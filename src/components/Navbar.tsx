@@ -11,9 +11,10 @@ const Navbar = () => {
         </div>
         
         <div className="hidden md:flex items-center gap-6">
-          <a href="#features" className="text-muted-foreground hover:text-foreground transition-smooth">Home</a>
-          <a href="#benefits" className="text-muted-foreground hover:text-foreground transition-smooth">About Us</a>
-          <a href="#contact" className="text-muted-foreground hover:text-foreground transition-smooth">Our Services</a>
+          <a href="#home" className="text-muted-foreground hover:text-foreground transition-smooth">Home</a>
+          <a href="#about" className="text-muted-foreground hover:text-foreground transition-smooth">About Us</a>
+          <a href="#services" className="text-muted-foreground hover:text-foreground transition-smooth">Services</a>
+          <a href="#contact" className="text-muted-foreground hover:text-foreground transition-smooth">Contact</a>
         </div>
         
         <div className="flex items-center gap-3">
