@@ -160,13 +160,13 @@ const Loans = () => {
                             <div>
                               <p className="text-sm text-muted-foreground mb-1">Principal Amount</p>
                               <p className="text-lg font-semibold">
-                                ${Number(loan.principal_amount).toFixed(2)}
+                                ₦{Number(loan.principal_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                               </p>
                             </div>
                             <div>
                               <p className="text-sm text-muted-foreground mb-1">Outstanding Balance</p>
                               <p className="text-lg font-semibold text-primary">
-                                ${Number(loan.outstanding_balance).toFixed(2)}
+                                ₦{Number(loan.outstanding_balance).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                               </p>
                             </div>
                             <div>
@@ -185,7 +185,7 @@ const Loans = () => {
                                 <span className="text-sm font-medium">Monthly Payment</span>
                               </div>
                               <span className="text-lg font-bold">
-                                ${Number(loan.monthly_payment).toFixed(2)}
+                                ₦{Number(loan.monthly_payment).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                               </span>
                             </div>
                           )}
@@ -235,7 +235,7 @@ const Loans = () => {
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Requested Amount:</span>
                             <span className="font-semibold">
-                              ${Number(app.requested_amount).toFixed(2)}
+                              ₦{Number(app.requested_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                             </span>
                           </div>
                           <div>

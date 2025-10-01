@@ -142,7 +142,7 @@ const LandingPage = () => {
               </Card>
               <Card className="shadow-card">
                 <CardContent className="pt-6 text-center">
-                  <div className="text-4xl font-bold text-secondary mb-2">$2M+</div>
+                  <div className="text-4xl font-bold text-secondary mb-2">₦2M+</div>
                   <p className="text-muted-foreground">Total Savings</p>
                 </CardContent>
               </Card>

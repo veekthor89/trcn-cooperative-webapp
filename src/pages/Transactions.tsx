@@ -157,7 +157,7 @@ const Transactions = () => {
                     <div className="text-right">
                       <p className={`text-xl font-bold ${getTransactionColor(transaction.type)}`}>
                         {isIncoming(transaction.type) ? '+' : '-'}
-                        ${Math.abs(Number(transaction.amount)).toFixed(2)}
+                        ₦{Math.abs(Number(transaction.amount)).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                       </p>
                     </div>
                   </div>
@@ -178,41 +178,37 @@ const Transactions = () => {
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Total Deposits</p>
                   <p className="text-lg font-semibold text-secondary">
-                    $
-                    {transactions
+                    ₦{transactions
                       .filter((t) => t.type === "deposit")
                       .reduce((sum, t) => sum + Number(t.amount), 0)
-                      .toFixed(2)}
+                      .toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Total Withdrawals</p>
                   <p className="text-lg font-semibold text-destructive">
-                    $
-                    {transactions
+                    ₦{transactions
                       .filter((t) => t.type === "withdrawal")
                       .reduce((sum, t) => sum + Number(t.amount), 0)
-                      .toFixed(2)}
+                      .toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Loan Disbursements</p>
                   <p className="text-lg font-semibold text-primary">
-                    $
-                    {transactions
+                    ₦{transactions
                       .filter((t) => t.type === "loan_disbursement")
                       .reduce((sum, t) => sum + Number(t.amount), 0)
-                      .toFixed(2)}
+                      .toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Loan Repayments</p>
                   <p className="text-lg font-semibold text-accent">
-                    $
-                    {transactions
+                    ₦{transactions
                       .filter((t) => t.type === "repayment")
                       .reduce((sum, t) => sum + Number(t.amount), 0)
-                      .toFixed(2)}
+                      .toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                   </p>
                 </div>
               </div>

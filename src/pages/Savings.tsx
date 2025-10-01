@@ -102,7 +102,7 @@ const Savings = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-white/80 mb-1">Total Savings</p>
-                    <p className="text-4xl font-bold text-white">${totalSavings.toFixed(2)}</p>
+                    <p className="text-4xl font-bold text-white">₦{totalSavings.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                   </div>
                   <div className="p-4 bg-white/20 rounded-full">
                     <PiggyBank className="h-8 w-8 text-white" />
@@ -137,7 +137,7 @@ const Savings = () => {
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-3xl font-bold mb-2">${Number(account.balance).toFixed(2)}</p>
+                        <p className="text-3xl font-bold mb-2">₦{Number(account.balance).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                         <p className="text-sm text-muted-foreground">
                           Created {new Date(account.created_at).toLocaleDateString()}
                         </p>
@@ -185,11 +185,11 @@ const Savings = () => {
                           <div className="flex justify-between text-sm">
                             <div>
                               <p className="text-muted-foreground">Current</p>
-                              <p className="font-semibold">${Number(goal.current_amount).toFixed(2)}</p>
+                              <p className="font-semibold">₦{Number(goal.current_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
                             </div>
                             <div className="text-right">
                               <p className="text-muted-foreground">Target</p>
-                              <p className="font-semibold">${Number(goal.target_amount).toFixed(2)}</p>
+                              <p className="font-semibold">₦{Number(goal.target_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
                             </div>
                           </div>
                           {goal.target_date && (

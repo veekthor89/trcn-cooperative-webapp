@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PiggyBank, CreditCard, TrendingUp, DollarSign } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 const Dashboard = () => {
   const [stats, setStats] = useState({
@@ -11,6 +12,7 @@ const Dashboard = () => {
     savingsGoals: 0,
     recentTransactions: 0,
   });
+  const [chartData, setChartData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -60,6 +62,27 @@ const Dashboard = () => {
         savingsGoals: goalsCount || 0,
         recentTransactions: transactionsCount || 0,
       });
+
+      // Fetch transaction data for chart
+      const { data: recentTransactions } = await supabase
+        .from("transactions")
+        .select("type, amount, created_at")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      // Group by type for pie chart
+      const transactionsByType = recentTransactions?.reduce((acc: any, t) => {
+        const existing = acc.find((item: any) => item.name === t.type);
+        if (existing) {
+          existing.value += Number(t.amount);
+        } else {
+          acc.push({ name: t.type, value: Number(t.amount) });
+        }
+        return acc;
+      }, []) || [];
+
+      setChartData(transactionsByType);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -70,7 +93,7 @@ const Dashboard = () => {
   const statCards = [
     {
       title: "Total Savings",
-      value: `$${stats.totalSavings.toFixed(2)}`,
+      value: `₦${stats.totalSavings.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       icon: PiggyBank,
       color: "text-secondary",
     },
@@ -162,15 +185,31 @@ const Dashboard = () => {
 
           <Card className="shadow-card">
             <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
+              <CardTitle>Transaction Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              {stats.recentTransactions === 0 ? (
-                <p className="text-muted-foreground text-sm">No recent transactions</p>
+              {chartData.length === 0 ? (
+                <p className="text-muted-foreground text-sm text-center py-8">No transaction data available</p>
               ) : (
-                <p className="text-muted-foreground text-sm">
-                  You have {stats.recentTransactions} recent transactions
-                </p>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={['hsl(var(--secondary))', 'hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--destructive))'][index % 4]} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value: number) => `₦${value.toLocaleString('en-NG', { minimumFractionDigits: 2 })}`} />
+                  </PieChart>
+                </ResponsiveContainer>
               )}
             </CardContent>
           </Card>
