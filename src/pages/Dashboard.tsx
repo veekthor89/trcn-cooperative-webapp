@@ -104,7 +104,7 @@ const Dashboard = () => {
       color: "text-primary",
     },
     {
-      title: "Savings Goals",
+      title: "Shares (Investment)",
       value: stats.savingsGoals.toString(),
       icon: TrendingUp,
       color: "text-accent",
