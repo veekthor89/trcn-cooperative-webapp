@@ -4,6 +4,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PiggyBank, CreditCard, TrendingUp, Eye, Mail, Bell, Landmark, Coins, DollarSign as DollarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 const Dashboard = () => {
   const [stats, setStats] = useState({
     totalBalance: 0,
@@ -191,6 +192,101 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Financial Overview Chart */}
+              <Card className="shadow-card">
+                <CardHeader>
+                  <CardTitle>Financial Overview</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart
+                      data={[
+                        { month: 'Jan', savings: 45000, loans: 30000, shares: 15000 },
+                        { month: 'Feb', savings: 52000, loans: 28000, shares: 18000 },
+                        { month: 'Mar', savings: 58000, loans: 25000, shares: 22000 },
+                        { month: 'Apr', savings: 65000, loans: 23000, shares: 28000 },
+                        { month: 'May', savings: 72000, loans: 20000, shares: 32000 },
+                        { month: 'Jun', savings: 78000, loans: 18000, shares: 38000 },
+                      ]}
+                      margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorLoans" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#ec4899" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorShares" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                      <XAxis 
+                        dataKey="month" 
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={12}
+                      />
+                      <YAxis 
+                        stroke="hsl(var(--muted-foreground))"
+                        fontSize={12}
+                        tickFormatter={(value) => `₦${(value / 1000).toFixed(0)}k`}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--background))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                        }}
+                        formatter={(value: number) => `₦${value.toLocaleString('en-NG')}`}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="savings" 
+                        stroke="#22c55e" 
+                        strokeWidth={2}
+                        fillOpacity={1} 
+                        fill="url(#colorSavings)" 
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="loans" 
+                        stroke="#ec4899" 
+                        strokeWidth={2}
+                        fillOpacity={1} 
+                        fill="url(#colorLoans)" 
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="shares" 
+                        stroke="#a855f7" 
+                        strokeWidth={2}
+                        fillOpacity={1} 
+                        fill="url(#colorShares)" 
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                  <div className="flex items-center justify-center gap-6 mt-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-600"></div>
+                      <span className="text-sm text-muted-foreground">Savings</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-pink-600"></div>
+                      <span className="text-sm text-muted-foreground">Loans</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-purple-600"></div>
+                      <span className="text-sm text-muted-foreground">Shares</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Activity Summary */}
               <Card className="shadow-card">
