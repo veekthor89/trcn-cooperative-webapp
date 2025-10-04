@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import {
   LayoutDashboard,
-  PiggyBank,
+  TrendingUp,
   CreditCard,
   ArrowLeftRight,
   Bell,
@@ -71,7 +71,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-    { icon: PiggyBank, label: "Savings", path: "/dashboard/savings" },
+    { icon: TrendingUp, label: "Shares", path: "/dashboard/savings" },
     { icon: CreditCard, label: "Loans", path: "/dashboard/loans" },
     { icon: ArrowLeftRight, label: "Transactions", path: "/dashboard/transactions" },
   ];
