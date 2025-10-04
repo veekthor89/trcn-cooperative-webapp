@@ -4,81 +4,66 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PiggyBank, CreditCard, TrendingUp, Eye, Mail, Bell, Landmark, Coins, DollarSign as DollarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 const Dashboard = () => {
   const [stats, setStats] = useState({
     totalBalance: 0,
     totalSavings: 0,
     totalLoans: 0,
-    totalInvestments: 0,
+    totalInvestments: 0
   });
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
-
   useEffect(() => {
     fetchDashboardData();
   }, []);
-
   const fetchDashboardData = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
       if (!session) return;
-
       const userId = session.user.id;
 
       // Fetch user profile
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-
+      const {
+        data: profile
+      } = await supabase.from("profiles").select("*").eq("id", userId).single();
       setUserProfile(profile);
 
       // Fetch savings accounts
-      const { data: savingsAccounts } = await supabase
-        .from("accounts")
-        .select("balance")
-        .eq("user_id", userId)
-        .eq("account_type", "savings");
-
+      const {
+        data: savingsAccounts
+      } = await supabase.from("accounts").select("balance").eq("user_id", userId).eq("account_type", "savings");
       const totalSavings = savingsAccounts?.reduce((sum, account) => sum + Number(account.balance), 0) || 0;
 
       // Fetch loans
-      const { data: loans } = await supabase
-        .from("loans")
-        .select("principal_amount")
-        .eq("user_id", userId)
-        .eq("status", "active");
-
+      const {
+        data: loans
+      } = await supabase.from("loans").select("principal_amount").eq("user_id", userId).eq("status", "active");
       const totalLoans = loans?.reduce((sum, loan) => sum + Number(loan.principal_amount), 0) || 0;
 
       // Fetch investments (savings goals)
-      const { data: investments } = await supabase
-        .from("savings_goals")
-        .select("current_amount")
-        .eq("user_id", userId);
-
+      const {
+        data: investments
+      } = await supabase.from("savings_goals").select("current_amount").eq("user_id", userId);
       const totalInvestments = investments?.reduce((sum, inv) => sum + Number(inv.current_amount), 0) || 0;
-
       const totalBalance = totalSavings + totalInvestments - totalLoans;
-
       setStats({
         totalBalance,
         totalSavings,
         totalLoans,
-        totalInvestments,
+        totalInvestments
       });
 
       // Fetch recent transactions
-      const { data: transactions } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(5);
-
+      const {
+        data: transactions
+      } = await supabase.from("transactions").select("*").eq("user_id", userId).order("created_at", {
+        ascending: false
+      }).limit(5);
       setRecentActivities(transactions || []);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -86,7 +71,6 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'loan':
@@ -100,7 +84,6 @@ const Dashboard = () => {
         return <PiggyBank className="h-5 w-5 text-green-600" />;
     }
   };
-
   const getTimeAgo = (date: string) => {
     const now = new Date();
     const created = new Date(date);
@@ -108,13 +91,11 @@ const Dashboard = () => {
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const diffWeeks = Math.floor(diffDays / 7);
     const diffMonths = Math.floor(diffDays / 30);
-
     if (diffMonths > 0) return `${diffMonths} month${diffMonths > 1 ? 's' : ''} ago`;
     if (diffWeeks > 0) return `${diffWeeks} week${diffWeeks > 1 ? 's' : ''} ago`;
     if (diffDays > 0) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     return 'Today';
   };
-
   const currentDate = new Date().toLocaleDateString('en-GB', {
     weekday: 'long',
     day: 'numeric',
@@ -124,9 +105,7 @@ const Dashboard = () => {
     minute: '2-digit',
     second: '2-digit'
   });
-
-  return (
-    <DashboardLayout>
+  return <DashboardLayout>
       <div className="flex gap-6">
         {/* Main Content */}
         <div className="flex-1 space-y-6">
@@ -143,17 +122,12 @@ const Dashboard = () => {
             <div className="text-sm text-muted-foreground">{currentDate}</div>
           </div>
 
-          {loading ? (
-            <div className="space-y-6">
+          {loading ? <div className="space-y-6">
               <Card className="animate-pulse h-40" />
               <div className="grid gap-6 md:grid-cols-3">
-                {[1, 2, 3].map((i) => (
-                  <Card key={i} className="animate-pulse h-32" />
-                ))}
+                {[1, 2, 3].map(i => <Card key={i} className="animate-pulse h-32" />)}
               </div>
-            </div>
-          ) : (
-            <>
+            </div> : <>
               {/* Total Balance Card */}
               <Card className="bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg">
                 <CardContent className="pt-6 pb-8">
@@ -162,7 +136,10 @@ const Dashboard = () => {
                     <Eye className="h-5 w-5 text-white/80" />
                   </div>
                   <p className="text-4xl font-bold">
-                    ₦{stats.totalBalance.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ₦{stats.totalBalance.toLocaleString('en-NG', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
                   </p>
                 </CardContent>
               </Card>
@@ -176,7 +153,10 @@ const Dashboard = () => {
                       <Eye className="h-5 w-5 text-green-600" />
                     </div>
                     <p className="text-2xl font-bold text-green-700">
-                      ₦{stats.totalSavings.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ₦{stats.totalSavings.toLocaleString('en-NG', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
                     </p>
                   </CardContent>
                 </Card>
@@ -188,7 +168,10 @@ const Dashboard = () => {
                       <Eye className="h-5 w-5 text-pink-600" />
                     </div>
                     <p className="text-2xl font-bold text-pink-700">
-                      ₦{stats.totalLoans.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ₦{stats.totalLoans.toLocaleString('en-NG', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
                     </p>
                   </CardContent>
                 </Card>
@@ -196,11 +179,14 @@ const Dashboard = () => {
                 <Card className="bg-purple-50 border-purple-100 shadow-card">
                   <CardContent className="pt-6">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-purple-900 font-medium">Investments</p>
+                      <p className="text-purple-900 font-medium">Shares</p>
                       <Eye className="h-5 w-5 text-purple-600" />
                     </div>
                     <p className="text-2xl font-bold text-purple-700">
-                      ₦{stats.totalInvestments.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      ₦{stats.totalInvestments.toLocaleString('en-NG', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                  })}
                     </p>
                   </CardContent>
                 </Card>
@@ -213,11 +199,7 @@ const Dashboard = () => {
                   <Button variant="link" className="text-primary">View All</Button>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {recentActivities.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-8">No recent activities</p>
-                  ) : (
-                    recentActivities.map((activity, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-smooth">
+                  {recentActivities.length === 0 ? <p className="text-muted-foreground text-center py-8">No recent activities</p> : recentActivities.map((activity, index) => <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-smooth">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
                             {getActivityIcon(activity.type)}
@@ -228,15 +210,14 @@ const Dashboard = () => {
                           </div>
                         </div>
                         <p className="font-semibold">
-                          ₦{Number(activity.amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
+                          ₦{Number(activity.amount).toLocaleString('en-NG', {
+                    minimumFractionDigits: 2
+                  })}
                         </p>
-                      </div>
-                    ))
-                  )}
+                      </div>)}
                 </CardContent>
               </Card>
-            </>
-          )}
+            </>}
         </div>
 
         {/* Right Sidebar */}
@@ -301,8 +282,6 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
-    </DashboardLayout>
-  );
+    </DashboardLayout>;
 };
-
 export default Dashboard;
