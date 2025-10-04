@@ -263,10 +263,6 @@ const Dashboard = () => {
                 <Coins className="h-5 w-5 mr-3 text-orange-600" />
                 <span className="text-sm">Special Contribution</span>
               </Button>
-              <Button variant="outline" className="w-full justify-start h-auto py-4 bg-orange-50 border-orange-100 hover:bg-orange-100">
-                <DollarIcon className="h-5 w-5 mr-3 text-orange-600" />
-                <span className="text-sm">Special Contribution</span>
-              </Button>
             </CardContent>
           </Card>
 
