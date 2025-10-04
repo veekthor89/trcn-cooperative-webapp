@@ -6,12 +6,12 @@ import {
   LayoutDashboard,
   TrendingUp,
   CreditCard,
-  ArrowLeftRight,
   Bell,
   User,
   LogOut,
   Menu,
   X,
+  PiggyBank,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -71,9 +71,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-    { icon: TrendingUp, label: "Shares", path: "/dashboard/savings" },
+    { icon: PiggyBank, label: "Savings", path: "/dashboard/savings" },
     { icon: CreditCard, label: "Loans", path: "/dashboard/loans" },
-    { icon: ArrowLeftRight, label: "Transactions", path: "/dashboard/transactions" },
+    { icon: TrendingUp, label: "Shares", path: "/dashboard/transactions" },
   ];
 
   if (!session) {
