@@ -56,7 +56,7 @@ const Loans = () => {
         .from("transactions")
         .select("*")
         .eq("user_id", userId)
-        .or("type.eq.loan_repayment,type.eq.loan_disbursement")
+        .or("type.eq.repayment,type.eq.loan_disbursement")
         .order("created_at", { ascending: false })
         .limit(10);
 
