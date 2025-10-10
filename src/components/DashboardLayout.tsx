@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
+import trcnLogo from "@/assets/trcn-logo.png";
 interface DashboardLayoutProps {
   children: ReactNode;
 }
@@ -100,11 +101,8 @@ const DashboardLayout = ({
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-border">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">CF</span>
-                </div>
-                
+              <div className="flex items-center justify-center flex-1">
+                <img src={trcnLogo} alt="TRCN Cooperative Logo" className="h-16 w-auto" />
               </div>
               <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(false)}>
                 <X className="h-5 w-5" />
