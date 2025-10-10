@@ -176,65 +176,58 @@ const Loans = () => {
             </div>
 
             {/* Active Loans */}
-            <div>
-              <div className="mb-4">
-                <h2 className="text-2xl font-bold">Active Loans</h2>
-                <p className="text-sm text-muted-foreground">Your current loan portfolio</p>
-              </div>
-              {loans.length === 0 ? (
-                <Card>
-                  <CardContent className="py-12 text-center">
+            <Card>
+              <CardHeader>
+                <CardTitle>Active Loans</CardTitle>
+                <CardDescription>Your current loan portfolio</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loans.length === 0 ? (
+                  <div className="text-center py-8">
                     <p className="text-muted-foreground mb-4">No active loans</p>
                     <Button>
                       <Plus className="mr-2 h-4 w-4" />
                       Apply for Loan
                     </Button>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-4">
-                  {loans.map((loan) => (
-                    <Card key={loan.id}>
-                      <CardContent className="pt-6">
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {loans.map((loan) => (
+                      <div key={loan.id} className="pb-6 border-b last:border-0 last:pb-0">
                         <div className="flex items-start justify-between mb-4">
-                          <h3 className="text-lg font-semibold">{formatLoanType(loan.loan_type)}</h3>
+                          <div>
+                            <h3 className="text-lg font-semibold mb-1">{formatLoanType(loan.loan_type)}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              Description of the loan type and terms
+                            </p>
+                          </div>
                           <div className="text-right">
-                            <p className="text-xs text-muted-foreground">Interest Rate</p>
-                            <p className="text-sm font-semibold">{Number(loan.interest_rate)}% per annum</p>
+                            <p className="text-sm text-muted-foreground">Amount</p>
+                            <p className="text-xl font-bold">₦{Number(loan.principal_amount).toLocaleString('en-NG')}</p>
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="flex items-center justify-between text-sm">
                           <div>
-                            <p className="text-xs text-muted-foreground mb-1">Original Amount</p>
-                            <p className="text-lg font-semibold">
-                              ₦{Number(loan.principal_amount).toLocaleString('en-NG')}
-                            </p>
+                            <span className="text-muted-foreground">Outstanding: </span>
+                            <span className="font-semibold text-destructive">₦{Number(loan.outstanding_balance).toLocaleString('en-NG')}</span>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground mb-1">Outstanding</p>
-                            <p className="text-lg font-semibold text-destructive">
-                              ₦{Number(loan.outstanding_balance).toLocaleString('en-NG')}
-                            </p>
+                            <span className="text-muted-foreground">Monthly Payment: </span>
+                            <span className="font-semibold">₦{Number(loan.monthly_payment || 0).toLocaleString('en-NG')}</span>
                           </div>
                           <div>
-                            <p className="text-xs text-muted-foreground mb-1">Monthly Payment</p>
-                            <p className="text-lg font-semibold">
-                              ₦{Number(loan.monthly_payment || 0).toLocaleString('en-NG')}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">Next Payment</p>
-                            <p className="text-lg font-semibold">
+                            <span className="text-muted-foreground">Next Payment: </span>
+                            <span className="font-semibold">
                               {loan.next_payment_date ? new Date(loan.next_payment_date).toLocaleDateString('en-GB') : 'N/A'}
-                            </p>
+                            </span>
                           </div>
                         </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Recent Loan Activity */}
             <div>
