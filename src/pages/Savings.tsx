@@ -14,9 +14,9 @@ interface SavingsAccount {
   created_at: string;
 }
 
-interface SavingsGoal {
+interface SpecialContribution {
   id: string;
-  goal_name: string;
+  contribution_name: string;
   target_amount: number;
   current_amount: number;
   target_date: string | null;
@@ -24,7 +24,7 @@ interface SavingsGoal {
 
 const Savings = () => {
   const [accounts, setAccounts] = useState<SavingsAccount[]>([]);
-  const [goals, setGoals] = useState<SavingsGoal[]>([]);
+  const [contributions, setContributions] = useState<SpecialContribution[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -47,16 +47,16 @@ const Savings = () => {
 
       if (accountsError) throw accountsError;
 
-      // Fetch savings goals
-      const { data: goalsData, error: goalsError } = await supabase
-        .from("savings_goals")
+      // Fetch special contributions
+      const { data: contributionsData, error: contributionsError } = await supabase
+        .from("special_contributions")
         .select("*")
         .eq("user_id", userId);
 
-      if (goalsError) throw goalsError;
+      if (contributionsError) throw contributionsError;
 
       setAccounts(accountsData || []);
-      setGoals(goalsData || []);
+      setContributions(contributionsData || []);
     } catch (error) {
       console.error("Error fetching savings data:", error);
       toast.error("Failed to load savings data");
@@ -148,30 +148,30 @@ const Savings = () => {
               )}
             </div>
 
-            {/* Savings Goals */}
+            {/* Special Contributions */}
             <div>
-              <h2 className="text-2xl font-semibold mb-4">Savings Goals</h2>
-              {goals.length === 0 ? (
+              <h2 className="text-2xl font-semibold mb-4">Special Contributions</h2>
+              {contributions.length === 0 ? (
                 <Card className="shadow-card">
                   <CardContent className="py-12 text-center">
                     <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">No savings goals yet</p>
+                    <p className="text-muted-foreground">No special contributions yet</p>
                     <Button variant="outline" className="mt-4">
                       <Plus className="mr-2 h-4 w-4" />
-                      Create Your First Goal
+                      Create Your First Contribution
                     </Button>
                   </CardContent>
                 </Card>
               ) : (
                 <div className="grid gap-4 md:grid-cols-2">
-                  {goals.map((goal) => {
-                    const progress = (Number(goal.current_amount) / Number(goal.target_amount)) * 100;
+                  {contributions.map((contribution) => {
+                    const progress = (Number(contribution.current_amount) / Number(contribution.target_amount)) * 100;
                     return (
-                      <Card key={goal.id} className="shadow-card">
+                      <Card key={contribution.id} className="shadow-card">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             <Target className="h-5 w-5 text-accent" />
-                            {goal.goal_name}
+                            {contribution.contribution_name}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -185,16 +185,16 @@ const Savings = () => {
                           <div className="flex justify-between text-sm">
                             <div>
                               <p className="text-muted-foreground">Current</p>
-                              <p className="font-semibold">₦{Number(goal.current_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
+                              <p className="font-semibold">₦{Number(contribution.current_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
                             </div>
                             <div className="text-right">
                               <p className="text-muted-foreground">Target</p>
-                              <p className="font-semibold">₦{Number(goal.target_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
+                              <p className="font-semibold">₦{Number(contribution.target_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
                             </div>
                           </div>
-                          {goal.target_date && (
+                          {contribution.target_date && (
                             <p className="text-xs text-muted-foreground">
-                              Target date: {new Date(goal.target_date).toLocaleDateString()}
+                              Target date: {new Date(contribution.target_date).toLocaleDateString()}
                             </p>
                           )}
                         </CardContent>

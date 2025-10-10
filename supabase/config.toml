@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.bulk-upload-transactions]
 verify_jwt = false
+
+[functions.bulk-upload-special-contributions]
+verify_jwt = false

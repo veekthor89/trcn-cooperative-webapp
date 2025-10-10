@@ -46,11 +46,11 @@ const Dashboard = () => {
       } = await supabase.from("loans").select("principal_amount").eq("user_id", userId).eq("status", "active");
       const totalLoans = loans?.reduce((sum, loan) => sum + Number(loan.principal_amount), 0) || 0;
 
-      // Fetch investments (savings goals)
+      // Fetch special contributions
       const {
-        data: investments
-      } = await supabase.from("savings_goals").select("current_amount").eq("user_id", userId);
-      const totalInvestments = investments?.reduce((sum, inv) => sum + Number(inv.current_amount), 0) || 0;
+        data: contributions
+      } = await supabase.from("special_contributions").select("current_amount").eq("user_id", userId);
+      const totalInvestments = contributions?.reduce((sum, inv) => sum + Number(inv.current_amount), 0) || 0;
       const totalBalance = totalSavings + totalInvestments - totalLoans;
       setStats({
         totalBalance,

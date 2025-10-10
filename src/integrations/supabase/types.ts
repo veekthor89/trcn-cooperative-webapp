@@ -52,83 +52,6 @@ export type Database = {
           },
         ]
       }
-      forum_comments: {
-        Row: {
-          content: string
-          created_at: string | null
-          id: string
-          post_id: string
-          user_id: string
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          id?: string
-          post_id: string
-          user_id: string
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          id?: string
-          post_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_comments_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "forum_posts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "forum_comments_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      forum_posts: {
-        Row: {
-          category: string | null
-          content: string
-          created_at: string | null
-          id: string
-          title: string
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          category?: string | null
-          content: string
-          created_at?: string | null
-          id?: string
-          title: string
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          category?: string | null
-          content?: string
-          created_at?: string | null
-          id?: string
-          title?: string
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "forum_posts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       loan_applications: {
         Row: {
           application_date: string | null
@@ -304,11 +227,11 @@ export type Database = {
         }
         Relationships: []
       }
-      savings_goals: {
+      special_contributions: {
         Row: {
+          contribution_name: string
           created_at: string | null
           current_amount: number
-          goal_name: string
           id: string
           target_amount: number
           target_date: string | null
@@ -316,9 +239,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          contribution_name: string
           created_at?: string | null
           current_amount?: number
-          goal_name: string
           id?: string
           target_amount: number
           target_date?: string | null
@@ -326,9 +249,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          contribution_name?: string
           created_at?: string | null
           current_amount?: number
-          goal_name?: string
           id?: string
           target_amount?: number
           target_date?: string | null
