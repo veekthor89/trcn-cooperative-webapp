@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
+import { AdminRoute } from "@/components/AdminRoute";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -109,7 +110,8 @@ const BulkUploadTransactions = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <AdminRoute>
+        <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Bulk Upload Transactions</h1>
           <p className="text-muted-foreground mt-2">
@@ -214,7 +216,8 @@ const BulkUploadTransactions = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
+        </div>
+      </AdminRoute>
     </DashboardLayout>
   );
 };

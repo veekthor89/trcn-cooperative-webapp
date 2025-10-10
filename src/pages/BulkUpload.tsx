@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, Download } from "lucide-react";
+import { AdminRoute } from "@/components/AdminRoute";
+import DashboardLayout from "@/components/DashboardLayout";
 
 interface MemberData {
   full_name: string;
@@ -99,90 +101,94 @@ const BulkUpload = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Bulk Upload Members</h1>
-        <p className="text-muted-foreground">Upload multiple members at once using a CSV file</p>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Upload CSV File</CardTitle>
-          <CardDescription>
-            Upload a CSV file with member details. All members will be created with the default password: <strong>trcn@2025</strong>
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-4">
-            <Button
-              variant="outline"
-              onClick={downloadTemplate}
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Download Template
-            </Button>
-
-            <div className="relative">
-              <input
-                type="file"
-                accept=".csv"
-                onChange={handleFileUpload}
-                disabled={uploading}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
-              <Button disabled={uploading} className="flex items-center gap-2">
-                <Upload className="h-4 w-4" />
-                {uploading ? 'Uploading...' : 'Upload CSV'}
-              </Button>
-            </div>
+    <DashboardLayout>
+      <AdminRoute>
+        <div className="container mx-auto p-6 space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Bulk Upload Members</h1>
+            <p className="text-muted-foreground">Upload multiple members at once using a CSV file</p>
           </div>
 
-          <div className="text-sm text-muted-foreground space-y-1">
-            <p><strong>CSV Format:</strong></p>
-            <p>Columns: id, full_name, email, phone, address, date_of_birth, created_at, updated_at</p>
-            <p className="text-xs">Note: id, created_at, and updated_at will be auto-generated if left empty</p>
-          </div>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Upload CSV File</CardTitle>
+              <CardDescription>
+                Upload a CSV file with member details. All members will be created with the default password: <strong>trcn@2025</strong>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex gap-4">
+                <Button
+                  variant="outline"
+                  onClick={downloadTemplate}
+                  className="flex items-center gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Download Template
+                </Button>
 
-      {results && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Upload Results</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {results.success.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-green-600 mb-2">
-                  Successfully uploaded ({results.success.length})
-                </h3>
-                <ul className="text-sm space-y-1 max-h-40 overflow-y-auto">
-                  {results.success.map((email, idx) => (
-                    <li key={idx} className="text-muted-foreground">✓ {email}</li>
-                  ))}
-                </ul>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
+                  <Button disabled={uploading} className="flex items-center gap-2">
+                    <Upload className="h-4 w-4" />
+                    {uploading ? 'Uploading...' : 'Upload CSV'}
+                  </Button>
+                </div>
               </div>
-            )}
 
-            {results.errors.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-destructive mb-2">
-                  Failed uploads ({results.errors.length})
-                </h3>
-                <ul className="text-sm space-y-2 max-h-40 overflow-y-auto">
-                  {results.errors.map((err, idx) => (
-                    <li key={idx} className="text-muted-foreground">
-                      <span className="font-medium">{err.email}</span>: {err.error}
-                    </li>
-                  ))}
-                </ul>
+              <div className="text-sm text-muted-foreground space-y-1">
+                <p><strong>CSV Format:</strong></p>
+                <p>Columns: id, full_name, email, phone, address, date_of_birth, created_at, updated_at</p>
+                <p className="text-xs">Note: id, created_at, and updated_at will be auto-generated if left empty</p>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-    </div>
+            </CardContent>
+          </Card>
+
+          {results && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Upload Results</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {results.success.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-green-600 mb-2">
+                      Successfully uploaded ({results.success.length})
+                    </h3>
+                    <ul className="text-sm space-y-1 max-h-40 overflow-y-auto">
+                      {results.success.map((email, idx) => (
+                        <li key={idx} className="text-muted-foreground">✓ {email}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {results.errors.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-destructive mb-2">
+                      Failed uploads ({results.errors.length})
+                    </h3>
+                    <ul className="text-sm space-y-2 max-h-40 overflow-y-auto">
+                      {results.errors.map((err, idx) => (
+                        <li key={idx} className="text-muted-foreground">
+                          <span className="font-medium">{err.email}</span>: {err.error}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </AdminRoute>
+    </DashboardLayout>
   );
 };
 

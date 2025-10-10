@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Upload, Download } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
+import { AdminRoute } from "@/components/AdminRoute";
 
 interface LoanData {
   email: string;
@@ -104,7 +105,8 @@ bobwilson@example.com,emergency,2000.00,4.5,6,pending`;
 
   return (
     <DashboardLayout>
-      <div className="container mx-auto p-6 space-y-6">
+      <AdminRoute>
+        <div className="container mx-auto p-6 space-y-6">
         <div>
           <h1 className="text-3xl font-bold mb-2">Bulk Upload Loans</h1>
           <p className="text-muted-foreground">Create multiple loan records at once using a CSV file</p>
@@ -190,7 +192,8 @@ bobwilson@example.com,emergency,2000.00,4.5,6,pending`;
             </CardContent>
           </Card>
         )}
-      </div>
+        </div>
+      </AdminRoute>
     </DashboardLayout>
   );
 };

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
+import { AdminRoute } from "@/components/AdminRoute";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -144,7 +145,8 @@ const BulkUploadSpecialContributions = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <AdminRoute>
+        <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold mb-2">Bulk Upload Special Contributions</h1>
           <p className="text-muted-foreground">Upload multiple special contributions via CSV file</p>
@@ -263,7 +265,8 @@ const BulkUploadSpecialContributions = () => {
             )}
           </CardContent>
         </Card>
-      </div>
+        </div>
+      </AdminRoute>
     </DashboardLayout>
   );
 };

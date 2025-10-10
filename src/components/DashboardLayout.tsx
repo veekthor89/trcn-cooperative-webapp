@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -26,6 +27,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileName, setProfileName] = useState("User");
+  const { isAdmin } = useUserRole();
 
   useEffect(() => {
     // Set up auth listener
@@ -132,79 +134,81 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
               </button>
             ))}
             
-            <div className="pt-4 mt-4 border-t border-border">
-              <p className="text-xs font-semibold text-muted-foreground px-4 mb-2">ADMIN</p>
-              <button
-                onClick={() => {
-                  navigate("/dashboard/admin");
-                  setSidebarOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
-              >
-                <LayoutDashboard className="h-5 w-5" />
-                <span>Admin Dashboard</span>
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/dashboard/members");
-                  setSidebarOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
-              >
-                <User className="h-5 w-5" />
-                <span>Member Management</span>
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/dashboard/bulk-upload");
-                  setSidebarOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
-              >
-                <User className="h-5 w-5" />
-                <span>Bulk Upload</span>
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/dashboard/bulk-upload-accounts");
-                  setSidebarOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
-              >
-                <User className="h-5 w-5" />
-                <span>Bulk Upload Accounts</span>
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/dashboard/bulk-upload-loans");
-                  setSidebarOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
-              >
-                <CreditCard className="h-5 w-5" />
-                <span>Bulk Upload Loans</span>
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/dashboard/bulk-upload-transactions");
-                  setSidebarOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
-              >
-                <TrendingUp className="h-5 w-5" />
-                <span>Bulk Upload Transactions</span>
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/dashboard/bulk-upload-special-contributions");
-                  setSidebarOpen(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
-              >
-                <PiggyBank className="h-5 w-5" />
-                <span>Bulk Upload Special Contributions</span>
-              </button>
-            </div>
+            {isAdmin && (
+              <div className="pt-4 mt-4 border-t border-border">
+                <p className="text-xs font-semibold text-muted-foreground px-4 mb-2">ADMIN</p>
+                <button
+                  onClick={() => {
+                    navigate("/dashboard/admin");
+                    setSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+                >
+                  <LayoutDashboard className="h-5 w-5" />
+                  <span>Admin Dashboard</span>
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/dashboard/members");
+                    setSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+                >
+                  <User className="h-5 w-5" />
+                  <span>Member Management</span>
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/dashboard/bulk-upload");
+                    setSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+                >
+                  <User className="h-5 w-5" />
+                  <span>Bulk Upload</span>
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/dashboard/bulk-upload-accounts");
+                    setSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+                >
+                  <User className="h-5 w-5" />
+                  <span>Bulk Upload Accounts</span>
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/dashboard/bulk-upload-loans");
+                    setSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+                >
+                  <CreditCard className="h-5 w-5" />
+                  <span>Bulk Upload Loans</span>
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/dashboard/bulk-upload-transactions");
+                    setSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+                >
+                  <TrendingUp className="h-5 w-5" />
+                  <span>Bulk Upload Transactions</span>
+                </button>
+                <button
+                  onClick={() => {
+                    navigate("/dashboard/bulk-upload-special-contributions");
+                    setSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+                >
+                  <PiggyBank className="h-5 w-5" />
+                  <span>Bulk Upload Special Contributions</span>
+                </button>
+              </div>
+            )}
           </nav>
 
           <div className="p-4 border-t border-border">
