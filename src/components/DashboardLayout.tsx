@@ -154,6 +154,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <User className="h-5 w-5" />
                 <span>Member Management</span>
               </button>
+              <button
+                onClick={() => {
+                  navigate("/dashboard/bulk-upload");
+                  setSidebarOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+              >
+                <User className="h-5 w-5" />
+                <span>Bulk Upload</span>
+              </button>
             </div>
           </nav>
 
