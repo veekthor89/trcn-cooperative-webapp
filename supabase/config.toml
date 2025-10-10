@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.bulk-upload-loans]
 verify_jwt = false
+
+[functions.bulk-upload-transactions]
+verify_jwt = false

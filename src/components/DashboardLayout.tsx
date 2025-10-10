@@ -184,6 +184,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <CreditCard className="h-5 w-5" />
                 <span>Bulk Upload Loans</span>
               </button>
+              <button
+                onClick={() => {
+                  navigate("/dashboard/bulk-upload-transactions");
+                  setSidebarOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+              >
+                <TrendingUp className="h-5 w-5" />
+                <span>Bulk Upload Transactions</span>
+              </button>
             </div>
           </nav>
 
