@@ -166,13 +166,13 @@ const Dashboard = () => {
                 <Card className="bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900">
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-medium text-purple-900 dark:text-purple-100">Shares</p>
+                      <p className="text-sm font-medium text-purple-900 dark:text-purple-100">Special Contributions</p>
                       <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     </div>
                     <p className="text-3xl font-bold text-purple-700 dark:text-purple-300">
                       ₦{stats.totalInvestments.toLocaleString('en-NG')}
                     </p>
-                    <p className="text-xs text-purple-600 dark:text-purple-400 mt-2">+8% dividend yield</p>
+                    <p className="text-xs text-purple-600 dark:text-purple-400 mt-2">Various contributions</p>
                   </CardContent>
                 </Card>
               </div>
@@ -189,12 +189,12 @@ const Dashboard = () => {
                     <ResponsiveContainer width="100%" height={300}>
                       <AreaChart
                         data={[
-                          { month: 'Jan', savings: 45000, loans: 30000, shares: 15000 },
-                          { month: 'Feb', savings: 52000, loans: 28000, shares: 18000 },
-                          { month: 'Mar', savings: 58000, loans: 25000, shares: 22000 },
-                          { month: 'Apr', savings: 65000, loans: 23000, shares: 28000 },
-                          { month: 'May', savings: 72000, loans: 20000, shares: 32000 },
-                          { month: 'Jun', savings: 78000, loans: 18000, shares: 38000 },
+                          { month: 'Jan', savings: 45000, loans: 30000, contributions: 15000 },
+                          { month: 'Feb', savings: 52000, loans: 28000, contributions: 18000 },
+                          { month: 'Mar', savings: 58000, loans: 25000, contributions: 22000 },
+                          { month: 'Apr', savings: 65000, loans: 23000, contributions: 28000 },
+                          { month: 'May', savings: 72000, loans: 20000, contributions: 32000 },
+                          { month: 'Jun', savings: 78000, loans: 18000, contributions: 38000 },
                         ]}
                         margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                       >
@@ -207,7 +207,7 @@ const Dashboard = () => {
                             <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3}/>
                             <stop offset="95%" stopColor="#ec4899" stopOpacity={0}/>
                           </linearGradient>
-                          <linearGradient id="colorShares" x1="0" y1="0" x2="0" y2="1">
+                          <linearGradient id="colorContributions" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
                             <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
                           </linearGradient>
@@ -250,11 +250,11 @@ const Dashboard = () => {
                         />
                         <Area 
                           type="monotone" 
-                          dataKey="shares" 
+                          dataKey="contributions" 
                           stroke="#a855f7" 
                           strokeWidth={2}
                           fillOpacity={1} 
-                          fill="url(#colorShares)" 
+                          fill="url(#colorContributions)" 
                         />
                       </AreaChart>
                     </ResponsiveContainer>
@@ -269,7 +269,7 @@ const Dashboard = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full bg-purple-600"></div>
-                        <span className="text-sm text-muted-foreground">Shares</span>
+                        <span className="text-sm text-muted-foreground">Contributions</span>
                       </div>
                     </div>
                   </CardContent>
@@ -310,8 +310,8 @@ const Dashboard = () => {
                           <TrendingUp className="h-5 w-5 text-white" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-purple-900 dark:text-purple-100">Buy Shares</p>
-                          <p className="text-xs text-purple-600 dark:text-purple-400">Increase share capital</p>
+                          <p className="text-sm font-medium text-purple-900 dark:text-purple-100">Add Contribution</p>
+                          <p className="text-xs text-purple-600 dark:text-purple-400">Make special contribution</p>
                         </div>
                       </div>
                     </Button>
