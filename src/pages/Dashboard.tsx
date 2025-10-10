@@ -107,9 +107,7 @@ const Dashboard = () => {
     second: '2-digit'
   });
   return <DashboardLayout>
-      <div className="flex gap-6">
-        {/* Main Content */}
-        <div className="flex-1 space-y-6">
+      <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -137,8 +135,8 @@ const Dashboard = () => {
                 {[1, 2, 3].map(i => <Card key={i} className="animate-pulse h-32" />)}
               </div>
             </div> : <>
-              {/* Stats Cards */}
-              <div className="grid gap-4 md:grid-cols-3">
+              {/* Stats Cards - Full Width */}
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
                 <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900">
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
@@ -179,101 +177,158 @@ const Dashboard = () => {
                 </Card>
               </div>
 
-              {/* Financial Overview Chart */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">Financial Overview</CardTitle>
-                  <p className="text-sm text-muted-foreground">Your financial performance over the last 6 months</p>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart
-                      data={[
-                        { month: 'Jan', savings: 45000, loans: 30000, shares: 15000 },
-                        { month: 'Feb', savings: 52000, loans: 28000, shares: 18000 },
-                        { month: 'Mar', savings: 58000, loans: 25000, shares: 22000 },
-                        { month: 'Apr', savings: 65000, loans: 23000, shares: 28000 },
-                        { month: 'May', savings: 72000, loans: 20000, shares: 32000 },
-                        { month: 'Jun', savings: 78000, loans: 18000, shares: 38000 },
-                      ]}
-                      margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                    >
-                      <defs>
-                        <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
-                        </linearGradient>
-                        <linearGradient id="colorLoans" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#ec4899" stopOpacity={0}/>
-                        </linearGradient>
-                        <linearGradient id="colorShares" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                      <XAxis 
-                        dataKey="month" 
-                        stroke="hsl(var(--muted-foreground))"
-                        fontSize={12}
-                      />
-                      <YAxis 
-                        stroke="hsl(var(--muted-foreground))"
-                        fontSize={12}
-                        tickFormatter={(value) => `₦${(value / 1000).toFixed(0)}k`}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          backgroundColor: 'hsl(var(--background))',
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                        }}
-                        formatter={(value: number) => `₦${value.toLocaleString('en-NG')}`}
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="savings" 
-                        stroke="#22c55e" 
-                        strokeWidth={2}
-                        fillOpacity={1} 
-                        fill="url(#colorSavings)" 
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="loans" 
-                        stroke="#ec4899" 
-                        strokeWidth={2}
-                        fillOpacity={1} 
-                        fill="url(#colorLoans)" 
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="shares" 
-                        stroke="#a855f7" 
-                        strokeWidth={2}
-                        fillOpacity={1} 
-                        fill="url(#colorShares)" 
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                  <div className="flex items-center justify-center gap-6 mt-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-green-600"></div>
-                      <span className="text-sm text-muted-foreground">Savings</span>
+              {/* Financial Overview and Quick Actions */}
+              <div className="grid gap-6 lg:grid-cols-[1fr,380px]">
+                {/* Financial Overview Chart */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-xl">Financial Overview</CardTitle>
+                    <p className="text-sm text-muted-foreground">Your financial performance over the last 6 months</p>
+                  </CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <AreaChart
+                        data={[
+                          { month: 'Jan', savings: 45000, loans: 30000, shares: 15000 },
+                          { month: 'Feb', savings: 52000, loans: 28000, shares: 18000 },
+                          { month: 'Mar', savings: 58000, loans: 25000, shares: 22000 },
+                          { month: 'Apr', savings: 65000, loans: 23000, shares: 28000 },
+                          { month: 'May', savings: 72000, loans: 20000, shares: 32000 },
+                          { month: 'Jun', savings: 78000, loans: 18000, shares: 38000 },
+                        ]}
+                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+                      >
+                        <defs>
+                          <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                          </linearGradient>
+                          <linearGradient id="colorLoans" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#ec4899" stopOpacity={0}/>
+                          </linearGradient>
+                          <linearGradient id="colorShares" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
+                            <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                        <XAxis 
+                          dataKey="month" 
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={12}
+                        />
+                        <YAxis 
+                          stroke="hsl(var(--muted-foreground))"
+                          fontSize={12}
+                          tickFormatter={(value) => `₦${(value / 1000).toFixed(0)}k`}
+                        />
+                        <Tooltip 
+                          contentStyle={{
+                            backgroundColor: 'hsl(var(--background))',
+                            border: '1px solid hsl(var(--border))',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                          }}
+                          formatter={(value: number) => `₦${value.toLocaleString('en-NG')}`}
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="savings" 
+                          stroke="#22c55e" 
+                          strokeWidth={2}
+                          fillOpacity={1} 
+                          fill="url(#colorSavings)" 
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="loans" 
+                          stroke="#ec4899" 
+                          strokeWidth={2}
+                          fillOpacity={1} 
+                          fill="url(#colorLoans)" 
+                        />
+                        <Area 
+                          type="monotone" 
+                          dataKey="shares" 
+                          stroke="#a855f7" 
+                          strokeWidth={2}
+                          fillOpacity={1} 
+                          fill="url(#colorShares)" 
+                        />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                    <div className="flex items-center justify-center gap-6 mt-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-green-600"></div>
+                        <span className="text-sm text-muted-foreground">Savings</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-pink-600"></div>
+                        <span className="text-sm text-muted-foreground">Loans</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-purple-600"></div>
+                        <span className="text-sm text-muted-foreground">Shares</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-pink-600"></div>
-                      <span className="text-sm text-muted-foreground">Loans</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-purple-600"></div>
-                      <span className="text-sm text-muted-foreground">Shares</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+
+                {/* Quick Actions */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Quick Actions</CardTitle>
+                    <p className="text-xs text-muted-foreground">Common tasks you can perform</p>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900 hover:bg-green-100 dark:hover:bg-green-950/30 text-left">
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                          <Landmark className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-green-900 dark:text-green-100">Make Deposit</p>
+                          <p className="text-xs text-green-600 dark:text-green-400">Add money to savings</p>
+                        </div>
+                      </div>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900 hover:bg-blue-100 dark:hover:bg-blue-950/30 text-left">
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+                          <CreditCard className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Apply for Loan</p>
+                          <p className="text-xs text-blue-600 dark:text-blue-400">Submit loan application</p>
+                        </div>
+                      </div>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900 hover:bg-purple-100 dark:hover:bg-purple-950/30 text-left">
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
+                          <TrendingUp className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-purple-900 dark:text-purple-100">Buy Shares</p>
+                          <p className="text-xs text-purple-600 dark:text-purple-400">Increase share capital</p>
+                        </div>
+                      </div>
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-900 hover:bg-orange-100 dark:hover:bg-orange-950/30 text-left">
+                      <div className="flex items-center gap-3 w-full">
+                        <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
+                          <Coins className="h-5 w-5 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-orange-900 dark:text-orange-100">Transfer Funds</p>
+                          <p className="text-xs text-orange-600 dark:text-orange-400">Send to another member</p>
+                        </div>
+                      </div>
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
 
               {/* Recent Activity */}
               <Card>
@@ -308,64 +363,6 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             </>}
-        </div>
-
-        {/* Right Sidebar */}
-        <div className="w-80 space-y-6 hidden lg:block">
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Quick Actions</CardTitle>
-              <p className="text-xs text-muted-foreground">Common tasks you can perform</p>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button variant="outline" className="w-full justify-start h-auto py-3 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900 hover:bg-green-100 dark:hover:bg-green-950/30 text-left">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
-                    <Landmark className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-green-900 dark:text-green-100">Make Deposit</p>
-                    <p className="text-xs text-green-600 dark:text-green-400">Add money to savings</p>
-                  </div>
-                </div>
-              </Button>
-              <Button variant="outline" className="w-full justify-start h-auto py-3 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900 hover:bg-blue-100 dark:hover:bg-blue-950/30 text-left">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
-                    <CreditCard className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Apply for Loan</p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400">Submit loan application</p>
-                  </div>
-                </div>
-              </Button>
-              <Button variant="outline" className="w-full justify-start h-auto py-3 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900 hover:bg-purple-100 dark:hover:bg-purple-950/30 text-left">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
-                    <TrendingUp className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-purple-900 dark:text-purple-100">Buy Shares</p>
-                    <p className="text-xs text-purple-600 dark:text-purple-400">Increase share capital</p>
-                  </div>
-                </div>
-              </Button>
-              <Button variant="outline" className="w-full justify-start h-auto py-3 bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-900 hover:bg-orange-100 dark:hover:bg-orange-950/30 text-left">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
-                    <Coins className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-orange-900 dark:text-orange-100">Transfer Funds</p>
-                    <p className="text-xs text-orange-600 dark:text-orange-400">Send to another member</p>
-                  </div>
-                </div>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </DashboardLayout>;
 };
