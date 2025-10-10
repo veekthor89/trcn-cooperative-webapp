@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PiggyBank, CreditCard, TrendingUp, Eye, Mail, Bell, Landmark, Coins, DollarSign as DollarIcon } from "lucide-react";
+import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 const Dashboard = () => {
@@ -111,92 +111,79 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="flex-1 space-y-6">
           {/* Header */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold mb-1">
-                Welcome {userProfile?.full_name || 'User'}
-                <span className="text-sm font-normal text-muted-foreground ml-2">
-                  (Coop No: {userProfile?.id?.slice(0, 8) || '----'})
-                </span>
+              <h1 className="text-3xl font-bold text-foreground">
+                Welcome back, {userProfile?.full_name || 'User'}!
               </h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Here's what's happening with your account today.
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Email: {userProfile?.email || 'user@example.com'}
+              </p>
             </div>
-            <div className="text-sm text-muted-foreground">{currentDate}</div>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5" />
+                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white text-xs flex items-center justify-center">3</span>
+              </Button>
+            </div>
           </div>
 
           {loading ? <div className="space-y-6">
-              <Card className="animate-pulse h-40" />
-              <div className="grid gap-6 md:grid-cols-3">
+              <div className="grid gap-4 md:grid-cols-3">
                 {[1, 2, 3].map(i => <Card key={i} className="animate-pulse h-32" />)}
               </div>
             </div> : <>
-              {/* Total Balance Card */}
-              <Card className="bg-gradient-to-br from-primary to-primary/80 text-white shadow-lg">
-                <CardContent className="pt-6 pb-8">
-                  <div className="flex items-center justify-between mb-2">
-                    <p className="text-white/90 text-sm">Total Balance</p>
-                    <Eye className="h-5 w-5 text-white/80" />
-                  </div>
-                  <p className="text-4xl font-bold">
-                    ₦{stats.totalBalance.toLocaleString('en-NG', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                })}
-                  </p>
-                </CardContent>
-              </Card>
-
               {/* Stats Cards */}
-              <div className="grid gap-6 md:grid-cols-3">
-                <Card className="bg-green-50 border-green-100 shadow-card">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-green-900 font-medium">Savings</p>
-                      <Eye className="h-5 w-5 text-green-600" />
+              <div className="grid gap-4 md:grid-cols-3">
+                <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900">
+                  <CardContent className="pt-6 pb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium text-green-900 dark:text-green-100">Total Savings</p>
+                      <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
                     </div>
-                    <p className="text-2xl font-bold text-green-700">
-                      ₦{stats.totalSavings.toLocaleString('en-NG', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  })}
+                    <p className="text-3xl font-bold text-green-700 dark:text-green-300">
+                      ₦{stats.totalSavings.toLocaleString('en-NG')}
                     </p>
+                    <p className="text-xs text-green-600 dark:text-green-400 mt-2">+12% from last month</p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-pink-50 border-pink-100 shadow-card">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-pink-900 font-medium">Loans</p>
-                      <Eye className="h-5 w-5 text-pink-600" />
+                <Card className="bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900">
+                  <CardContent className="pt-6 pb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium text-red-900 dark:text-red-100">Active Loans</p>
+                      <CreditCard className="h-5 w-5 text-red-600 dark:text-red-400" />
                     </div>
-                    <p className="text-2xl font-bold text-pink-700">
-                      ₦{stats.totalLoans.toLocaleString('en-NG', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  })}
+                    <p className="text-3xl font-bold text-red-700 dark:text-red-300">
+                      ₦{stats.totalLoans.toLocaleString('en-NG')}
                     </p>
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-2">2 active loans</p>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-purple-50 border-purple-100 shadow-card">
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-purple-900 font-medium">Shares</p>
-                      <Eye className="h-5 w-5 text-purple-600" />
+                <Card className="bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900">
+                  <CardContent className="pt-6 pb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium text-purple-900 dark:text-purple-100">Shares</p>
+                      <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     </div>
-                    <p className="text-2xl font-bold text-purple-700">
-                      ₦{stats.totalInvestments.toLocaleString('en-NG', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                  })}
+                    <p className="text-3xl font-bold text-purple-700 dark:text-purple-300">
+                      ₦{stats.totalInvestments.toLocaleString('en-NG')}
                     </p>
+                    <p className="text-xs text-purple-600 dark:text-purple-400 mt-2">+8% dividend yield</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Financial Overview Chart */}
-              <Card className="shadow-card">
+              <Card>
                 <CardHeader>
-                  <CardTitle>Financial Overview</CardTitle>
+                  <CardTitle className="text-xl">Financial Overview</CardTitle>
+                  <p className="text-sm text-muted-foreground">Your financial performance over the last 6 months</p>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
@@ -288,29 +275,36 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              {/* Activity Summary */}
-              <Card className="shadow-card">
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle>Activity Summary</CardTitle>
-                  <Button variant="link" className="text-primary">View All</Button>
+              {/* Recent Activity */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-xl">Recent Activity</CardTitle>
+                  <p className="text-sm text-muted-foreground">Your latest transactions for {userProfile?.full_name || 'User'}</p>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3">
                   {recentActivities.length === 0 ? <p className="text-muted-foreground text-center py-8">No recent activities</p> : recentActivities.map((activity, index) => <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-smooth">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                          <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
                             {getActivityIcon(activity.type)}
                           </div>
                           <div>
-                            <p className="font-medium capitalize">{activity.type} {activity.description || 'Transaction'}</p>
-                            <p className="text-sm text-muted-foreground">{getTimeAgo(activity.created_at)}</p>
+                            <p className="font-medium text-sm capitalize">{activity.description || activity.type}</p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                              <span>{new Date(activity.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                              <span>•</span>
+                              <span className="capitalize">{activity.type}</span>
+                            </div>
                           </div>
                         </div>
-                        <p className="font-semibold">
-                          ₦{Number(activity.amount).toLocaleString('en-NG', {
-                    minimumFractionDigits: 2
-                  })}
+                        <p className={`font-semibold text-lg ${activity.type === 'deposit' || activity.type === 'investment' ? 'text-green-600' : 'text-red-600'}`}>
+                          {activity.type === 'deposit' || activity.type === 'investment' ? '+' : '-'}₦{Number(activity.amount).toLocaleString('en-NG')}
                         </p>
                       </div>)}
+                  {recentActivities.length > 0 && (
+                    <Button variant="outline" className="w-full mt-4">
+                      Load More Transactions
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             </>}
@@ -319,61 +313,56 @@ const Dashboard = () => {
         {/* Right Sidebar */}
         <div className="w-80 space-y-6 hidden lg:block">
           {/* Quick Actions */}
-          <Card className="shadow-card">
+          <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Quick Action</CardTitle>
+              <CardTitle className="text-lg">Quick Actions</CardTitle>
+              <p className="text-xs text-muted-foreground">Common tasks you can perform</p>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full justify-start h-auto py-4 bg-green-50 border-green-100 hover:bg-green-100">
-                <Landmark className="h-5 w-5 mr-3 text-green-600" />
-                <span className="text-sm">Make deposit</span>
-              </Button>
-              <Button variant="outline" className="w-full justify-start h-auto py-4 bg-pink-50 border-pink-100 hover:bg-pink-100">
-                <CreditCard className="h-5 w-5 mr-3 text-pink-600" />
-                <span className="text-sm">Apply for Loan</span>
-              </Button>
-              <Button variant="outline" className="w-full justify-start h-auto py-4 bg-purple-50 border-purple-100 hover:bg-purple-100">
-                <TrendingUp className="h-5 w-5 mr-3 text-purple-600" />
-                <span className="text-sm">Buy Shares</span>
-              </Button>
-              <Button variant="outline" className="w-full justify-start h-auto py-4 bg-orange-50 border-orange-100 hover:bg-orange-100">
-                <Coins className="h-5 w-5 mr-3 text-orange-600" />
-                <span className="text-sm">Special Contribution</span>
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Inbox */}
-          <Card className="shadow-card">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-lg">Inbox</CardTitle>
-              <Button variant="link" className="text-primary text-sm">View All</Button>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-smooth">
-                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                  <Mail className="h-5 w-5 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="font-medium text-sm">ADMIN</p>
-                    <p className="text-xs text-muted-foreground">12:23am</p>
+            <CardContent className="space-y-2">
+              <Button variant="outline" className="w-full justify-start h-auto py-3 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900 hover:bg-green-100 dark:hover:bg-green-950/30 text-left">
+                <div className="flex items-center gap-3 w-full">
+                  <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+                    <Landmark className="h-5 w-5 text-white" />
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">Your loan has been approved, it will...</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-smooth">
-                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                  <Mail className="h-5 w-5 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="font-medium text-sm">Ali Raza</p>
-                    <p className="text-xs text-muted-foreground">Apr 10</p>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-green-900 dark:text-green-100">Make Deposit</p>
+                    <p className="text-xs text-green-600 dark:text-green-400">Add money to savings</p>
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">I have guaranteed the repayment of...</p>
                 </div>
-              </div>
+              </Button>
+              <Button variant="outline" className="w-full justify-start h-auto py-3 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900 hover:bg-blue-100 dark:hover:bg-blue-950/30 text-left">
+                <div className="flex items-center gap-3 w-full">
+                  <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+                    <CreditCard className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Apply for Loan</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">Submit loan application</p>
+                  </div>
+                </div>
+              </Button>
+              <Button variant="outline" className="w-full justify-start h-auto py-3 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900 hover:bg-purple-100 dark:hover:bg-purple-950/30 text-left">
+                <div className="flex items-center gap-3 w-full">
+                  <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-purple-900 dark:text-purple-100">Buy Shares</p>
+                    <p className="text-xs text-purple-600 dark:text-purple-400">Increase share capital</p>
+                  </div>
+                </div>
+              </Button>
+              <Button variant="outline" className="w-full justify-start h-auto py-3 bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-900 hover:bg-orange-100 dark:hover:bg-orange-950/30 text-left">
+                <div className="flex items-center gap-3 w-full">
+                  <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
+                    <Coins className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-orange-900 dark:text-orange-100">Transfer Funds</p>
+                    <p className="text-xs text-orange-600 dark:text-orange-400">Send to another member</p>
+                  </div>
+                </div>
+              </Button>
             </CardContent>
           </Card>
         </div>
