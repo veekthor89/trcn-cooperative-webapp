@@ -107,91 +107,104 @@ bobwilson@example.com,emergency,2000.00,4.5,6,pending`;
     <DashboardLayout>
       <AdminRoute>
         <div className="container mx-auto p-6 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Bulk Upload Loans</h1>
-          <p className="text-muted-foreground">Create multiple loan records at once using a CSV file</p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Upload CSV File</CardTitle>
-            <CardDescription>
-              Upload a CSV file with loan details. Members must already exist in the system.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-4">
-              <Button
-                variant="outline"
-                onClick={downloadTemplate}
-                className="flex items-center gap-2"
-              >
-                <Download className="h-4 w-4" />
-                Download Template
-              </Button>
-
-              <div className="relative">
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleFileUpload}
-                  disabled={uploading}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                />
-                <Button disabled={uploading} className="flex items-center gap-2">
-                  <Upload className="h-4 w-4" />
-                  {uploading ? 'Uploading...' : 'Upload CSV'}
-                </Button>
-              </div>
+          {/* Page Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold">Bulk Upload Loans</h1>
+              <p className="text-muted-foreground mt-1">Create multiple loan records at once using a CSV file</p>
             </div>
+          </div>
 
-            <div className="text-sm text-muted-foreground space-y-1">
-              <p><strong>CSV Format:</strong></p>
-              <p>Columns: email, loan_type, principal_amount, interest_rate, repayment_period, status</p>
-              <p className="text-xs"><strong>loan_type:</strong> personal, business, emergency, or education</p>
-              <p className="text-xs"><strong>status:</strong> pending, active, paid, or defaulted (default: pending)</p>
-              <p className="text-xs"><strong>interest_rate:</strong> Annual interest rate as percentage (e.g., 5.5 for 5.5%)</p>
-              <p className="text-xs"><strong>repayment_period:</strong> Number of months</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {results && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload Results</CardTitle>
+          <Card className="border-border/50">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Upload CSV File</CardTitle>
+              <CardDescription>
+                Upload a CSV file with loan details. Members must already exist in the system.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {results.success.length > 0 && (
-                <div>
-                  <h3 className="font-semibold text-green-600 mb-2">
-                    Successfully created ({results.success.length})
-                  </h3>
-                  <ul className="text-sm space-y-1 max-h-40 overflow-y-auto">
-                    {results.success.map((email, idx) => (
-                      <li key={idx} className="text-muted-foreground">✓ {email}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+            <CardContent className="space-y-6">
+              <div className="flex flex-wrap gap-3">
+                <Button
+                  variant="outline"
+                  onClick={downloadTemplate}
+                  className="gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Download Template
+                </Button>
 
-              {results.errors.length > 0 && (
-                <div>
-                  <h3 className="font-semibold text-destructive mb-2">
-                    Failed uploads ({results.errors.length})
-                  </h3>
-                  <ul className="text-sm space-y-2 max-h-40 overflow-y-auto">
-                    {results.errors.map((err, idx) => (
-                      <li key={idx} className="text-muted-foreground">
-                        <span className="font-medium">{err.email}</span>: {err.error}
-                      </li>
-                    ))}
-                  </ul>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handleFileUpload}
+                    disabled={uploading}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                  />
+                  <Button disabled={uploading} className="gap-2">
+                    <Upload className="h-4 w-4" />
+                    {uploading ? 'Uploading...' : 'Upload CSV'}
+                  </Button>
                 </div>
-              )}
+              </div>
+
+              <div className="rounded-lg bg-muted/50 p-4 space-y-2 text-sm">
+                <p className="font-semibold text-foreground">CSV Format Requirements:</p>
+                <div className="space-y-1 text-muted-foreground">
+                  <p><span className="font-medium">Columns:</span> email, loan_type, principal_amount, interest_rate, repayment_period, status</p>
+                  <p><span className="font-medium">loan_type:</span> personal, business, emergency, or education</p>
+                  <p><span className="font-medium">status:</span> pending, active, paid, or defaulted (default: pending)</p>
+                  <p><span className="font-medium">interest_rate:</span> Annual interest rate as percentage (e.g., 5.5 for 5.5%)</p>
+                  <p><span className="font-medium">repayment_period:</span> Number of months</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        )}
+
+          {results && (
+            <Card className="border-border/50">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl">Upload Results</CardTitle>
+                <CardDescription>
+                  {results.success.length} successful, {results.errors.length} failed
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {results.success.length > 0 && (
+                  <div className="rounded-lg border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/20 p-4">
+                    <h3 className="font-semibold text-green-700 dark:text-green-400 mb-3 flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 dark:bg-green-900 text-xs">✓</span>
+                      Successfully Created ({results.success.length})
+                    </h3>
+                    <ul className="text-sm space-y-1.5 max-h-60 overflow-y-auto">
+                      {results.success.map((email, idx) => (
+                        <li key={idx} className="text-green-600 dark:text-green-300 flex items-center gap-2">
+                          <span className="text-green-500">✓</span> {email}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {results.errors.length > 0 && (
+                  <div className="rounded-lg border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/20 p-4">
+                    <h3 className="font-semibold text-red-700 dark:text-red-400 mb-3 flex items-center gap-2">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-100 dark:bg-red-900 text-xs">✕</span>
+                      Failed Uploads ({results.errors.length})
+                    </h3>
+                    <ul className="text-sm space-y-2 max-h-60 overflow-y-auto">
+                      {results.errors.map((err, idx) => (
+                        <li key={idx} className="text-red-600 dark:text-red-300">
+                          <span className="font-medium">{err.email}</span>
+                          <span className="text-red-500 dark:text-red-400">: {err.error}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </AdminRoute>
     </DashboardLayout>
