@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.bulk-upload-accounts]
 verify_jwt = false
+
+[functions.bulk-upload-loans]
+verify_jwt = false

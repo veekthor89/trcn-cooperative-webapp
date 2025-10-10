@@ -174,6 +174,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                 <User className="h-5 w-5" />
                 <span>Bulk Upload Accounts</span>
               </button>
+              <button
+                onClick={() => {
+                  navigate("/dashboard/bulk-upload-loans");
+                  setSidebarOpen(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth"
+              >
+                <CreditCard className="h-5 w-5" />
+                <span>Bulk Upload Loans</span>
+              </button>
             </div>
           </nav>
 
