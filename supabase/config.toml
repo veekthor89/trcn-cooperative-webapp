@@ -2,3 +2,6 @@ project_id = "dxeavlgrxdmxtgoioooi"
 
 [functions.bulk-upload-members]
 verify_jwt = false
+
+[functions.bulk-upload-accounts]
+verify_jwt = false

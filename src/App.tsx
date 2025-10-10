@@ -9,6 +9,7 @@ import Savings from "./pages/Savings";
 import Loans from "./pages/Loans";
 import Transactions from "./pages/Transactions";
 import BulkUpload from "./pages/BulkUpload";
+import BulkUploadAccounts from "./pages/BulkUploadAccounts";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/dashboard/loans" element={<Loans />} />
           <Route path="/dashboard/transactions" element={<Transactions />} />
           <Route path="/dashboard/bulk-upload" element={<BulkUpload />} />
+          <Route path="/dashboard/bulk-upload-accounts" element={<BulkUploadAccounts />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
