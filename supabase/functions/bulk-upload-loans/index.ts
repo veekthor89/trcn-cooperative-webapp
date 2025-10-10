@@ -12,6 +12,9 @@ interface LoanData {
   interest_rate: number;
   repayment_period: number;
   status?: string;
+  outstanding_balance?: number;
+  monthly_payment?: number;
+  next_payment_date?: string;
 }
 
 Deno.serve(async (req) => {
@@ -58,7 +61,9 @@ Deno.serve(async (req) => {
             principal_amount: loan.principal_amount,
             interest_rate: loan.interest_rate,
             repayment_period: loan.repayment_period,
-            outstanding_balance: loan.principal_amount, // Initially equals principal
+            outstanding_balance: loan.outstanding_balance ?? loan.principal_amount,
+            monthly_payment: loan.monthly_payment,
+            next_payment_date: loan.next_payment_date,
             status: loan.status || 'pending'
           });
 

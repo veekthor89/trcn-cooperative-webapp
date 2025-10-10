@@ -14,6 +14,9 @@ interface LoanData {
   interest_rate: number;
   repayment_period: number;
   status?: 'pending' | 'active' | 'paid' | 'defaulted';
+  outstanding_balance?: number;
+  monthly_payment?: number;
+  next_payment_date?: string;
 }
 
 const BulkUploadLoans = () => {
@@ -36,7 +39,10 @@ const BulkUploadLoans = () => {
         principal_amount: values[2]?.trim() ? parseFloat(values[2].trim()) : 0,
         interest_rate: values[3]?.trim() ? parseFloat(values[3].trim()) : 0,
         repayment_period: values[4]?.trim() ? parseInt(values[4].trim()) : 12,
-        status: (values[5]?.trim()?.toLowerCase() || 'pending') as 'pending' | 'active' | 'paid' | 'defaulted'
+        status: (values[5]?.trim()?.toLowerCase() || 'pending') as 'pending' | 'active' | 'paid' | 'defaulted',
+        outstanding_balance: values[6]?.trim() ? parseFloat(values[6].trim()) : undefined,
+        monthly_payment: values[7]?.trim() ? parseFloat(values[7].trim()) : undefined,
+        next_payment_date: values[8]?.trim() || undefined
       };
       
       if (loan.email && loan.principal_amount > 0) {
@@ -89,10 +95,10 @@ const BulkUploadLoans = () => {
   };
 
   const downloadTemplate = () => {
-    const template = `email,loan_type,principal_amount,interest_rate,repayment_period,status
-johndoe@example.com,personal,5000.00,5.5,12,pending
-janesmith@example.com,business,15000.00,7.0,24,pending
-bobwilson@example.com,emergency,2000.00,4.5,6,pending`;
+    const template = `email,loan_type,principal_amount,interest_rate,repayment_period,status,outstanding_balance,monthly_payment,next_payment_date
+johndoe@example.com,personal,5000.00,5.5,12,active,5000.00,440.00,2025-11-10
+janesmith@example.com,business,15000.00,7.0,24,active,15000.00,655.00,2025-11-10
+bobwilson@example.com,emergency,2000.00,4.5,6,pending,2000.00,340.00,2025-11-10`;
     
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -151,11 +157,14 @@ bobwilson@example.com,emergency,2000.00,4.5,6,pending`;
               <div className="rounded-lg bg-muted/50 p-4 space-y-2 text-sm">
                 <p className="font-semibold text-foreground">CSV Format Requirements:</p>
                 <div className="space-y-1 text-muted-foreground">
-                  <p><span className="font-medium">Columns:</span> email, loan_type, principal_amount, interest_rate, repayment_period, status</p>
+                  <p><span className="font-medium">Columns:</span> email, loan_type, principal_amount, interest_rate, repayment_period, status, outstanding_balance, monthly_payment, next_payment_date</p>
                   <p><span className="font-medium">loan_type:</span> personal, business, emergency, or education</p>
                   <p><span className="font-medium">status:</span> pending, active, paid, or defaulted (default: pending)</p>
                   <p><span className="font-medium">interest_rate:</span> Annual interest rate as percentage (e.g., 5.5 for 5.5%)</p>
                   <p><span className="font-medium">repayment_period:</span> Number of months</p>
+                  <p><span className="font-medium">outstanding_balance:</span> Current outstanding balance (optional, defaults to principal_amount)</p>
+                  <p><span className="font-medium">monthly_payment:</span> Monthly payment amount (optional)</p>
+                  <p><span className="font-medium">next_payment_date:</span> Next payment date in YYYY-MM-DD format (optional)</p>
                 </div>
               </div>
             </CardContent>
