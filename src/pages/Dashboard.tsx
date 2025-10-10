@@ -117,12 +117,14 @@ const Dashboard = () => {
               <p className="text-sm text-muted-foreground mt-1">
                 Here's what's happening with your account today.
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Email: {userProfile?.email || 'user@example.com'}
-              </p>
+              
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              <span className="text-sm text-muted-foreground">{new Date().toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
+            })}</span>
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white text-xs flex items-center justify-center">3</span>
@@ -187,75 +189,68 @@ const Dashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>
-                      <AreaChart
-                        data={[
-                          { month: 'Jan', savings: 45000, loans: 30000, contributions: 15000 },
-                          { month: 'Feb', savings: 52000, loans: 28000, contributions: 18000 },
-                          { month: 'Mar', savings: 58000, loans: 25000, contributions: 22000 },
-                          { month: 'Apr', savings: 65000, loans: 23000, contributions: 28000 },
-                          { month: 'May', savings: 72000, loans: 20000, contributions: 32000 },
-                          { month: 'Jun', savings: 78000, loans: 18000, contributions: 38000 },
-                        ]}
-                        margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                      >
+                      <AreaChart data={[{
+                  month: 'Jan',
+                  savings: 45000,
+                  loans: 30000,
+                  contributions: 15000
+                }, {
+                  month: 'Feb',
+                  savings: 52000,
+                  loans: 28000,
+                  contributions: 18000
+                }, {
+                  month: 'Mar',
+                  savings: 58000,
+                  loans: 25000,
+                  contributions: 22000
+                }, {
+                  month: 'Apr',
+                  savings: 65000,
+                  loans: 23000,
+                  contributions: 28000
+                }, {
+                  month: 'May',
+                  savings: 72000,
+                  loans: 20000,
+                  contributions: 32000
+                }, {
+                  month: 'Jun',
+                  savings: 78000,
+                  loans: 18000,
+                  contributions: 38000
+                }]} margin={{
+                  top: 10,
+                  right: 10,
+                  left: 0,
+                  bottom: 0
+                }}>
                         <defs>
                           <linearGradient id="colorSavings" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                           </linearGradient>
                           <linearGradient id="colorLoans" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="#ec4899" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#ec4899" stopOpacity={0} />
                           </linearGradient>
                           <linearGradient id="colorContributions" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3}/>
-                            <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#a855f7" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
-                        <XAxis 
-                          dataKey="month" 
-                          stroke="hsl(var(--muted-foreground))"
-                          fontSize={12}
-                        />
-                        <YAxis 
-                          stroke="hsl(var(--muted-foreground))"
-                          fontSize={12}
-                          tickFormatter={(value) => `₦${(value / 1000).toFixed(0)}k`}
-                        />
-                        <Tooltip 
-                          contentStyle={{
-                            backgroundColor: 'hsl(var(--background))',
-                            border: '1px solid hsl(var(--border))',
-                            borderRadius: '8px',
-                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                          }}
-                          formatter={(value: number) => `₦${value.toLocaleString('en-NG')}`}
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="savings" 
-                          stroke="#22c55e" 
-                          strokeWidth={2}
-                          fillOpacity={1} 
-                          fill="url(#colorSavings)" 
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="loans" 
-                          stroke="#ec4899" 
-                          strokeWidth={2}
-                          fillOpacity={1} 
-                          fill="url(#colorLoans)" 
-                        />
-                        <Area 
-                          type="monotone" 
-                          dataKey="contributions" 
-                          stroke="#a855f7" 
-                          strokeWidth={2}
-                          fillOpacity={1} 
-                          fill="url(#colorContributions)" 
-                        />
+                        <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={value => `₦${(value / 1000).toFixed(0)}k`} />
+                        <Tooltip contentStyle={{
+                    backgroundColor: 'hsl(var(--background))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  }} formatter={(value: number) => `₦${value.toLocaleString('en-NG')}`} />
+                        <Area type="monotone" dataKey="savings" stroke="#22c55e" strokeWidth={2} fillOpacity={1} fill="url(#colorSavings)" />
+                        <Area type="monotone" dataKey="loans" stroke="#ec4899" strokeWidth={2} fillOpacity={1} fill="url(#colorLoans)" />
+                        <Area type="monotone" dataKey="contributions" stroke="#a855f7" strokeWidth={2} fillOpacity={1} fill="url(#colorContributions)" />
                       </AreaChart>
                     </ResponsiveContainer>
                     <div className="flex items-center justify-center gap-6 mt-4">
@@ -345,7 +340,11 @@ const Dashboard = () => {
                           <div>
                             <p className="font-medium text-sm capitalize">{activity.description || activity.type}</p>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                              <span>{new Date(activity.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                              <span>{new Date(activity.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}</span>
                               <span>•</span>
                               <span className="capitalize">{activity.type}</span>
                             </div>
@@ -355,11 +354,9 @@ const Dashboard = () => {
                           {activity.type === 'deposit' || activity.type === 'investment' ? '+' : '-'}₦{Number(activity.amount).toLocaleString('en-NG')}
                         </p>
                       </div>)}
-                  {recentActivities.length > 0 && (
-                    <Button variant="outline" className="w-full mt-4">
+                  {recentActivities.length > 0 && <Button variant="outline" className="w-full mt-4">
                       Load More Transactions
-                    </Button>
-                  )}
+                    </Button>}
                 </CardContent>
               </Card>
             </>}
