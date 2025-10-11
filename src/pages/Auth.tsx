@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Shield, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import cooperativeLogo from "@/assets/cooperative-logo.png";
 
 const authSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -96,87 +97,111 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
-      <Card className="w-full max-w-md shadow-elevated">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 bg-primary/10 rounded-full">
-              <Shield className="h-8 w-8 text-primary" />
-            </div>
+    <div className="min-h-screen flex bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      {/* Left side - Logo */}
+      <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12">
+        <div className="max-w-md space-y-6 text-center">
+          <img 
+            src={cooperativeLogo} 
+            alt="TRCN Staff Multipurpose Cooperative Society" 
+            className="w-full max-w-sm mx-auto"
+          />
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-foreground">
+              TRCN Staff Multipurpose Cooperative Society
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Bridging The Wealth Divide
+            </p>
           </div>
-          <CardTitle className="text-2xl">
-            {isSignUp ? "Create your account" : "Welcome back"}
-          </CardTitle>
-          <CardDescription>
-            {isSignUp
-              ? "Join your cooperative society today"
-              : "Sign into your Cooperative Account"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
+        </div>
+      </div>
+
+      {/* Right side - Form */}
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-elevated">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4 lg:hidden">
+              <img 
+                src={cooperativeLogo} 
+                alt="TRCN SMCS Logo" 
+                className="h-24 w-24"
+              />
+            </div>
+            <CardTitle className="text-2xl">
+              {isSignUp ? "Create your account" : "Welcome back"}
+            </CardTitle>
+            <CardDescription>
+              {isSignUp
+                ? "Join your cooperative society today"
+                : "Sign into your Cooperative Account"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="fullName">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    type="text"
+                    placeholder="John Doe"
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    required={isSignUp}
+                  />
+                </div>
+              )}
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
+                <Label htmlFor="email">Email</Label>
                 <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  required={isSignUp}
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  required
                 />
               </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-              />
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Please wait...
+                  </>
+                ) : isSignUp ? (
+                  "Create Account"
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+            
+            <div className="mt-6 text-center text-sm">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-primary hover:underline"
+              >
+                {isSignUp
+                  ? "Already have an account? Sign in"
+                  : "Don't have an account? Sign up"}
+              </button>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait...
-                </>
-              ) : isSignUp ? (
-                "Create Account"
-              ) : (
-                "Sign In"
-              )}
-            </Button>
-          </form>
-          
-          <div className="mt-6 text-center text-sm">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-primary hover:underline"
-            >
-              {isSignUp
-                ? "Already have an account? Sign in"
-                : "Don't have an account? Sign up"}
-            </button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
