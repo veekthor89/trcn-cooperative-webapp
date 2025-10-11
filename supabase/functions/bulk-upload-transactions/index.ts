@@ -102,7 +102,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${user.email} authorized for bulk transaction upload`);
+    console.log(`Admin user ${user.id} authorized for bulk transaction upload`);
 
     const supabase = createClient(supabaseUrl, supabaseKey);
     const formData = await req.formData();
@@ -164,9 +164,9 @@ serve(async (req) => {
           .single();
 
         if (!profile) {
-          console.error('User lookup error for', row.email);
+          console.error('User lookup error');
           results.failed++;
-          results.errors.push(`Row ${i}: User not found with email: ${row.email}`);
+          results.errors.push(`Row ${i}: User not found`);
           continue;
         }
 
@@ -216,7 +216,7 @@ serve(async (req) => {
         if (insertError) throw insertError;
 
         results.successful++;
-        console.log('Successfully created transaction for:', row.email);
+        console.log('Successfully created transaction for user:', profile.id);
       } catch (error: any) {
         console.error(`Error processing row ${i}:`, error);
         results.failed++;

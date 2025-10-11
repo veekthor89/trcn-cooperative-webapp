@@ -112,7 +112,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${user.email} authorized for bulk account upload`);
+    console.log(`Admin user ${user.id} authorized for bulk account upload`);
 
     const { accounts } = await req.json() as { accounts: AccountData[] };
 
@@ -158,7 +158,7 @@ serve(async (req) => {
           continue;
         }
 
-        console.log(`Processing account for: ${sanitizedAccount.email}`);
+        console.log(`Processing account for user profile`);
 
         // Find user by email
         const { data: profile, error: profileError } = await supabaseAdmin
@@ -168,7 +168,7 @@ serve(async (req) => {
           .single();
 
         if (profileError || !profile) {
-          console.error(`User not found for ${sanitizedAccount.email}:`, profileError);
+          console.error(`User not found:`, profileError);
           results.errors.push({ 
             email: sanitizedAccount.email, 
             error: 'User not found with this email address'
@@ -176,7 +176,7 @@ serve(async (req) => {
           continue;
         }
 
-        console.log(`Found user ${profile.id} for ${sanitizedAccount.email}, creating account...`);
+        console.log(`Found user ${profile.id}, creating account...`);
 
         // Create account with validated data
         const { error: accountError } = await supabaseAdmin
@@ -189,17 +189,17 @@ serve(async (req) => {
           });
 
         if (accountError) {
-          console.error(`Account creation error for ${sanitizedAccount.email}:`, accountError);
+          console.error(`Account creation error:`, accountError);
           results.errors.push({ 
             email: sanitizedAccount.email, 
             error: sanitizeError(accountError)
           });
         } else {
           results.success.push(sanitizedAccount.email);
-          console.log(`Successfully created account for ${sanitizedAccount.email}`);
+          console.log(`Successfully created account for user ${profile.id}`);
         }
       } catch (error) {
-        console.error(`Error processing ${account.email}:`, error);
+        console.error(`Error processing record:`, error);
         results.errors.push({ 
           email: account.email || 'unknown', 
           error: 'Processing error' 

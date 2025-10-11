@@ -126,7 +126,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${user.email} authorized for bulk member upload`);
+    console.log(`Admin user ${user.id} authorized for bulk member upload`);
 
     const { members } = await req.json() as { members: MemberData[] };
 
@@ -175,7 +175,7 @@ serve(async (req) => {
           continue;
         }
 
-        console.log(`Processing member: ${sanitizedMember.email}`);
+        console.log(`Processing member: ${sanitizedMember.full_name} (user will be assigned ID)`);
 
         // Generate secure random password
         const randomPassword = generateSecurePassword(16);
@@ -192,12 +192,12 @@ serve(async (req) => {
         });
 
         if (authError) {
-          console.error(`Auth error for ${sanitizedMember.email}:`, authError);
+          console.error(`Auth error:`, authError);
           results.errors.push({ email: sanitizedMember.email, error: sanitizeError(authError) });
           continue;
         }
 
-        console.log(`Created auth user for ${sanitizedMember.email}, updating profile...`);
+        console.log(`Created auth user ${authData.user.id}, updating profile...`);
 
         // Update profile with additional data
         const { error: profileError } = await supabaseAdmin
@@ -210,14 +210,14 @@ serve(async (req) => {
           .eq('id', authData.user.id);
 
         if (profileError) {
-          console.error(`Profile update error for ${sanitizedMember.email}:`, profileError);
+          console.error(`Profile update error:`, profileError);
           results.errors.push({ email: sanitizedMember.email, error: sanitizeError(profileError) });
         } else {
           results.success.push(sanitizedMember.email);
-          console.log(`Successfully created ${sanitizedMember.email} with random password`);
+          console.log(`Successfully created user ${authData.user.id} with random password`);
         }
       } catch (error) {
-        console.error(`Error processing ${member.email}:`, error);
+        console.error(`Error processing member:`, error);
         results.errors.push({ 
           email: member.email || 'unknown', 
           error: error instanceof Error ? error.message : 'Unknown error' 

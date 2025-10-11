@@ -108,7 +108,7 @@ serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${user.email} authorized for bulk special contributions upload`);
+    console.log(`Admin user ${user.id} authorized for bulk special contributions upload`);
 
     const supabase = createClient(supabaseUrl, supabaseKey);
     const { records } = await req.json();
@@ -162,7 +162,7 @@ serve(async (req) => {
           .single();
 
         if (profileError || !profile) {
-          console.error('User lookup error for', sanitizedRecord.email, profileError);
+          console.error('User lookup error:', profileError);
           results.failed.push({
             email: sanitizedRecord.email,
             error: 'User not found with this email address',
@@ -182,14 +182,14 @@ serve(async (req) => {
           });
 
         if (insertError) {
-          console.error(`Failed to create special contribution for: ${sanitizedRecord.email}`, insertError);
+          console.error(`Failed to create special contribution:`, insertError);
           results.failed.push({
             email: sanitizedRecord.email,
             error: sanitizeError(insertError),
           });
         } else {
           results.successful.push(sanitizedRecord.email);
-          console.log(`Successfully created special contribution for: ${sanitizedRecord.email}`);
+          console.log(`Successfully created special contribution for user ${profile.id}`);
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -197,7 +197,7 @@ serve(async (req) => {
           email: record.email || 'unknown',
           error: 'Processing error',
         });
-        console.error(`Error processing record for ${record.email}:`, error);
+        console.error(`Error processing record:`, error);
       }
     }
 

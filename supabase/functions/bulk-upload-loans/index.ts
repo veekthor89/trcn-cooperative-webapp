@@ -121,7 +121,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log(`Admin ${user.email} authorized for bulk loan upload`);
+    console.log(`Admin user ${user.id} authorized for bulk loan upload`);
 
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
     const { loans } = await req.json() as { loans: LoanData[] };
@@ -179,7 +179,7 @@ Deno.serve(async (req) => {
           .single();
 
         if (profileError || !profile) {
-          console.error('User lookup error for', sanitizedLoan.email, profileError);
+          console.error('User lookup error:', profileError);
           results.errors.push({
             email: sanitizedLoan.email,
             error: 'User not found with this email address'
@@ -210,10 +210,10 @@ Deno.serve(async (req) => {
           });
         } else {
           results.success.push(sanitizedLoan.email);
-          console.log(`Successfully created loan for: ${sanitizedLoan.email}`);
+          console.log(`Successfully created loan for user ${profile.id}`);
         }
       } catch (error) {
-        console.error(`Error processing loan for ${loan.email}:`, error);
+        console.error(`Error processing loan record:`, error);
         results.errors.push({
           email: loan.email || 'unknown',
           error: 'Processing error'

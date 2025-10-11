@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Loader2, Edit, Save, X, Camera, User, Briefcase, Users, Wallet, CreditCard, Settings, ArrowLeft } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { ImageCropper } from "@/components/ImageCropper";
+import { ChangePasswordDialog } from "@/components/ChangePasswordDialog";
 const nigerianBanks = ["Access Bank", "Citibank", "Ecobank", "Fidelity Bank", "First Bank of Nigeria", "First City Monument Bank (FCMB)", "Globus Bank", "Guaranty Trust Bank (GTBank)", "Heritage Bank", "Keystone Bank", "Polaris Bank", "Providus Bank", "Stanbic IBTC Bank", "Standard Chartered", "Sterling Bank", "SunTrust Bank", "Titan Trust Bank", "Union Bank of Nigeria", "United Bank for Africa (UBA)", "Unity Bank", "Wema Bank", "Zenith Bank"];
 const nigerianStates = ["Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"];
 const Profile = () => {
@@ -24,6 +25,7 @@ const Profile = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [cropperOpen, setCropperOpen] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [profileData, setProfileData] = useState({
     full_name: "",
     email: "",
@@ -83,6 +85,22 @@ const Profile = () => {
       } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
       if (profileError) throw profileError;
       if (profile) {
+        // If profile has a photo URL, fetch a signed URL for it
+        let photoUrl = "";
+        if (profile.profile_photo_url) {
+          const pathMatch = profile.profile_photo_url.match(/profile-photos\/(.+?)(\?|$)/);
+          if (pathMatch) {
+            const filePath = pathMatch[1];
+            const { data: signedUrlData } = await supabase.storage
+              .from("profile-photos")
+              .createSignedUrl(filePath, 3600); // 1 hour expiration
+            
+            if (signedUrlData?.signedUrl) {
+              photoUrl = signedUrlData.signedUrl;
+            }
+          }
+        }
+
         setProfileData({
           full_name: profile.full_name || "",
           email: profile.email || "",
@@ -109,7 +127,7 @@ const Profile = () => {
           account_number: profile.account_number || "",
           account_name: profile.account_name || "",
           bvn: profile.bvn || "",
-          profile_photo_url: profile.profile_photo_url || "",
+          profile_photo_url: photoUrl,
           email_notifications: profile.email_notifications ?? true,
           sms_notifications: profile.sms_notifications ?? true
         });
@@ -222,14 +240,17 @@ const Profile = () => {
 
     setUploading(true);
     try {
-      // Use timestamp in filename to avoid caching issues
+      // Use random UUID + timestamp for unpredictable filenames
       const timestamp = Date.now();
-      const filePath = `${userId}/profile-${timestamp}.jpg`;
+      const randomId = crypto.randomUUID().split('-')[0];
+      const filePath = `${userId}/profile-${randomId}-${timestamp}.jpg`;
 
       // Delete old photo if exists
       if (profileData.profile_photo_url) {
-        const oldPath = profileData.profile_photo_url.split("/profile-photos/")[1]?.split("?")[0];
-        if (oldPath) {
+        // Extract file path from signed URL or public URL
+        const pathMatch = profileData.profile_photo_url.match(/profile-photos\/(.+?)(\?|$)/);
+        if (pathMatch) {
+          const oldPath = pathMatch[1];
           await supabase.storage.from("profile-photos").remove([oldPath]);
         }
       }
@@ -245,18 +266,22 @@ const Profile = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL with cache busting
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("profile-photos").getPublicUrl(filePath);
+      // Create a signed URL (1 hour expiration)
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+        .from("profile-photos")
+        .createSignedUrl(filePath, 3600);
 
-      const urlWithCacheBust = `${publicUrl}?v=${timestamp}`;
+      if (signedUrlError) throw signedUrlError;
+      if (!signedUrlData?.signedUrl) throw new Error("Failed to create signed URL");
 
-      // Update profile with new photo URL (with cache buster)
+      // Store the file path reference (not the signed URL) for later regeneration
+      const photoReference = `profile-photos/${filePath}`;
+
+      // Update profile with photo reference
       const { error: updateError } = await supabase
         .from("profiles")
         .update({
-          profile_photo_url: urlWithCacheBust,
+          profile_photo_url: photoReference,
         })
         .eq("id", userId);
 
@@ -265,7 +290,7 @@ const Profile = () => {
       setCropperOpen(false);
       setImageToCrop(null);
 
-      // Force a page reload to update the sidebar avatar
+      // Force a page reload to update with new signed URL
       window.location.reload();
       toast.success("Profile photo updated successfully");
     } catch (error: any) {
@@ -280,18 +305,8 @@ const Profile = () => {
     setCropperOpen(false);
     setImageToCrop(null);
   };
-  const handleChangePassword = async () => {
-    try {
-      const {
-        error
-      } = await supabase.auth.updateUser({
-        password: prompt("Enter new password:") || ""
-      });
-      if (error) throw error;
-      toast.success("Password changed successfully");
-    } catch (error: any) {
-      toast.error("Failed to change password");
-    }
+  const handleChangePassword = () => {
+    setPasswordDialogOpen(true);
   };
   if (loading) {
     return <DashboardLayout>
@@ -705,6 +720,12 @@ const Profile = () => {
           isOpen={cropperOpen}
         />
       )}
+
+      {/* Change Password Dialog */}
+      <ChangePasswordDialog
+        open={passwordDialogOpen}
+        onOpenChange={setPasswordDialogOpen}
+      />
     </DashboardLayout>;
 };
 export default Profile;
