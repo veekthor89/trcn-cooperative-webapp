@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-import { LayoutDashboard, TrendingUp, CreditCard, Bell, User, LogOut, Menu, X, PiggyBank } from "lucide-react";
+import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, FileSpreadsheet, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -119,56 +119,44 @@ const DashboardLayout = ({
                 <span>{item.label}</span>
               </button>)}
             
-            {isAdmin && <div className="pt-4 mt-4 border-t border-border">
-                <p className="text-xs font-semibold text-muted-foreground px-4 mb-2">ADMIN</p>
-                <button onClick={() => {
-              navigate("/dashboard/admin");
-              setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth">
-                  <LayoutDashboard className="h-5 w-5" />
-                  <span>Admin Dashboard</span>
-                </button>
-                <button onClick={() => {
-              navigate("/dashboard/members");
-              setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth">
-                  <User className="h-5 w-5" />
-                  <span>Member Management</span>
-                </button>
+            {isAdmin && <div className="pt-6 mt-6 border-t border-border space-y-1">
+                <div className="px-4 pb-3">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Data Management</p>
+                </div>
                 <button onClick={() => {
               navigate("/dashboard/bulk-upload");
               setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth">
-                  <User className="h-5 w-5" />
-                  <span>Bulk Upload</span>
+            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                  <Upload className="h-5 w-5" />
+                  <span>Bulk Upload Members</span>
                 </button>
                 <button onClick={() => {
               navigate("/dashboard/bulk-upload-accounts");
               setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth">
-                  <User className="h-5 w-5" />
+            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                  <Wallet className="h-5 w-5" />
                   <span>Bulk Upload Accounts</span>
                 </button>
                 <button onClick={() => {
               navigate("/dashboard/bulk-upload-loans");
               setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth">
+            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
                   <CreditCard className="h-5 w-5" />
                   <span>Bulk Upload Loans</span>
                 </button>
                 <button onClick={() => {
               navigate("/dashboard/bulk-upload-transactions");
               setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth">
+            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
                   <TrendingUp className="h-5 w-5" />
                   <span>Bulk Upload Transactions</span>
                 </button>
                 <button onClick={() => {
               navigate("/dashboard/bulk-upload-special-contributions");
               setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth">
+            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
                   <PiggyBank className="h-5 w-5" />
-                  <span>Bulk Upload Special Contributions</span>
+                  <span>Bulk Upload Contributions</span>
                 </button>
               </div>}
           </nav>
