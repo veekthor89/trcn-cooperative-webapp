@@ -120,7 +120,7 @@ const Auth = () => {
       {/* Right side - Form */}
       <div className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-lg shadow-elevated">
-          <CardHeader className="text-center">
+          <CardHeader className="text-center space-y-4 py-8">
             <div className="flex justify-center mb-4 lg:hidden">
               <img 
                 src={cooperativeLogo} 
@@ -137,8 +137,8 @@ const Auth = () => {
                 : "Sign into your Cooperative Account"}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <CardContent className="py-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
               {isSignUp && (
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
