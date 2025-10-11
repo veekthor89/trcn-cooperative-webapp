@@ -110,7 +110,7 @@ const Auth = () => {
           <CardDescription>
             {isSignUp
               ? "Join your cooperative society today"
-              : "Sign in to manage your finances"}
+              : "Sign into your Cooperative Account"}
           </CardDescription>
         </CardHeader>
         <CardContent>
