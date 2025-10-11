@@ -161,7 +161,7 @@ const Dashboard = () => {
                     <p className="text-3xl font-bold text-red-700 dark:text-red-300">
                       ₦{stats.totalLoans.toLocaleString('en-NG')}
                     </p>
-                    <p className="text-xs text-red-600 dark:text-red-400 mt-2">2 active loans</p>
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-2">1 active loan</p>
                   </CardContent>
                 </Card>
 
