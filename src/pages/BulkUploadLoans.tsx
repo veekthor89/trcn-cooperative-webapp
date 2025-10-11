@@ -57,6 +57,18 @@ const BulkUploadLoans = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Validate MIME type
+    if (file.type !== "text/csv") {
+      toast.error("Please select a valid CSV file");
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("CSV file must be less than 2MB");
+      return;
+    }
+
     setUploading(true);
     setResults(null);
 

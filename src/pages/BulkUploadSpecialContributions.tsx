@@ -70,12 +70,22 @@ const BulkUploadSpecialContributions = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.type === "text/csv") {
-      setFile(selectedFile);
-      setResult(null);
-    } else {
+    if (!selectedFile) return;
+
+    // Validate MIME type
+    if (selectedFile.type !== "text/csv") {
       toast.error("Please select a valid CSV file");
+      return;
     }
+
+    // Validate file size (max 2MB)
+    if (selectedFile.size > 2 * 1024 * 1024) {
+      toast.error("CSV file must be less than 2MB");
+      return;
+    }
+
+    setFile(selectedFile);
+    setResult(null);
   };
 
   const parseCSV = (text: string) => {
