@@ -26,9 +26,9 @@ function validateLoan(loan: any): { valid: boolean; errors: string[] } {
     errors.push('Invalid email format');
   }
   
-  const validTypes = ['personal', 'business', 'emergency', 'education'];
+  const validTypes = ['normal', 'trade', 'special', 'long_term'];
   if (!loan.loan_type || !validTypes.includes(loan.loan_type)) {
-    errors.push('Loan type must be personal, business, emergency, or education');
+    errors.push('Loan type must be normal, trade, special, or long_term');
   }
   
   const principal = parseFloat(loan.principal_amount);
