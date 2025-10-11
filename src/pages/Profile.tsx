@@ -38,9 +38,7 @@ const Profile = () => {
     state_of_residence: "",
     designation: "",
     department: "",
-    school_name: "",
     state_of_deployment: "",
-    lga: "",
     staff_id: "",
     years_of_service: 0,
     next_of_kin_name: "",
@@ -113,9 +111,7 @@ const Profile = () => {
           state_of_residence: profile.state_of_residence || "",
           designation: profile.designation || "",
           department: profile.department || "",
-          school_name: profile.school_name || "",
           state_of_deployment: profile.state_of_deployment || "",
-          lga: profile.lga || "",
           staff_id: profile.staff_id || "",
           years_of_service: profile.years_of_service || 0,
           next_of_kin_name: profile.next_of_kin_name || "",
@@ -180,9 +176,7 @@ const Profile = () => {
         state_of_residence: profileData.state_of_residence,
         designation: profileData.designation,
         department: profileData.department,
-        school_name: profileData.school_name,
         state_of_deployment: profileData.state_of_deployment,
-        lga: profileData.lga,
         staff_id: profileData.staff_id,
         years_of_service: profileData.years_of_service,
         next_of_kin_name: profileData.next_of_kin_name,
@@ -544,13 +538,6 @@ const Profile = () => {
                 <Input id="designation" value={profileData.designation} onChange={e => setProfileData({
                 ...profileData,
                 designation: e.target.value
-              })} disabled={!editMode} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="school_name">Unit</Label>
-                <Input id="school_name" value={profileData.school_name} onChange={e => setProfileData({
-                ...profileData,
-                school_name: e.target.value
               })} disabled={!editMode} />
               </div>
               <div className="space-y-2">

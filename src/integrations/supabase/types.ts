@@ -212,7 +212,6 @@ export type Database = {
           full_name: string
           gender: string | null
           id: string
-          lga: string | null
           next_of_kin_address: string | null
           next_of_kin_email: string | null
           next_of_kin_name: string | null
@@ -220,7 +219,6 @@ export type Database = {
           next_of_kin_relationship: string | null
           phone: string | null
           profile_photo_url: string | null
-          school_name: string | null
           sms_notifications: boolean | null
           staff_id: string | null
           state_of_deployment: string | null
@@ -245,7 +243,6 @@ export type Database = {
           full_name: string
           gender?: string | null
           id: string
-          lga?: string | null
           next_of_kin_address?: string | null
           next_of_kin_email?: string | null
           next_of_kin_name?: string | null
@@ -253,7 +250,6 @@ export type Database = {
           next_of_kin_relationship?: string | null
           phone?: string | null
           profile_photo_url?: string | null
-          school_name?: string | null
           sms_notifications?: boolean | null
           staff_id?: string | null
           state_of_deployment?: string | null
@@ -278,7 +274,6 @@ export type Database = {
           full_name?: string
           gender?: string | null
           id?: string
-          lga?: string | null
           next_of_kin_address?: string | null
           next_of_kin_email?: string | null
           next_of_kin_name?: string | null
@@ -286,7 +281,6 @@ export type Database = {
           next_of_kin_relationship?: string | null
           phone?: string | null
           profile_photo_url?: string | null
-          school_name?: string | null
           sms_notifications?: boolean | null
           staff_id?: string | null
           state_of_deployment?: string | null
