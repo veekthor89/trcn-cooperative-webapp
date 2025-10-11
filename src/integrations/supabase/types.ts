@@ -357,6 +357,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      recalculate_account_balance: {
+        Args: {
+          p_account_type: Database["public"]["Enums"]["account_type"]
+          p_user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       account_status: "active" | "inactive" | "closed"
