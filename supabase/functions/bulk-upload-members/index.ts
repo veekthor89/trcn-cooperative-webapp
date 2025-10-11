@@ -204,15 +204,19 @@ serve(async (req) => {
 
         console.log(`Created auth user ${authData.user.id}, updating profile...`);
 
-        // Update profile with additional data
+        // Upsert profile with additional data (insert or update)
         const { error: profileError } = await supabaseAdmin
           .from('profiles')
-          .update({
+          .upsert({
+            id: authData.user.id,
+            full_name: sanitizedMember.full_name,
+            email: sanitizedMember.email,
             phone: sanitizedMember.phone,
             address: sanitizedMember.address,
             date_of_birth: sanitizedMember.date_of_birth
-          })
-          .eq('id', authData.user.id);
+          }, {
+            onConflict: 'id'
+          });
 
         if (profileError) {
           console.error(`Profile update error:`, profileError);
