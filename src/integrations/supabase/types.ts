@@ -196,34 +196,103 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_name: string | null
+          account_number: string | null
           address: string | null
+          alternative_phone: string | null
+          bank_name: string | null
+          bvn: string | null
+          city: string | null
           created_at: string | null
           date_of_birth: string | null
+          department: string | null
+          designation: string | null
           email: string
+          email_notifications: boolean | null
           full_name: string
+          gender: string | null
           id: string
+          lga: string | null
+          next_of_kin_address: string | null
+          next_of_kin_email: string | null
+          next_of_kin_name: string | null
+          next_of_kin_phone: string | null
+          next_of_kin_relationship: string | null
           phone: string | null
+          profile_photo_url: string | null
+          school_name: string | null
+          sms_notifications: boolean | null
+          staff_id: string | null
+          state_of_deployment: string | null
+          state_of_residence: string | null
           updated_at: string | null
+          years_of_service: number | null
         }
         Insert: {
+          account_name?: string | null
+          account_number?: string | null
           address?: string | null
+          alternative_phone?: string | null
+          bank_name?: string | null
+          bvn?: string | null
+          city?: string | null
           created_at?: string | null
           date_of_birth?: string | null
+          department?: string | null
+          designation?: string | null
           email: string
+          email_notifications?: boolean | null
           full_name: string
+          gender?: string | null
           id: string
+          lga?: string | null
+          next_of_kin_address?: string | null
+          next_of_kin_email?: string | null
+          next_of_kin_name?: string | null
+          next_of_kin_phone?: string | null
+          next_of_kin_relationship?: string | null
           phone?: string | null
+          profile_photo_url?: string | null
+          school_name?: string | null
+          sms_notifications?: boolean | null
+          staff_id?: string | null
+          state_of_deployment?: string | null
+          state_of_residence?: string | null
           updated_at?: string | null
+          years_of_service?: number | null
         }
         Update: {
+          account_name?: string | null
+          account_number?: string | null
           address?: string | null
+          alternative_phone?: string | null
+          bank_name?: string | null
+          bvn?: string | null
+          city?: string | null
           created_at?: string | null
           date_of_birth?: string | null
+          department?: string | null
+          designation?: string | null
           email?: string
+          email_notifications?: boolean | null
           full_name?: string
+          gender?: string | null
           id?: string
+          lga?: string | null
+          next_of_kin_address?: string | null
+          next_of_kin_email?: string | null
+          next_of_kin_name?: string | null
+          next_of_kin_phone?: string | null
+          next_of_kin_relationship?: string | null
           phone?: string | null
+          profile_photo_url?: string | null
+          school_name?: string | null
+          sms_notifications?: boolean | null
+          staff_id?: string | null
+          state_of_deployment?: string | null
+          state_of_residence?: string | null
           updated_at?: string | null
+          years_of_service?: number | null
         }
         Relationships: []
       }
