@@ -13,6 +13,44 @@ interface AccountData {
   status?: 'active' | 'inactive' | 'suspended';
 }
 
+// Input validation
+function validateAccount(account: any): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!account.email || !emailRegex.test(account.email)) {
+    errors.push('Invalid email format');
+  }
+  
+  const validTypes = ['savings', 'shares', 'loan'];
+  if (!account.account_type || !validTypes.includes(account.account_type)) {
+    errors.push('Account type must be savings, shares, or loan');
+  }
+  
+  if (account.balance !== undefined) {
+    const balance = parseFloat(account.balance);
+    if (isNaN(balance) || balance < 0 || balance > 100000000) {
+      errors.push('Balance must be between 0 and 100,000,000');
+    }
+  }
+  
+  const validStatuses = ['active', 'inactive', 'suspended'];
+  if (account.status && !validStatuses.includes(account.status)) {
+    errors.push('Status must be active, inactive, or suspended');
+  }
+  
+  return { valid: errors.length === 0, errors };
+}
+
+// Sanitize CSV fields
+function sanitizeCsvField(field: string): string {
+  if (typeof field !== 'string') return field;
+  if (field.startsWith('=') || field.startsWith('+') || field.startsWith('-') || field.startsWith('@')) {
+    return "'" + field;
+  }
+  return field;
+}
+
 // Sanitize database errors for client responses
 function sanitizeError(error: any): string {
   console.error('Database error details:', error);
@@ -35,6 +73,47 @@ serve(async (req) => {
   }
 
   try {
+    // 1. Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { autoRefreshToken: false, persistSession: false }
+    });
+
+    // 2. Get authenticated user
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 3. Check admin role
+    const { data: isAdmin, error: roleError } = await supabaseClient.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin'
+    });
+
+    if (roleError || !isAdmin) {
+      return new Response(
+        JSON.stringify({ error: 'Admin privileges required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Admin ${user.email} authorized for bulk account upload`);
+
     const { accounts } = await req.json() as { accounts: AccountData[] };
 
     if (!accounts || !Array.isArray(accounts) || accounts.length === 0) {
@@ -44,16 +123,16 @@ serve(async (req) => {
       );
     }
 
-    const supabaseAdmin = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      }
-    );
+    if (accounts.length > 1000) {
+      return new Response(
+        JSON.stringify({ error: 'Maximum 1000 accounts per upload' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
+    });
 
     const results = {
       success: [] as string[],
@@ -62,51 +141,68 @@ serve(async (req) => {
 
     for (const account of accounts) {
       try {
-        console.log(`Processing account for: ${account.email}`);
+        const sanitizedAccount = {
+          email: account.email?.trim().toLowerCase() || '',
+          account_type: account.account_type,
+          balance: account.balance,
+          status: account.status
+        };
+
+        // Validate input
+        const validation = validateAccount(sanitizedAccount);
+        if (!validation.valid) {
+          results.errors.push({ 
+            email: sanitizedAccount.email, 
+            error: validation.errors.join(', ') 
+          });
+          continue;
+        }
+
+        console.log(`Processing account for: ${sanitizedAccount.email}`);
 
         // Find user by email
         const { data: profile, error: profileError } = await supabaseAdmin
           .from('profiles')
           .select('id')
-          .eq('email', account.email)
+          .eq('email', sanitizedAccount.email)
           .single();
 
         if (profileError || !profile) {
-          console.error(`User not found for ${account.email}:`, profileError);
+          console.error(`User not found for ${sanitizedAccount.email}:`, profileError);
           results.errors.push({ 
-            email: account.email, 
+            email: sanitizedAccount.email, 
             error: 'User not found with this email address'
           });
           continue;
         }
 
-        console.log(`Found user ${profile.id} for ${account.email}, creating account...`);
+        console.log(`Found user ${profile.id} for ${sanitizedAccount.email}, creating account...`);
 
-        // Create account
+        // Create account with validated data
         const { error: accountError } = await supabaseAdmin
           .from('accounts')
           .insert({
             user_id: profile.id,
-            account_type: account.account_type,
-            balance: account.balance || 0.00,
-            status: account.status || 'active'
+            account_type: sanitizedAccount.account_type,
+            balance: sanitizedAccount.balance || 0.00,
+            status: sanitizedAccount.status || 'active'
           });
 
         if (accountError) {
-          console.error(`Account creation error for ${account.email}:`, accountError);
+          console.error(`Account creation error for ${sanitizedAccount.email}:`, accountError);
           results.errors.push({ 
-            email: account.email, 
+            email: sanitizedAccount.email, 
             error: sanitizeError(accountError)
           });
         } else {
-          results.success.push(account.email);
-          console.log(`Successfully created account for ${account.email}`);
+          results.success.push(sanitizedAccount.email);
+          console.log(`Successfully created account for ${sanitizedAccount.email}`);
         }
       } catch (error) {
         console.error(`Error processing ${account.email}:`, error);
         results.errors.push({ 
-          email: account.email, 
-          error: error instanceof Error ? error.message : 'Unknown error' 
+          email: account.email || 'unknown', 
+          error: 'Processing error' 
         });
       }
     }
@@ -118,7 +214,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in bulk-upload-accounts:', error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

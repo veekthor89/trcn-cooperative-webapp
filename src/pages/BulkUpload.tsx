@@ -113,7 +113,7 @@ const BulkUpload = () => {
             <CardHeader>
               <CardTitle>Upload CSV File</CardTitle>
               <CardDescription>
-                Upload a CSV file with member details. All members will be created with the default password: <strong>trcn@2025</strong>
+                Upload a CSV file with member details. Each member will be assigned a secure random password and must change it on first login.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -146,6 +146,7 @@ const BulkUpload = () => {
                 <p><strong>CSV Format:</strong></p>
                 <p>Columns: id, full_name, email, phone, address, date_of_birth, created_at, updated_at</p>
                 <p className="text-xs">Note: id, created_at, and updated_at will be auto-generated if left empty</p>
+                <p className="text-xs text-amber-600"><strong>Security:</strong> Each member receives a secure random password and must change it on first login.</p>
               </div>
             </CardContent>
           </Card>

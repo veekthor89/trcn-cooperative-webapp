@@ -6,6 +6,41 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Input validation
+function validateTransaction(txn: any): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!txn.email || !emailRegex.test(txn.email)) {
+    errors.push('Invalid email format');
+  }
+  
+  const amount = parseFloat(txn.amount);
+  if (isNaN(amount) || amount <= 0 || amount > 100000000) {
+    errors.push('Amount must be between 0 and 100,000,000');
+  }
+  
+  const validTypes = ['deposit', 'withdrawal', 'loan_disbursement', 'repayment'];
+  if (!txn.type || !validTypes.includes(txn.type)) {
+    errors.push('Type must be deposit, withdrawal, loan_disbursement, or repayment');
+  }
+  
+  if (txn.description && txn.description.length > 500) {
+    errors.push('Description must be less than 500 characters');
+  }
+  
+  return { valid: errors.length === 0, errors };
+}
+
+// Sanitize CSV fields
+function sanitizeCsvField(field: string): string {
+  if (typeof field !== 'string') return field;
+  if (field.startsWith('=') || field.startsWith('+') || field.startsWith('-') || field.startsWith('@')) {
+    return "'" + field;
+  }
+  return field;
+}
+
 // Sanitize database errors for client responses
 function sanitizeError(error: any): string {
   console.error('Database error details:', error);
@@ -28,10 +63,48 @@ serve(async (req) => {
   }
 
   try {
+    // 1. Verify authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
 
+    const supabaseClient = createClient(supabaseUrl, supabaseKey, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { autoRefreshToken: false, persistSession: false }
+    });
+
+    // 2. Get authenticated user
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 3. Check admin role
+    const { data: isAdmin, error: roleError } = await supabaseClient.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin'
+    });
+
+    if (roleError || !isAdmin) {
+      return new Response(
+        JSON.stringify({ error: 'Admin privileges required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Admin ${user.email} authorized for bulk transaction upload`);
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
     const formData = await req.formData();
     const file = formData.get('file') as File;
 
@@ -46,6 +119,13 @@ serve(async (req) => {
     const lines = text.split('\n').filter(line => line.trim());
     const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
 
+    if (lines.length > 1001) {
+      return new Response(
+        JSON.stringify({ error: 'Maximum 1000 transactions per upload' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     console.log('Processing', lines.length - 1, 'transaction records');
 
     const results = {
@@ -55,24 +135,38 @@ serve(async (req) => {
     };
 
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',').map(v => v.trim());
+      const values = lines[i].split(',').map(v => sanitizeCsvField(v.trim()));
       const row: Record<string, string> = {};
       headers.forEach((header, index) => {
         row[header] = values[index] || '';
       });
 
       try {
+        // Validate transaction data
+        const validation = validateTransaction({
+          email: row.email,
+          amount: row.amount,
+          type: row.type,
+          description: row.description
+        });
+
+        if (!validation.valid) {
+          results.failed++;
+          results.errors.push(`Row ${i}: ${validation.errors.join(', ')}`);
+          continue;
+        }
+
         // Get user by email
         const { data: profile } = await supabase
           .from('profiles')
           .select('id')
-          .eq('email', row.email)
+          .eq('email', row.email.toLowerCase())
           .single();
 
         if (!profile) {
           console.error('User lookup error for', row.email);
           results.failed++;
-          results.errors.push(`User not found with email: ${row.email}`);
+          results.errors.push(`Row ${i}: User not found with email: ${row.email}`);
           continue;
         }
 
@@ -139,7 +233,7 @@ serve(async (req) => {
   } catch (error: any) {
     console.error('Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Internal server error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
