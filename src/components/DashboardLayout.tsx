@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, FileSpreadsheet, Wallet } from "lucide-react";
+import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, FileSpreadsheet, Wallet, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -192,8 +192,15 @@ const DashboardLayout = ({
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Bar */}
-        
+        {/* Top Bar - Mobile/Tablet Hamburger Menu */}
+        <header className="lg:hidden sticky top-0 z-30 flex items-center gap-4 border-b border-border bg-background px-4 py-3">
+          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}>
+            <Menu className="h-5 w-5" />
+          </Button>
+          <div className="flex items-center gap-2">
+            <img src={trcnLogo} alt="TRCN" className="h-8 w-auto" />
+          </div>
+        </header>
 
         {/* Content */}
         <main className="flex-1 overflow-auto p-6">
