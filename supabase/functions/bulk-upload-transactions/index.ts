@@ -72,16 +72,19 @@ serve(async (req) => {
       );
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
 
-    const supabaseClient = createClient(supabaseUrl, supabaseKey, {
+    // Create client with user's JWT for authentication check
+    const token = authHeader.replace('Bearer ', '');
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
       auth: { autoRefreshToken: false, persistSession: false }
     });
 
     // 2. Get authenticated user
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token);
     if (userError || !user) {
       return new Response(
         JSON.stringify({ error: 'Invalid authentication' }),
@@ -104,7 +107,9 @@ serve(async (req) => {
 
     console.log(`Admin user ${user.id} authorized for bulk transaction upload`);
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
+    });
     const formData = await req.formData();
     const file = formData.get('file') as File;
 
@@ -157,7 +162,7 @@ serve(async (req) => {
         }
 
         // Get user by email
-        const { data: profile } = await supabase
+        const { data: profile } = await supabaseAdmin
           .from('profiles')
           .select('id')
           .eq('email', row.email.toLowerCase())
@@ -173,7 +178,7 @@ serve(async (req) => {
         // Get account if account_id is provided
         let accountId = null;
         if (row.account_id) {
-          const { data: account } = await supabase
+          const { data: account } = await supabaseAdmin
             .from('accounts')
             .select('id')
             .eq('user_id', profile.id)
@@ -188,7 +193,7 @@ serve(async (req) => {
         // Check if transaction with this reference number already exists
         const referenceNumber = row.reference_number || `TXN-${Date.now()}-${i}`;
         
-        const { data: existingTransaction } = await supabase
+        const { data: existingTransaction } = await supabaseAdmin
           .from('transactions')
           .select('id')
           .eq('reference_number', referenceNumber)
@@ -202,7 +207,7 @@ serve(async (req) => {
         }
 
         // Create transaction (balance is automatically updated by database trigger)
-        const { error: insertError } = await supabase
+        const { error: insertError } = await supabaseAdmin
           .from('transactions')
           .insert({
             user_id: profile.id,
