@@ -233,10 +233,16 @@ const Profile = () => {
         profile_photo_url: publicUrl
       }).eq("id", userId);
       if (updateError) throw updateError;
+      
+      // Add timestamp to force image refresh
+      const urlWithTimestamp = `${publicUrl}?t=${Date.now()}`;
       setProfileData(prev => ({
         ...prev,
-        profile_photo_url: publicUrl
+        profile_photo_url: urlWithTimestamp
       }));
+      
+      // Force a page reload to update the sidebar avatar
+      window.location.reload();
       toast.success("Profile photo updated successfully");
     } catch (error: any) {
       console.error("Error uploading photo:", error);
