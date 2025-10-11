@@ -68,6 +68,9 @@ function generateSecurePassword(length = 16): string {
 function sanitizeError(error: any): string {
   console.error('Database error details:', error);
   
+  if (error.message?.includes('User already registered') || error.message?.includes('already exists')) {
+    return 'This email is already registered';
+  }
   if (error.code === '23505') {
     return 'This member already exists';
   }
