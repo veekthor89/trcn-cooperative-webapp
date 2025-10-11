@@ -186,7 +186,7 @@ const BulkUpload = () => {
           {results && (
             <Card>
               <CardHeader>
-                <CardTitle>Upload Results</CardTitle>
+                <CardTitle>Member Credentials</CardTitle>
                 <CardDescription className="text-amber-600">
                   <strong>Security Warning:</strong> Copy these passwords immediately. They will not be shown again.
                 </CardDescription>
@@ -195,20 +195,22 @@ const BulkUpload = () => {
                 {results.success.length > 0 && (
                   <div>
                     <h3 className="font-semibold text-green-600 mb-2">
-                      Successfully uploaded ({results.success.length})
+                      Successfully created ({results.success.length})
                     </h3>
                     <div className="border rounded-md p-4 space-y-3 max-h-96 overflow-y-auto bg-muted/50">
                       {results.success.map((member, idx) => (
-                        <div key={idx} className="flex items-start justify-between p-3 bg-background rounded border">
-                          <div className="space-y-1 flex-1">
-                            <p className="font-medium">{member.email}</p>
-                            <p className="text-sm text-muted-foreground">
-                              Password: <code className="bg-muted px-2 py-1 rounded text-xs">{member.password}</code>
-                            </p>
+                        <div key={idx} className="flex items-start justify-between gap-4 p-3 bg-background rounded border">
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <p className="font-medium text-sm break-all">{member.email}</p>
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-muted-foreground">Password:</span>
+                              <code className="bg-muted px-2 py-1 rounded text-xs font-mono break-all">{member.password}</code>
+                            </div>
                           </div>
                           <Button
                             variant="outline"
                             size="sm"
+                            className="shrink-0"
                             onClick={() => {
                               navigator.clipboard.writeText(`Email: ${member.email}\nPassword: ${member.password}`);
                               toast.success("Credentials copied!");
