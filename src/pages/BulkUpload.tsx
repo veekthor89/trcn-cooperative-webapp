@@ -69,12 +69,14 @@ const BulkUpload = () => {
     // Validate MIME type
     if (file.type !== "text/csv") {
       toast.error("Please select a valid CSV file");
+      event.target.value = ''; // Reset file input
       return;
     }
 
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       toast.error("CSV file must be less than 2MB");
+      event.target.value = ''; // Reset file input
       return;
     }
 
@@ -112,6 +114,7 @@ const BulkUpload = () => {
       toast.error(error instanceof Error ? error.message : 'Failed to upload members');
     } finally {
       setUploading(false);
+      event.target.value = ''; // Reset file input to allow re-upload
     }
   };
 
