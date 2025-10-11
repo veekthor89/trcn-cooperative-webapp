@@ -398,7 +398,7 @@ const Profile = () => {
                 </Button>
               </div>
               <div className="bg-muted p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground">Total Shares</p>
+                <p className="text-sm text-muted-foreground">Special Contributions</p>
                 <p className="text-2xl font-bold">₦{financialSummary.totalShares.toLocaleString()}</p>
                 <Button variant="link" className="p-0 h-auto" onClick={() => navigate("/dashboard/savings")}>
                   View Details →
