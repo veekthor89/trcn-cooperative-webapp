@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -146,16 +146,23 @@ const Profile = () => {
         ?.filter(a => a.account_type === "savings")
         .reduce((sum, a) => sum + Number(a.balance), 0) || 0;
 
-      const totalShares = accounts
-        ?.filter(a => a.account_type === "shares")
-        .reduce((sum, a) => sum + Number(a.balance), 0) || 0;
+      const totalShares = 0; // Shares calculated from special_contributions
+
+      // Fetch special contributions (shares)
+      const { data: contributions } = await supabase
+        .from("special_contributions")
+        .select("current_amount")
+        .eq("user_id", session.user.id);
+
+      const contributionsTotal = contributions
+        ?.reduce((sum, c) => sum + Number(c.current_amount), 0) || 0;
 
       const activeLoans = loans?.filter(l => l.status === "active") || [];
       const outstandingBalance = activeLoans.reduce((sum, l) => sum + Number(l.outstanding_balance), 0);
 
       setFinancialSummary({
         totalSavings,
-        totalShares,
+        totalShares: contributionsTotal,
         activeLoansCount: activeLoans.length,
         outstandingBalance,
       });
