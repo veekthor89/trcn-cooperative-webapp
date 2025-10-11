@@ -152,7 +152,7 @@ serve(async (req) => {
     });
 
     const results = {
-      success: [] as string[],
+      success: [] as { email: string; password: string }[],
       errors: [] as { email: string; error: string }[]
     };
 
@@ -215,7 +215,7 @@ serve(async (req) => {
           console.error(`Profile update error:`, profileError);
           results.errors.push({ email: sanitizedMember.email, error: sanitizeError(profileError) });
         } else {
-          results.success.push(sanitizedMember.email);
+          results.success.push({ email: sanitizedMember.email, password: randomPassword });
           console.log(`Successfully created user ${authData.user.id} with random password`);
         }
       } catch (error) {

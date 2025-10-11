@@ -17,7 +17,7 @@ interface MemberData {
 
 const BulkUpload = () => {
   const [uploading, setUploading] = useState(false);
-  const [results, setResults] = useState<{ success: string[]; errors: Array<{ email: string; error: string }> } | null>(null);
+  const [results, setResults] = useState<{ success: Array<{ email: string; password: string }>; errors: Array<{ email: string; error: string }> } | null>(null);
 
   const parseCsv = (text: string): MemberData[] => {
     const lines = text.split('\n').filter(line => line.trim());
@@ -187,6 +187,9 @@ const BulkUpload = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Upload Results</CardTitle>
+                <CardDescription className="text-amber-600">
+                  <strong>Security Warning:</strong> Copy these passwords immediately. They will not be shown again.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {results.success.length > 0 && (
@@ -194,11 +197,28 @@ const BulkUpload = () => {
                     <h3 className="font-semibold text-green-600 mb-2">
                       Successfully uploaded ({results.success.length})
                     </h3>
-                    <ul className="text-sm space-y-1 max-h-40 overflow-y-auto">
-                      {results.success.map((email, idx) => (
-                        <li key={idx} className="text-muted-foreground">✓ {email}</li>
+                    <div className="border rounded-md p-4 space-y-3 max-h-96 overflow-y-auto bg-muted/50">
+                      {results.success.map((member, idx) => (
+                        <div key={idx} className="flex items-start justify-between p-3 bg-background rounded border">
+                          <div className="space-y-1 flex-1">
+                            <p className="font-medium">{member.email}</p>
+                            <p className="text-sm text-muted-foreground">
+                              Password: <code className="bg-muted px-2 py-1 rounded text-xs">{member.password}</code>
+                            </p>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              navigator.clipboard.writeText(`Email: ${member.email}\nPassword: ${member.password}`);
+                              toast.success("Credentials copied!");
+                            }}
+                          >
+                            Copy
+                          </Button>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 )}
 
