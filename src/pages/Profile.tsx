@@ -469,21 +469,6 @@ const Profile = () => {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="designation">Designation</Label>
-                <Input id="designation" value={profileData.designation} onChange={e => setProfileData({
-                ...profileData,
-                designation: e.target.value
-              })} disabled={!editMode} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="department">Department</Label>
-                <Input id="department" value={profileData.department} onChange={e => setProfileData({
-                ...profileData,
-                department: e.target.value
-              })} disabled={!editMode} />
-              </div>
-              
-              <div className="space-y-2">
                 <Label htmlFor="state_of_deployment">State of Deployment</Label>
                 <Select value={profileData.state_of_deployment} onValueChange={value => setProfileData({
                 ...profileData,
@@ -498,10 +483,24 @@ const Profile = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="lga">LGA</Label>
-                <Input id="lga" value={profileData.lga} onChange={e => setProfileData({
+                <Label htmlFor="department">Department</Label>
+                <Input id="department" value={profileData.department} onChange={e => setProfileData({
                 ...profileData,
-                lga: e.target.value
+                department: e.target.value
+              })} disabled={!editMode} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="designation">Division</Label>
+                <Input id="designation" value={profileData.designation} onChange={e => setProfileData({
+                ...profileData,
+                designation: e.target.value
+              })} disabled={!editMode} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="school_name">Unit</Label>
+                <Input id="school_name" value={profileData.school_name} onChange={e => setProfileData({
+                ...profileData,
+                school_name: e.target.value
               })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
