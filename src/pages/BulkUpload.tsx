@@ -21,13 +21,30 @@ const BulkUpload = () => {
 
   const parseCsv = (text: string): MemberData[] => {
     const lines = text.split('\n').filter(line => line.trim());
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
     
     const members: MemberData[] = [];
     
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',');
-      if (values.length < 2 || !values[1]?.trim() || !values[2]?.trim()) continue;
+      // Parse CSV line properly handling quoted fields
+      const values: string[] = [];
+      let currentValue = '';
+      let insideQuotes = false;
+      
+      for (let j = 0; j < lines[i].length; j++) {
+        const char = lines[i][j];
+        
+        if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === ',' && !insideQuotes) {
+          values.push(currentValue.trim());
+          currentValue = '';
+        } else {
+          currentValue += char;
+        }
+      }
+      values.push(currentValue.trim());
+      
+      if (values.length < 3 || !values[1]?.trim() || !values[2]?.trim()) continue;
       
       const member: MemberData = {
         full_name: values[1]?.trim() || '',
