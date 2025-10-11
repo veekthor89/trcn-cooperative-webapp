@@ -12,23 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Loader2, Edit, Save, X, Camera, User, Briefcase, Users, Wallet, CreditCard, Settings, ArrowLeft } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
-
-const nigerianBanks = [
-  "Access Bank", "Citibank", "Ecobank", "Fidelity Bank", "First Bank of Nigeria",
-  "First City Monument Bank (FCMB)", "Globus Bank", "Guaranty Trust Bank (GTBank)",
-  "Heritage Bank", "Keystone Bank", "Polaris Bank", "Providus Bank", "Stanbic IBTC Bank",
-  "Standard Chartered", "Sterling Bank", "SunTrust Bank", "Titan Trust Bank",
-  "Union Bank of Nigeria", "United Bank for Africa (UBA)", "Unity Bank", "Wema Bank", "Zenith Bank"
-];
-
-const nigerianStates = [
-  "Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno",
-  "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT", "Gombe", "Imo",
-  "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa",
-  "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba",
-  "Yobe", "Zamfara"
-];
-
+const nigerianBanks = ["Access Bank", "Citibank", "Ecobank", "Fidelity Bank", "First Bank of Nigeria", "First City Monument Bank (FCMB)", "Globus Bank", "Guaranty Trust Bank (GTBank)", "Heritage Bank", "Keystone Bank", "Polaris Bank", "Providus Bank", "Stanbic IBTC Bank", "Standard Chartered", "Sterling Bank", "SunTrust Bank", "Titan Trust Bank", "Union Bank of Nigeria", "United Bank for Africa (UBA)", "Unity Bank", "Wema Bank", "Zenith Bank"];
+const nigerianStates = ["Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"];
 const Profile = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -36,7 +21,6 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-
   const [profileData, setProfileData] = useState({
     full_name: "",
     email: "",
@@ -65,39 +49,36 @@ const Profile = () => {
     bvn: "",
     profile_photo_url: "",
     email_notifications: true,
-    sms_notifications: true,
+    sms_notifications: true
   });
-
   const [financialSummary, setFinancialSummary] = useState({
     totalSavings: 0,
     totalShares: 0,
     activeLoansCount: 0,
-    outstandingBalance: 0,
+    outstandingBalance: 0
   });
-
   useEffect(() => {
     fetchProfile();
   }, []);
-
   const fetchProfile = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: {
+          session
+        }
+      } = await supabase.auth.getSession();
       if (!session) {
         navigate("/");
         return;
       }
-
       setUserId(session.user.id);
 
       // Fetch profile data
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", session.user.id)
-        .single();
-
+      const {
+        data: profile,
+        error: profileError
+      } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
       if (profileError) throw profileError;
-
       if (profile) {
         setProfileData({
           full_name: profile.full_name || "",
@@ -127,44 +108,32 @@ const Profile = () => {
           bvn: profile.bvn || "",
           profile_photo_url: profile.profile_photo_url || "",
           email_notifications: profile.email_notifications ?? true,
-          sms_notifications: profile.sms_notifications ?? true,
+          sms_notifications: profile.sms_notifications ?? true
         });
       }
 
       // Fetch financial summary
-      const { data: accounts } = await supabase
-        .from("accounts")
-        .select("balance, account_type")
-        .eq("user_id", session.user.id);
-
-      const { data: loans } = await supabase
-        .from("loans")
-        .select("outstanding_balance, status")
-        .eq("user_id", session.user.id);
-
-      const totalSavings = accounts
-        ?.filter(a => a.account_type === "savings")
-        .reduce((sum, a) => sum + Number(a.balance), 0) || 0;
-
+      const {
+        data: accounts
+      } = await supabase.from("accounts").select("balance, account_type").eq("user_id", session.user.id);
+      const {
+        data: loans
+      } = await supabase.from("loans").select("outstanding_balance, status").eq("user_id", session.user.id);
+      const totalSavings = accounts?.filter(a => a.account_type === "savings").reduce((sum, a) => sum + Number(a.balance), 0) || 0;
       const totalShares = 0; // Shares calculated from special_contributions
 
       // Fetch special contributions (shares)
-      const { data: contributions } = await supabase
-        .from("special_contributions")
-        .select("current_amount")
-        .eq("user_id", session.user.id);
-
-      const contributionsTotal = contributions
-        ?.reduce((sum, c) => sum + Number(c.current_amount), 0) || 0;
-
+      const {
+        data: contributions
+      } = await supabase.from("special_contributions").select("current_amount").eq("user_id", session.user.id);
+      const contributionsTotal = contributions?.reduce((sum, c) => sum + Number(c.current_amount), 0) || 0;
       const activeLoans = loans?.filter(l => l.status === "active") || [];
       const outstandingBalance = activeLoans.reduce((sum, l) => sum + Number(l.outstanding_balance), 0);
-
       setFinancialSummary({
         totalSavings,
         totalShares: contributionsTotal,
         activeLoansCount: activeLoans.length,
-        outstandingBalance,
+        outstandingBalance
       });
     } catch (error: any) {
       console.error("Error fetching profile:", error);
@@ -173,46 +142,41 @@ const Profile = () => {
       setLoading(false);
     }
   };
-
   const handleSave = async () => {
     setSaving(true);
     try {
       if (!userId) throw new Error("User not authenticated");
-
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          full_name: profileData.full_name,
-          phone: profileData.phone,
-          alternative_phone: profileData.alternative_phone,
-          date_of_birth: profileData.date_of_birth,
-          gender: profileData.gender,
-          address: profileData.address,
-          city: profileData.city,
-          state_of_residence: profileData.state_of_residence,
-          designation: profileData.designation,
-          department: profileData.department,
-          school_name: profileData.school_name,
-          state_of_deployment: profileData.state_of_deployment,
-          lga: profileData.lga,
-          staff_id: profileData.staff_id,
-          years_of_service: profileData.years_of_service,
-          next_of_kin_name: profileData.next_of_kin_name,
-          next_of_kin_relationship: profileData.next_of_kin_relationship,
-          next_of_kin_phone: profileData.next_of_kin_phone,
-          next_of_kin_email: profileData.next_of_kin_email,
-          next_of_kin_address: profileData.next_of_kin_address,
-          bank_name: profileData.bank_name,
-          account_number: profileData.account_number,
-          account_name: profileData.account_name,
-          bvn: profileData.bvn,
-          email_notifications: profileData.email_notifications,
-          sms_notifications: profileData.sms_notifications,
-        })
-        .eq("id", userId);
-
+      const {
+        error
+      } = await supabase.from("profiles").update({
+        full_name: profileData.full_name,
+        phone: profileData.phone,
+        alternative_phone: profileData.alternative_phone,
+        date_of_birth: profileData.date_of_birth,
+        gender: profileData.gender,
+        address: profileData.address,
+        city: profileData.city,
+        state_of_residence: profileData.state_of_residence,
+        designation: profileData.designation,
+        department: profileData.department,
+        school_name: profileData.school_name,
+        state_of_deployment: profileData.state_of_deployment,
+        lga: profileData.lga,
+        staff_id: profileData.staff_id,
+        years_of_service: profileData.years_of_service,
+        next_of_kin_name: profileData.next_of_kin_name,
+        next_of_kin_relationship: profileData.next_of_kin_relationship,
+        next_of_kin_phone: profileData.next_of_kin_phone,
+        next_of_kin_email: profileData.next_of_kin_email,
+        next_of_kin_address: profileData.next_of_kin_address,
+        bank_name: profileData.bank_name,
+        account_number: profileData.account_number,
+        account_name: profileData.account_name,
+        bvn: profileData.bvn,
+        email_notifications: profileData.email_notifications,
+        sms_notifications: profileData.sms_notifications
+      }).eq("id", userId);
       if (error) throw error;
-
       toast.success("Profile updated successfully");
       setEditMode(false);
     } catch (error: any) {
@@ -222,7 +186,6 @@ const Profile = () => {
       setSaving(false);
     }
   };
-
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
@@ -238,7 +201,6 @@ const Profile = () => {
       toast.error("Image size must be less than 5MB");
       return;
     }
-
     setUploading(true);
     try {
       const fileExt = file.name.split(".").pop();
@@ -250,26 +212,31 @@ const Profile = () => {
       }
 
       // Upload new photo
-      const { error: uploadError } = await supabase.storage
-        .from("profile-photos")
-        .upload(filePath, file, { upsert: true });
-
+      const {
+        error: uploadError
+      } = await supabase.storage.from("profile-photos").upload(filePath, file, {
+        upsert: true
+      });
       if (uploadError) throw uploadError;
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from("profile-photos")
-        .getPublicUrl(filePath);
+      const {
+        data: {
+          publicUrl
+        }
+      } = supabase.storage.from("profile-photos").getPublicUrl(filePath);
 
       // Update profile with new photo URL
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ profile_photo_url: publicUrl })
-        .eq("id", userId);
-
+      const {
+        error: updateError
+      } = await supabase.from("profiles").update({
+        profile_photo_url: publicUrl
+      }).eq("id", userId);
       if (updateError) throw updateError;
-
-      setProfileData(prev => ({ ...prev, profile_photo_url: publicUrl }));
+      setProfileData(prev => ({
+        ...prev,
+        profile_photo_url: publicUrl
+      }));
       toast.success("Profile photo updated successfully");
     } catch (error: any) {
       console.error("Error uploading photo:", error);
@@ -278,32 +245,27 @@ const Profile = () => {
       setUploading(false);
     }
   };
-
   const handleChangePassword = async () => {
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: prompt("Enter new password:") || "",
+      const {
+        error
+      } = await supabase.auth.updateUser({
+        password: prompt("Enter new password:") || ""
       });
-
       if (error) throw error;
       toast.success("Password changed successfully");
     } catch (error: any) {
       toast.error("Failed to change password");
     }
   };
-
   if (loading) {
-    return (
-      <DashboardLayout>
+    return <DashboardLayout>
         <div className="flex items-center justify-center h-96">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      </DashboardLayout>
-    );
+      </DashboardLayout>;
   }
-
-  return (
-    <DashboardLayout>
+  return <DashboardLayout>
       <div className="space-y-6 pb-16">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -317,32 +279,24 @@ const Profile = () => {
             </div>
           </div>
           <div className="flex gap-2">
-            {editMode ? (
-              <>
+            {editMode ? <>
                 <Button variant="outline" onClick={() => setEditMode(false)} disabled={saving}>
                   <X className="h-4 w-4 mr-2" />
                   Cancel
                 </Button>
                 <Button onClick={handleSave} disabled={saving}>
-                  {saving ? (
-                    <>
+                  {saving ? <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                       Saving...
-                    </>
-                  ) : (
-                    <>
+                    </> : <>
                       <Save className="h-4 w-4 mr-2" />
                       Save Changes
-                    </>
-                  )}
+                    </>}
                 </Button>
-              </>
-            ) : (
-              <Button onClick={() => setEditMode(true)}>
+              </> : <Button onClick={() => setEditMode(true)}>
                 <Edit className="h-4 w-4 mr-2" />
                 Edit Profile
-              </Button>
-            )}
+              </Button>}
           </div>
         </div>
 
@@ -357,18 +311,10 @@ const Profile = () => {
                     {profileData.full_name?.charAt(0) || <User />}
                   </AvatarFallback>
                 </Avatar>
-                {editMode && (
-                  <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/90">
+                {editMode && <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/90">
                     <Camera className="h-4 w-4" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoUpload}
-                      className="hidden"
-                      disabled={uploading}
-                    />
-                  </label>
-                )}
+                    <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" disabled={uploading} />
+                  </label>}
               </div>
               <div>
                 <h2 className="text-2xl font-bold">{profileData.full_name}</h2>
@@ -434,12 +380,10 @@ const Profile = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="full_name">Full Name</Label>
-                <Input
-                  id="full_name"
-                  value={profileData.full_name}
-                  onChange={(e) => setProfileData({ ...profileData, full_name: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="full_name" value={profileData.full_name} onChange={e => setProfileData({
+                ...profileData,
+                full_name: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -447,39 +391,31 @@ const Profile = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  value={profileData.phone}
-                  onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="phone" value={profileData.phone} onChange={e => setProfileData({
+                ...profileData,
+                phone: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="alternative_phone">Alternative Phone</Label>
-                <Input
-                  id="alternative_phone"
-                  value={profileData.alternative_phone}
-                  onChange={(e) => setProfileData({ ...profileData, alternative_phone: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="alternative_phone" value={profileData.alternative_phone} onChange={e => setProfileData({
+                ...profileData,
+                alternative_phone: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="date_of_birth">Date of Birth</Label>
-                <Input
-                  id="date_of_birth"
-                  type="date"
-                  value={profileData.date_of_birth}
-                  onChange={(e) => setProfileData({ ...profileData, date_of_birth: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="date_of_birth" type="date" value={profileData.date_of_birth} onChange={e => setProfileData({
+                ...profileData,
+                date_of_birth: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="gender">Gender</Label>
-                <Select
-                  value={profileData.gender}
-                  onValueChange={(value) => setProfileData({ ...profileData, gender: value })}
-                  disabled={!editMode}
-                >
+                <Select value={profileData.gender} onValueChange={value => setProfileData({
+                ...profileData,
+                gender: value
+              })} disabled={!editMode}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select gender" />
                   </SelectTrigger>
@@ -492,36 +428,29 @@ const Profile = () => {
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="address">Residential Address</Label>
-                <Input
-                  id="address"
-                  value={profileData.address}
-                  onChange={(e) => setProfileData({ ...profileData, address: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="address" value={profileData.address} onChange={e => setProfileData({
+                ...profileData,
+                address: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  value={profileData.city}
-                  onChange={(e) => setProfileData({ ...profileData, city: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="city" value={profileData.city} onChange={e => setProfileData({
+                ...profileData,
+                city: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="state_of_residence">State of Residence</Label>
-                <Select
-                  value={profileData.state_of_residence}
-                  onValueChange={(value) => setProfileData({ ...profileData, state_of_residence: value })}
-                  disabled={!editMode}
-                >
+                <Select value={profileData.state_of_residence} onValueChange={value => setProfileData({
+                ...profileData,
+                state_of_residence: value
+              })} disabled={!editMode}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
                   <SelectContent>
-                    {nigerianStates.map(state => (
-                      <SelectItem key={state} value={state}>{state}</SelectItem>
-                    ))}
+                    {nigerianStates.map(state => <SelectItem key={state} value={state}>{state}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -541,75 +470,53 @@ const Profile = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="designation">Designation</Label>
-                <Input
-                  id="designation"
-                  value={profileData.designation}
-                  onChange={(e) => setProfileData({ ...profileData, designation: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="designation" value={profileData.designation} onChange={e => setProfileData({
+                ...profileData,
+                designation: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="department">Department</Label>
-                <Input
-                  id="department"
-                  value={profileData.department}
-                  onChange={(e) => setProfileData({ ...profileData, department: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="department" value={profileData.department} onChange={e => setProfileData({
+                ...profileData,
+                department: e.target.value
+              })} disabled={!editMode} />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="school_name">School Name</Label>
-                <Input
-                  id="school_name"
-                  value={profileData.school_name}
-                  onChange={(e) => setProfileData({ ...profileData, school_name: e.target.value })}
-                  disabled={!editMode}
-                />
-              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="state_of_deployment">State of Deployment</Label>
-                <Select
-                  value={profileData.state_of_deployment}
-                  onValueChange={(value) => setProfileData({ ...profileData, state_of_deployment: value })}
-                  disabled={!editMode}
-                >
+                <Select value={profileData.state_of_deployment} onValueChange={value => setProfileData({
+                ...profileData,
+                state_of_deployment: value
+              })} disabled={!editMode}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select state" />
                   </SelectTrigger>
                   <SelectContent>
-                    {nigerianStates.map(state => (
-                      <SelectItem key={state} value={state}>{state}</SelectItem>
-                    ))}
+                    {nigerianStates.map(state => <SelectItem key={state} value={state}>{state}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lga">LGA</Label>
-                <Input
-                  id="lga"
-                  value={profileData.lga}
-                  onChange={(e) => setProfileData({ ...profileData, lga: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="lga" value={profileData.lga} onChange={e => setProfileData({
+                ...profileData,
+                lga: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="staff_id">Staff ID</Label>
-                <Input
-                  id="staff_id"
-                  value={profileData.staff_id}
-                  onChange={(e) => setProfileData({ ...profileData, staff_id: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="staff_id" value={profileData.staff_id} onChange={e => setProfileData({
+                ...profileData,
+                staff_id: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="years_of_service">Years of Service</Label>
-                <Input
-                  id="years_of_service"
-                  type="number"
-                  value={profileData.years_of_service}
-                  onChange={(e) => setProfileData({ ...profileData, years_of_service: parseInt(e.target.value) || 0 })}
-                  disabled={!editMode}
-                />
+                <Input id="years_of_service" type="number" value={profileData.years_of_service} onChange={e => setProfileData({
+                ...profileData,
+                years_of_service: parseInt(e.target.value) || 0
+              })} disabled={!editMode} />
               </div>
             </div>
           </CardContent>
@@ -627,49 +534,38 @@ const Profile = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="next_of_kin_name">Name</Label>
-                <Input
-                  id="next_of_kin_name"
-                  value={profileData.next_of_kin_name}
-                  onChange={(e) => setProfileData({ ...profileData, next_of_kin_name: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="next_of_kin_name" value={profileData.next_of_kin_name} onChange={e => setProfileData({
+                ...profileData,
+                next_of_kin_name: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="next_of_kin_relationship">Relationship</Label>
-                <Input
-                  id="next_of_kin_relationship"
-                  value={profileData.next_of_kin_relationship}
-                  onChange={(e) => setProfileData({ ...profileData, next_of_kin_relationship: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="next_of_kin_relationship" value={profileData.next_of_kin_relationship} onChange={e => setProfileData({
+                ...profileData,
+                next_of_kin_relationship: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="next_of_kin_phone">Phone</Label>
-                <Input
-                  id="next_of_kin_phone"
-                  value={profileData.next_of_kin_phone}
-                  onChange={(e) => setProfileData({ ...profileData, next_of_kin_phone: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="next_of_kin_phone" value={profileData.next_of_kin_phone} onChange={e => setProfileData({
+                ...profileData,
+                next_of_kin_phone: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="next_of_kin_email">Email</Label>
-                <Input
-                  id="next_of_kin_email"
-                  type="email"
-                  value={profileData.next_of_kin_email}
-                  onChange={(e) => setProfileData({ ...profileData, next_of_kin_email: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="next_of_kin_email" type="email" value={profileData.next_of_kin_email} onChange={e => setProfileData({
+                ...profileData,
+                next_of_kin_email: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="next_of_kin_address">Address</Label>
-                <Input
-                  id="next_of_kin_address"
-                  value={profileData.next_of_kin_address}
-                  onChange={(e) => setProfileData({ ...profileData, next_of_kin_address: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="next_of_kin_address" value={profileData.next_of_kin_address} onChange={e => setProfileData({
+                ...profileData,
+                next_of_kin_address: e.target.value
+              })} disabled={!editMode} />
               </div>
             </div>
           </CardContent>
@@ -687,49 +583,38 @@ const Profile = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="bank_name">Bank Name</Label>
-                <Select
-                  value={profileData.bank_name}
-                  onValueChange={(value) => setProfileData({ ...profileData, bank_name: value })}
-                  disabled={!editMode}
-                >
+                <Select value={profileData.bank_name} onValueChange={value => setProfileData({
+                ...profileData,
+                bank_name: value
+              })} disabled={!editMode}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select bank" />
                   </SelectTrigger>
                   <SelectContent>
-                    {nigerianBanks.map(bank => (
-                      <SelectItem key={bank} value={bank}>{bank}</SelectItem>
-                    ))}
+                    {nigerianBanks.map(bank => <SelectItem key={bank} value={bank}>{bank}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="account_number">Account Number</Label>
-                <Input
-                  id="account_number"
-                  value={profileData.account_number}
-                  onChange={(e) => setProfileData({ ...profileData, account_number: e.target.value })}
-                  disabled={!editMode}
-                  maxLength={10}
-                />
+                <Input id="account_number" value={profileData.account_number} onChange={e => setProfileData({
+                ...profileData,
+                account_number: e.target.value
+              })} disabled={!editMode} maxLength={10} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="account_name">Account Name</Label>
-                <Input
-                  id="account_name"
-                  value={profileData.account_name}
-                  onChange={(e) => setProfileData({ ...profileData, account_name: e.target.value })}
-                  disabled={!editMode}
-                />
+                <Input id="account_name" value={profileData.account_name} onChange={e => setProfileData({
+                ...profileData,
+                account_name: e.target.value
+              })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bvn">BVN</Label>
-                <Input
-                  id="bvn"
-                  value={profileData.bvn}
-                  onChange={(e) => setProfileData({ ...profileData, bvn: e.target.value })}
-                  disabled={!editMode}
-                  maxLength={11}
-                />
+                <Input id="bvn" value={profileData.bvn} onChange={e => setProfileData({
+                ...profileData,
+                bvn: e.target.value
+              })} disabled={!editMode} maxLength={11} />
               </div>
             </div>
           </CardContent>
@@ -750,12 +635,10 @@ const Profile = () => {
                   <Label htmlFor="email_notifications">Email Notifications</Label>
                   <p className="text-sm text-muted-foreground">Receive updates via email</p>
                 </div>
-                <Switch
-                  id="email_notifications"
-                  checked={profileData.email_notifications}
-                  onCheckedChange={(checked) => setProfileData({ ...profileData, email_notifications: checked })}
-                  disabled={!editMode}
-                />
+                <Switch id="email_notifications" checked={profileData.email_notifications} onCheckedChange={checked => setProfileData({
+                ...profileData,
+                email_notifications: checked
+              })} disabled={!editMode} />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
@@ -763,12 +646,10 @@ const Profile = () => {
                   <Label htmlFor="sms_notifications">SMS Notifications</Label>
                   <p className="text-sm text-muted-foreground">Receive updates via SMS</p>
                 </div>
-                <Switch
-                  id="sms_notifications"
-                  checked={profileData.sms_notifications}
-                  onCheckedChange={(checked) => setProfileData({ ...profileData, sms_notifications: checked })}
-                  disabled={!editMode}
-                />
+                <Switch id="sms_notifications" checked={profileData.sms_notifications} onCheckedChange={checked => setProfileData({
+                ...profileData,
+                sms_notifications: checked
+              })} disabled={!editMode} />
               </div>
               <Separator />
               <div>
@@ -780,8 +661,6 @@ const Profile = () => {
           </CardContent>
         </Card>
       </div>
-    </DashboardLayout>
-  );
+    </DashboardLayout>;
 };
-
 export default Profile;
