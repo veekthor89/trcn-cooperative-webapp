@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, FileSpreadsheet, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import trcnLogo from "@/assets/trcn-logo.png";
@@ -18,6 +18,7 @@ const DashboardLayout = ({
   const [session, setSession] = useState<Session | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileName, setProfileName] = useState("User");
+  const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const {
     isAdmin
   } = useUserRole();
@@ -44,13 +45,16 @@ const DashboardLayout = ({
       if (!session) {
         navigate("/auth");
       } else {
-        // Fetch profile name
+        // Fetch profile name and photo
         setTimeout(async () => {
           const {
             data
-          } = await supabase.from("profiles").select("full_name").eq("id", session.user.id).single();
+          } = await supabase.from("profiles").select("full_name, profile_photo_url").eq("id", session.user.id).single();
           if (data?.full_name) {
             setProfileName(data.full_name);
+          }
+          if (data?.profile_photo_url) {
+            setProfilePhotoUrl(data.profile_photo_url);
           }
         }, 0);
       }
@@ -164,6 +168,7 @@ const DashboardLayout = ({
           <div className="p-4 border-t border-border">
             <div className="flex items-center gap-3 mb-4">
               <Avatar>
+                {profilePhotoUrl && <AvatarImage src={profilePhotoUrl} alt={profileName} />}
                 <AvatarFallback className="bg-muted text-foreground">
                   {profileName.charAt(0).toUpperCase()}
                 </AvatarFallback>
