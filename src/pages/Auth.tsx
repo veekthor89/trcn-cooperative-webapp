@@ -119,7 +119,7 @@ const Auth = () => {
 
       {/* Right side - Form */}
       <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md shadow-elevated">
+        <Card className="w-full max-w-lg shadow-elevated">
           <CardHeader className="text-center">
             <div className="flex justify-center mb-4 lg:hidden">
               <img 
