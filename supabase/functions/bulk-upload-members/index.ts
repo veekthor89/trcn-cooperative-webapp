@@ -14,6 +14,22 @@ interface MemberData {
   date_of_birth?: string;
 }
 
+// Sanitize database errors for client responses
+function sanitizeError(error: any): string {
+  console.error('Database error details:', error);
+  
+  if (error.code === '23505') {
+    return 'This member already exists';
+  }
+  if (error.code === '23503') {
+    return 'Referenced record not found';
+  }
+  if (error.code === '23514') {
+    return 'Invalid data format';
+  }
+  return 'An error occurred while processing this member';
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -63,7 +79,7 @@ serve(async (req) => {
 
         if (authError) {
           console.error(`Auth error for ${member.email}:`, authError);
-          results.errors.push({ email: member.email, error: authError.message });
+          results.errors.push({ email: member.email, error: sanitizeError(authError) });
           continue;
         }
 
@@ -81,7 +97,7 @@ serve(async (req) => {
 
         if (profileError) {
           console.error(`Profile update error for ${member.email}:`, profileError);
-          results.errors.push({ email: member.email, error: `Profile update failed: ${profileError.message}` });
+          results.errors.push({ email: member.email, error: sanitizeError(profileError) });
         } else {
           results.success.push(member.email);
           console.log(`Successfully created and updated ${member.email}`);

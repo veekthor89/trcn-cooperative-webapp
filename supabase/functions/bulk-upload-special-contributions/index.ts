@@ -6,6 +6,22 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Sanitize database errors for client responses
+function sanitizeError(error: any): string {
+  console.error('Database error details:', error);
+  
+  if (error.code === '23505') {
+    return 'This contribution record already exists';
+  }
+  if (error.code === '23503') {
+    return 'User not found';
+  }
+  if (error.code === '23514') {
+    return 'Invalid contribution data';
+  }
+  return 'An error occurred while processing this contribution';
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -37,9 +53,10 @@ serve(async (req) => {
           .single();
 
         if (profileError || !profile) {
+          console.error('User lookup error for', email, profileError);
           results.failed.push({
             email,
-            error: `User not found with email: ${email}`,
+            error: 'User not found with this email address',
           });
           continue;
         }
@@ -56,11 +73,11 @@ serve(async (req) => {
           });
 
         if (insertError) {
+          console.error(`Failed to create special contribution for: ${email}`, insertError);
           results.failed.push({
             email,
-            error: insertError.message,
+            error: sanitizeError(insertError),
           });
-          console.error(`Failed to create special contribution for: ${email}`, insertError);
         } else {
           results.successful.push(email);
           console.log(`Successfully created special contribution for: ${email}`);

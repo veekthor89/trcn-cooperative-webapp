@@ -6,6 +6,22 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Sanitize database errors for client responses
+function sanitizeError(error: any): string {
+  console.error('Database error details:', error);
+  
+  if (error.code === '23505') {
+    return 'This transaction already exists';
+  }
+  if (error.code === '23503') {
+    return 'Referenced record not found';
+  }
+  if (error.code === '23514') {
+    return 'Invalid transaction data';
+  }
+  return 'An error occurred while processing this transaction';
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -54,8 +70,9 @@ serve(async (req) => {
           .single();
 
         if (!profile) {
+          console.error('User lookup error for', row.email);
           results.failed++;
-          results.errors.push(`User not found for email: ${row.email}`);
+          results.errors.push(`User not found with email: ${row.email}`);
           continue;
         }
 
@@ -84,9 +101,9 @@ serve(async (req) => {
           .single();
 
         if (existingTransaction) {
-          results.failed++;
-          results.errors.push(`Row ${i}: Transaction with reference number ${referenceNumber} already exists`);
           console.log(`Skipping duplicate transaction: ${referenceNumber}`);
+          results.failed++;
+          results.errors.push(`Row ${i}: Duplicate transaction reference`);
           continue;
         }
 
@@ -107,9 +124,9 @@ serve(async (req) => {
         results.successful++;
         console.log('Successfully created transaction for:', row.email);
       } catch (error: any) {
-        results.failed++;
-        results.errors.push(`Row ${i}: ${error.message}`);
         console.error(`Error processing row ${i}:`, error);
+        results.failed++;
+        results.errors.push(`Row ${i}: ${sanitizeError(error)}`);
       }
     }
 

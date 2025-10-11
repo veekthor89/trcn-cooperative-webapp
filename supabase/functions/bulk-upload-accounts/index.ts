@@ -13,6 +13,22 @@ interface AccountData {
   status?: 'active' | 'inactive' | 'suspended';
 }
 
+// Sanitize database errors for client responses
+function sanitizeError(error: any): string {
+  console.error('Database error details:', error);
+  
+  if (error.code === '23505') {
+    return 'This account already exists';
+  }
+  if (error.code === '23503') {
+    return 'User not found';
+  }
+  if (error.code === '23514') {
+    return 'Invalid account data';
+  }
+  return 'An error occurred while creating this account';
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -56,10 +72,10 @@ serve(async (req) => {
           .single();
 
         if (profileError || !profile) {
-          console.error(`User not found for ${account.email}`);
+          console.error(`User not found for ${account.email}:`, profileError);
           results.errors.push({ 
             email: account.email, 
-            error: 'User not found. Please ensure the member exists first.' 
+            error: 'User not found with this email address'
           });
           continue;
         }
@@ -80,7 +96,7 @@ serve(async (req) => {
           console.error(`Account creation error for ${account.email}:`, accountError);
           results.errors.push({ 
             email: account.email, 
-            error: `Account creation failed: ${accountError.message}` 
+            error: sanitizeError(accountError)
           });
         } else {
           results.success.push(account.email);

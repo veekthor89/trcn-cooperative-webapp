@@ -17,6 +17,22 @@ interface LoanData {
   next_payment_date?: string;
 }
 
+// Sanitize database errors for client responses
+function sanitizeError(error: any): string {
+  console.error('Database error details:', error);
+  
+  if (error.code === '23505') {
+    return 'This loan record already exists';
+  }
+  if (error.code === '23503') {
+    return 'User not found';
+  }
+  if (error.code === '23514') {
+    return 'Invalid loan data';
+  }
+  return 'An error occurred while creating this loan';
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -45,9 +61,10 @@ Deno.serve(async (req) => {
           .single();
 
         if (profileError || !profile) {
+          console.error('User lookup error for', loan.email, profileError);
           results.errors.push({
             email: loan.email,
-            error: 'Member not found with this email'
+            error: 'User not found with this email address'
           });
           continue;
         }
@@ -71,7 +88,7 @@ Deno.serve(async (req) => {
           console.error('Loan creation error:', loanError);
           results.errors.push({
             email: loan.email,
-            error: loanError.message
+            error: sanitizeError(loanError)
           });
         } else {
           results.success.push(loan.email);
