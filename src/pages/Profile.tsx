@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Loader2, Edit, Save, X, Camera, User, Briefcase, Users, Wallet, CreditCard, Settings, ArrowLeft } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
+import { ImageCropper } from "@/components/ImageCropper";
 const nigerianBanks = ["Access Bank", "Citibank", "Ecobank", "Fidelity Bank", "First Bank of Nigeria", "First City Monument Bank (FCMB)", "Globus Bank", "Guaranty Trust Bank (GTBank)", "Heritage Bank", "Keystone Bank", "Polaris Bank", "Providus Bank", "Stanbic IBTC Bank", "Standard Chartered", "Sterling Bank", "SunTrust Bank", "Titan Trust Bank", "Union Bank of Nigeria", "United Bank for Africa (UBA)", "Unity Bank", "Wema Bank", "Zenith Bank"];
 const nigerianStates = ["Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "FCT", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"];
 const Profile = () => {
@@ -21,6 +22,8 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+  const [cropperOpen, setCropperOpen] = useState(false);
   const [profileData, setProfileData] = useState({
     full_name: "",
     email: "",
@@ -186,7 +189,7 @@ const Profile = () => {
       setSaving(false);
     }
   };
-  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
 
@@ -201,46 +204,69 @@ const Profile = () => {
       toast.error("Image size must be less than 5MB");
       return;
     }
+
+    // Create preview URL for cropping
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageToCrop(reader.result as string);
+      setCropperOpen(true);
+    };
+    reader.readAsDataURL(file);
+
+    // Reset input
+    e.target.value = "";
+  };
+
+  const handleCropComplete = async (croppedImage: Blob) => {
+    if (!userId) return;
+
     setUploading(true);
     try {
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${userId}/profile.${fileExt}`;
+      const filePath = `${userId}/profile.jpg`;
 
       // Delete old photo if exists
       if (profileData.profile_photo_url) {
-        await supabase.storage.from("profile-photos").remove([`${userId}/profile.${profileData.profile_photo_url.split(".").pop()}`]);
+        const oldPath = profileData.profile_photo_url.split("/profile-photos/")[1]?.split("?")[0];
+        if (oldPath) {
+          await supabase.storage.from("profile-photos").remove([oldPath]);
+        }
       }
 
-      // Upload new photo
-      const {
-        error: uploadError
-      } = await supabase.storage.from("profile-photos").upload(filePath, file, {
-        upsert: true
-      });
+      // Upload cropped photo
+      const { error: uploadError } = await supabase.storage
+        .from("profile-photos")
+        .upload(filePath, croppedImage, {
+          upsert: true,
+          contentType: "image/jpeg",
+        });
+
       if (uploadError) throw uploadError;
 
       // Get public URL
       const {
-        data: {
-          publicUrl
-        }
+        data: { publicUrl },
       } = supabase.storage.from("profile-photos").getPublicUrl(filePath);
 
       // Update profile with new photo URL
-      const {
-        error: updateError
-      } = await supabase.from("profiles").update({
-        profile_photo_url: publicUrl
-      }).eq("id", userId);
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({
+          profile_photo_url: publicUrl,
+        })
+        .eq("id", userId);
+
       if (updateError) throw updateError;
-      
+
       // Add timestamp to force image refresh
       const urlWithTimestamp = `${publicUrl}?t=${Date.now()}`;
-      setProfileData(prev => ({
+      setProfileData((prev) => ({
         ...prev,
-        profile_photo_url: urlWithTimestamp
+        profile_photo_url: urlWithTimestamp,
       }));
-      
+
+      setCropperOpen(false);
+      setImageToCrop(null);
+
       // Force a page reload to update the sidebar avatar
       window.location.reload();
       toast.success("Profile photo updated successfully");
@@ -250,6 +276,11 @@ const Profile = () => {
     } finally {
       setUploading(false);
     }
+  };
+
+  const handleCropCancel = () => {
+    setCropperOpen(false);
+    setImageToCrop(null);
   };
   const handleChangePassword = async () => {
     try {
@@ -319,7 +350,7 @@ const Profile = () => {
                 </Avatar>
                 {editMode && <label className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:bg-primary/90">
                     <Camera className="h-4 w-4" />
-                    <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" disabled={uploading} />
+                    <input type="file" accept="image/*" onChange={handlePhotoSelect} className="hidden" disabled={uploading} />
                   </label>}
               </div>
               <div>
@@ -666,6 +697,16 @@ const Profile = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Image Cropper Modal */}
+      {imageToCrop && (
+        <ImageCropper
+          image={imageToCrop}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          isOpen={cropperOpen}
+        />
+      )}
     </DashboardLayout>;
 };
 export default Profile;
