@@ -74,6 +74,22 @@ serve(async (req) => {
           }
         }
 
+        // Check if transaction with this reference number already exists
+        const referenceNumber = row.reference_number || `TXN-${Date.now()}-${i}`;
+        
+        const { data: existingTransaction } = await supabase
+          .from('transactions')
+          .select('id')
+          .eq('reference_number', referenceNumber)
+          .single();
+
+        if (existingTransaction) {
+          results.failed++;
+          results.errors.push(`Row ${i}: Transaction with reference number ${referenceNumber} already exists`);
+          console.log(`Skipping duplicate transaction: ${referenceNumber}`);
+          continue;
+        }
+
         // Create transaction
         const { error: insertError } = await supabase
           .from('transactions')
@@ -83,7 +99,7 @@ serve(async (req) => {
             type: row.type || 'deposit',
             amount: parseFloat(row.amount) || 0,
             description: row.description || '',
-            reference_number: row.reference_number || `TXN-${Date.now()}-${i}`,
+            reference_number: referenceNumber,
           });
 
         if (insertError) throw insertError;
