@@ -91,21 +91,60 @@ serve(async (req) => {
         }
 
         // Create transaction
+        const transactionType = row.type || 'deposit';
+        const amount = parseFloat(row.amount) || 0;
+        
         const { error: insertError } = await supabase
           .from('transactions')
           .insert({
             user_id: profile.id,
             account_id: accountId,
-            type: row.type || 'deposit',
-            amount: parseFloat(row.amount) || 0,
+            type: transactionType,
+            amount: amount,
             description: row.description || '',
             reference_number: referenceNumber,
           });
 
         if (insertError) throw insertError;
 
+        // Update account balance
+        const { data: savingsAccount } = await supabase
+          .from('accounts')
+          .select('id, balance')
+          .eq('user_id', profile.id)
+          .eq('account_type', 'savings')
+          .single();
+
+        if (savingsAccount) {
+          // Calculate new balance based on transaction type
+          let newBalance = parseFloat(savingsAccount.balance.toString());
+          if (transactionType === 'deposit' || transactionType === 'loan_disbursement') {
+            newBalance += amount;
+          } else if (transactionType === 'withdrawal' || transactionType === 'loan_repayment') {
+            newBalance -= amount;
+          }
+
+          // Update the account balance
+          await supabase
+            .from('accounts')
+            .update({ balance: newBalance })
+            .eq('id', savingsAccount.id);
+        } else {
+          // Create a savings account if it doesn't exist (for deposits only)
+          if (transactionType === 'deposit' || transactionType === 'loan_disbursement') {
+            await supabase
+              .from('accounts')
+              .insert({
+                user_id: profile.id,
+                account_type: 'savings',
+                balance: amount,
+                status: 'active'
+              });
+          }
+        }
+
         results.successful++;
-        console.log('Successfully created transaction for:', row.email);
+        console.log('Successfully created transaction and updated balance for:', row.email);
       } catch (error: any) {
         results.failed++;
         results.errors.push(`Row ${i}: ${error.message}`);
