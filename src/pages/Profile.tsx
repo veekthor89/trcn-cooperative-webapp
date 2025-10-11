@@ -222,7 +222,9 @@ const Profile = () => {
 
     setUploading(true);
     try {
-      const filePath = `${userId}/profile.jpg`;
+      // Use timestamp in filename to avoid caching issues
+      const timestamp = Date.now();
+      const filePath = `${userId}/profile-${timestamp}.jpg`;
 
       // Delete old photo if exists
       if (profileData.profile_photo_url) {
@@ -236,33 +238,29 @@ const Profile = () => {
       const { error: uploadError } = await supabase.storage
         .from("profile-photos")
         .upload(filePath, croppedImage, {
-          upsert: true,
           contentType: "image/jpeg",
+          cacheControl: "3600",
+          upsert: false,
         });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
+      // Get public URL with cache busting
       const {
         data: { publicUrl },
       } = supabase.storage.from("profile-photos").getPublicUrl(filePath);
 
-      // Update profile with new photo URL
+      const urlWithCacheBust = `${publicUrl}?v=${timestamp}`;
+
+      // Update profile with new photo URL (with cache buster)
       const { error: updateError } = await supabase
         .from("profiles")
         .update({
-          profile_photo_url: publicUrl,
+          profile_photo_url: urlWithCacheBust,
         })
         .eq("id", userId);
 
       if (updateError) throw updateError;
-
-      // Add timestamp to force image refresh
-      const urlWithTimestamp = `${publicUrl}?t=${Date.now()}`;
-      setProfileData((prev) => ({
-        ...prev,
-        profile_photo_url: urlWithTimestamp,
-      }));
 
       setCropperOpen(false);
       setImageToCrop(null);
