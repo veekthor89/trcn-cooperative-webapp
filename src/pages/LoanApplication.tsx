@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 interface LoanTypeConfig {
   max: number;
@@ -299,9 +299,19 @@ export default function LoanApplication() {
   return (
     <DashboardLayout>
       <div className="max-w-4xl mx-auto p-6 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Loan Application</h1>
-          <p className="text-muted-foreground">Complete the form below to apply for a loan</p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/loans")}
+            className="shrink-0"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Loan Application</h1>
+            <p className="text-muted-foreground">Complete the form below to apply for a loan</p>
+          </div>
         </div>
 
         {/* Applicant Info */}
