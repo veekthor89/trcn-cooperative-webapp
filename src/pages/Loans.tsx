@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -27,6 +28,7 @@ interface Transaction {
 }
 
 const Loans = () => {
+  const navigate = useNavigate();
   const [loans, setLoans] = useState<Loan[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,7 +108,7 @@ const Loans = () => {
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-3xl font-bold">Loans</h1>
-              <Button>
+              <Button onClick={() => navigate("/dashboard/loan-application")}>
                 <Plus className="mr-2 h-4 w-4" />
                 Apply for Loan
               </Button>

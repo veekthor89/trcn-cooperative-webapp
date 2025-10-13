@@ -54,39 +54,90 @@ export type Database = {
       }
       loan_applications: {
         Row: {
+          account_name: string | null
+          account_number: string | null
+          account_type: string | null
+          amount_received: number | null
           application_date: string | null
           approval_date: string | null
           approved_by: string | null
+          bank_name: string | null
+          draft: boolean | null
+          guarantor_1_member_number: string | null
+          guarantor_1_name: string | null
+          guarantor_1_phone: string | null
+          guarantor_2_member_number: string | null
+          guarantor_2_name: string | null
+          guarantor_2_phone: string | null
           id: string
+          interest_amount: number | null
           loan_type: Database["public"]["Enums"]["loan_type"]
+          monthly_income: number | null
+          monthly_payment: number | null
           notes: string | null
           purpose: string
+          repayment_period: number | null
           requested_amount: number
           status: Database["public"]["Enums"]["application_status"]
+          terms_accepted: boolean | null
           user_id: string
         }
         Insert: {
+          account_name?: string | null
+          account_number?: string | null
+          account_type?: string | null
+          amount_received?: number | null
           application_date?: string | null
           approval_date?: string | null
           approved_by?: string | null
+          bank_name?: string | null
+          draft?: boolean | null
+          guarantor_1_member_number?: string | null
+          guarantor_1_name?: string | null
+          guarantor_1_phone?: string | null
+          guarantor_2_member_number?: string | null
+          guarantor_2_name?: string | null
+          guarantor_2_phone?: string | null
           id?: string
+          interest_amount?: number | null
           loan_type: Database["public"]["Enums"]["loan_type"]
+          monthly_income?: number | null
+          monthly_payment?: number | null
           notes?: string | null
           purpose: string
+          repayment_period?: number | null
           requested_amount: number
           status?: Database["public"]["Enums"]["application_status"]
+          terms_accepted?: boolean | null
           user_id: string
         }
         Update: {
+          account_name?: string | null
+          account_number?: string | null
+          account_type?: string | null
+          amount_received?: number | null
           application_date?: string | null
           approval_date?: string | null
           approved_by?: string | null
+          bank_name?: string | null
+          draft?: boolean | null
+          guarantor_1_member_number?: string | null
+          guarantor_1_name?: string | null
+          guarantor_1_phone?: string | null
+          guarantor_2_member_number?: string | null
+          guarantor_2_name?: string | null
+          guarantor_2_phone?: string | null
           id?: string
+          interest_amount?: number | null
           loan_type?: Database["public"]["Enums"]["loan_type"]
+          monthly_income?: number | null
+          monthly_payment?: number | null
           notes?: string | null
           purpose?: string
+          repayment_period?: number | null
           requested_amount?: number
           status?: Database["public"]["Enums"]["application_status"]
+          terms_accepted?: boolean | null
           user_id?: string
         }
         Relationships: [

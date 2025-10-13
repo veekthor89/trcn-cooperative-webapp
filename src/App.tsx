@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Savings from "./pages/Savings";
 import Loans from "./pages/Loans";
+import LoanApplication from "./pages/LoanApplication";
 import Transactions from "./pages/Transactions";
 import BulkUpload from "./pages/BulkUpload";
 import BulkUploadAccounts from "./pages/BulkUploadAccounts";
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/savings" element={<Savings />} />
           <Route path="/dashboard/loans" element={<Loans />} />
+          <Route path="/dashboard/loan-application" element={<LoanApplication />} />
           <Route path="/dashboard/transactions" element={<Transactions />} />
           <Route path="/dashboard/bulk-upload" element={<BulkUpload />} />
           <Route path="/dashboard/bulk-upload-accounts" element={<BulkUploadAccounts />} />
