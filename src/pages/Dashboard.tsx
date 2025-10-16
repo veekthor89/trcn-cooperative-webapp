@@ -290,11 +290,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full justify-start h-auto py-3 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900 hover:bg-blue-100 dark:hover:bg-blue-950/30 text-left"
-                      onClick={() => navigate("/dashboard/loan-application")}
-                    >
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900 hover:bg-blue-100 dark:hover:bg-blue-950/30 text-left" onClick={() => navigate("/dashboard/loan-application")}>
                       <div className="flex items-center gap-3 w-full">
                         <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
                           <CreditCard className="h-5 w-5 text-white" />
@@ -322,8 +318,8 @@ const Dashboard = () => {
                           <Coins className="h-5 w-5 text-white" />
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-orange-900 dark:text-orange-100">Transfer Funds</p>
-                          <p className="text-xs text-orange-600 dark:text-orange-400">Send to another member</p>
+                          <p className="text-sm font-medium text-orange-900 dark:text-orange-100">Buy Shares</p>
+                          <p className="text-xs text-orange-600 dark:text-orange-400">Invest in the cooperative</p>
                         </div>
                       </div>
                     </Button>
