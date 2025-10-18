@@ -16,11 +16,13 @@ interface UploadResult {
 
 interface SpecialContribution {
   id: string;
-  contribution_name: string;
-  target_amount: number;
-  current_amount: number;
-  target_date: string | null;
+  contribution_year: number;
+  monthly_amount: number;
+  total_contributed: number;
+  total_expected: number;
+  maturity_date: string | null;
   created_at: string;
+  application_status: string;
 }
 
 const BulkUploadSpecialContributions = () => {
@@ -259,11 +261,11 @@ const BulkUploadSpecialContributions = () => {
                 {recentContributions.map((contribution) => (
                   <div key={contribution.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex-1">
-                      <p className="font-medium">{contribution.contribution_name}</p>
+                      <p className="font-medium">Year {contribution.contribution_year}</p>
                       <p className="text-sm text-muted-foreground">
-                        Target: ₦{Number(contribution.target_amount).toLocaleString()} • 
-                        Current: ₦{Number(contribution.current_amount).toLocaleString()}
-                        {contribution.target_date && ` • Due: ${new Date(contribution.target_date).toLocaleDateString()}`}
+                        Monthly: ₦{Number(contribution.monthly_amount).toLocaleString()} • 
+                        Contributed: ₦{Number(contribution.total_contributed).toLocaleString()}
+                        {contribution.maturity_date && ` • Matures: ${new Date(contribution.maturity_date).toLocaleDateString()}`}
                       </p>
                     </div>
                     <span className="text-xs text-muted-foreground">

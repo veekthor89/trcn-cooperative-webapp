@@ -16,10 +16,12 @@ interface SavingsAccount {
 
 interface SpecialContribution {
   id: string;
-  contribution_name: string;
-  target_amount: number;
-  current_amount: number;
-  target_date: string | null;
+  contribution_year: number;
+  monthly_amount: number;
+  total_contributed: number;
+  total_expected: number;
+  maturity_date: string | null;
+  application_status: string;
 }
 
 const Savings = () => {
@@ -51,7 +53,8 @@ const Savings = () => {
       const { data: contributionsData, error: contributionsError } = await supabase
         .from("special_contributions")
         .select("*")
-        .eq("user_id", userId);
+        .eq("user_id", userId)
+        .in("application_status", ["active", "approved"]);
 
       if (contributionsError) throw contributionsError;
 
@@ -165,13 +168,13 @@ const Savings = () => {
               ) : (
                 <div className="grid gap-4 md:grid-cols-2">
                   {contributions.map((contribution) => {
-                    const progress = (Number(contribution.current_amount) / Number(contribution.target_amount)) * 100;
+                    const progress = (Number(contribution.total_contributed) / Number(contribution.total_expected)) * 100;
                     return (
                       <Card key={contribution.id} className="shadow-card">
                         <CardHeader>
                           <CardTitle className="flex items-center gap-2">
                             <Target className="h-5 w-5 text-accent" />
-                            {contribution.contribution_name}
+                            Contribution {contribution.contribution_year}
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -184,17 +187,17 @@ const Savings = () => {
                           </div>
                           <div className="flex justify-between text-sm">
                             <div>
-                              <p className="text-muted-foreground">Current</p>
-                              <p className="font-semibold">₦{Number(contribution.current_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
+                              <p className="text-muted-foreground">Contributed</p>
+                              <p className="font-semibold">₦{Number(contribution.total_contributed).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
                             </div>
                             <div className="text-right">
-                              <p className="text-muted-foreground">Target</p>
-                              <p className="font-semibold">₦{Number(contribution.target_amount).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
+                              <p className="text-muted-foreground">Expected</p>
+                              <p className="font-semibold">₦{Number(contribution.total_expected).toLocaleString('en-NG', { minimumFractionDigits: 2 })}</p>
                             </div>
                           </div>
-                          {contribution.target_date && (
+                          {contribution.maturity_date && (
                             <p className="text-xs text-muted-foreground">
-                              Target date: {new Date(contribution.target_date).toLocaleDateString()}
+                              Maturity date: {new Date(contribution.maturity_date).toLocaleDateString()}
                             </p>
                           )}
                         </CardContent>

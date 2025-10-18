@@ -341,46 +341,130 @@ export type Database = {
         }
         Relationships: []
       }
-      special_contributions: {
+      special_contribution_deductions: {
         Row: {
-          contribution_name: string
+          amount: number
+          contribution_id: string
           created_at: string | null
-          current_amount: number
+          deduction_date: string | null
+          deduction_month: number
+          deduction_year: number
           id: string
-          target_amount: number
-          target_date: string | null
-          updated_at: string | null
+          reference_number: string | null
           user_id: string
         }
         Insert: {
-          contribution_name: string
+          amount: number
+          contribution_id: string
           created_at?: string | null
-          current_amount?: number
+          deduction_date?: string | null
+          deduction_month: number
+          deduction_year: number
           id?: string
-          target_amount: number
-          target_date?: string | null
-          updated_at?: string | null
+          reference_number?: string | null
           user_id: string
         }
         Update: {
-          contribution_name?: string
+          amount?: number
+          contribution_id?: string
           created_at?: string | null
-          current_amount?: number
+          deduction_date?: string | null
+          deduction_month?: number
+          deduction_year?: number
           id?: string
-          target_amount?: number
-          target_date?: string | null
-          updated_at?: string | null
+          reference_number?: string | null
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "savings_goals_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "special_contribution_deductions_contribution_id_fkey"
+            columns: ["contribution_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "special_contributions"
             referencedColumns: ["id"]
           },
         ]
+      }
+      special_contributions: {
+        Row: {
+          account_name: string
+          account_number: string
+          application_status: Database["public"]["Enums"]["contribution_status"]
+          approved_by: string | null
+          approved_date: string | null
+          balance: number | null
+          bank_name: string
+          contribution_year: number
+          created_at: string | null
+          department: string | null
+          duration_months: number
+          id: string
+          maturity_date: string | null
+          member_number: string | null
+          monthly_amount: number
+          purpose_category: Database["public"]["Enums"]["contribution_purpose"]
+          purpose_description: string | null
+          state_of_assignment: string | null
+          total_contributed: number | null
+          total_expected: number | null
+          updated_at: string | null
+          user_id: string
+          withdrawal_amount: number | null
+          withdrawal_date: string | null
+        }
+        Insert: {
+          account_name: string
+          account_number: string
+          application_status?: Database["public"]["Enums"]["contribution_status"]
+          approved_by?: string | null
+          approved_date?: string | null
+          balance?: number | null
+          bank_name: string
+          contribution_year: number
+          created_at?: string | null
+          department?: string | null
+          duration_months?: number
+          id?: string
+          maturity_date?: string | null
+          member_number?: string | null
+          monthly_amount: number
+          purpose_category: Database["public"]["Enums"]["contribution_purpose"]
+          purpose_description?: string | null
+          state_of_assignment?: string | null
+          total_contributed?: number | null
+          total_expected?: number | null
+          updated_at?: string | null
+          user_id: string
+          withdrawal_amount?: number | null
+          withdrawal_date?: string | null
+        }
+        Update: {
+          account_name?: string
+          account_number?: string
+          application_status?: Database["public"]["Enums"]["contribution_status"]
+          approved_by?: string | null
+          approved_date?: string | null
+          balance?: number | null
+          bank_name?: string
+          contribution_year?: number
+          created_at?: string | null
+          department?: string | null
+          duration_months?: number
+          id?: string
+          maturity_date?: string | null
+          member_number?: string | null
+          monthly_amount?: number
+          purpose_category?: Database["public"]["Enums"]["contribution_purpose"]
+          purpose_description?: string | null
+          state_of_assignment?: string | null
+          total_contributed?: number | null
+          total_expected?: number | null
+          updated_at?: string | null
+          user_id?: string
+          withdrawal_amount?: number | null
+          withdrawal_date?: string | null
+        }
+        Relationships: []
       }
       transactions: {
         Row: {
@@ -484,6 +568,24 @@ export type Database = {
       account_type: "savings" | "loan"
       app_role: "member" | "admin" | "loan_officer"
       application_status: "pending" | "approved" | "rejected"
+      contribution_purpose:
+        | "emergency_fund"
+        | "house_purchase"
+        | "car_purchase"
+        | "children_education"
+        | "wedding"
+        | "medical"
+        | "business_capital"
+        | "end_of_year_expenses"
+        | "other"
+      contribution_status:
+        | "draft"
+        | "pending"
+        | "approved"
+        | "active"
+        | "completed"
+        | "rejected"
+        | "cancelled"
       loan_status: "pending" | "approved" | "active" | "closed" | "rejected"
       loan_type: "normal" | "trade" | "special" | "long_term"
       transaction_type:
@@ -622,6 +724,26 @@ export const Constants = {
       account_type: ["savings", "loan"],
       app_role: ["member", "admin", "loan_officer"],
       application_status: ["pending", "approved", "rejected"],
+      contribution_purpose: [
+        "emergency_fund",
+        "house_purchase",
+        "car_purchase",
+        "children_education",
+        "wedding",
+        "medical",
+        "business_capital",
+        "end_of_year_expenses",
+        "other",
+      ],
+      contribution_status: [
+        "draft",
+        "pending",
+        "approved",
+        "active",
+        "completed",
+        "rejected",
+        "cancelled",
+      ],
       loan_status: ["pending", "approved", "active", "closed", "rejected"],
       loan_type: ["normal", "trade", "special", "long_term"],
       transaction_type: [

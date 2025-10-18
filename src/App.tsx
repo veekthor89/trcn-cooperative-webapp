@@ -15,6 +15,9 @@ import BulkUploadAccounts from "./pages/BulkUploadAccounts";
 import BulkUploadLoans from "./pages/BulkUploadLoans";
 import BulkUploadTransactions from "./pages/BulkUploadTransactions";
 import BulkUploadSpecialContributions from "./pages/BulkUploadSpecialContributions";
+import SpecialContributions from "./pages/SpecialContributions";
+import SpecialContributionApplication from "./pages/SpecialContributionApplication";
+import AdminSpecialContributions from "./pages/AdminSpecialContributions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +41,9 @@ const App = () => (
           <Route path="/dashboard/bulk-upload-loans" element={<BulkUploadLoans />} />
           <Route path="/dashboard/bulk-upload-transactions" element={<BulkUploadTransactions />} />
           <Route path="/dashboard/bulk-upload-special-contributions" element={<BulkUploadSpecialContributions />} />
+          <Route path="/dashboard/special-contributions" element={<SpecialContributions />} />
+          <Route path="/dashboard/special-contribution/apply" element={<SpecialContributionApplication />} />
+          <Route path="/dashboard/admin/special-contributions" element={<AdminSpecialContributions />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -51,8 +51,8 @@ const Dashboard = () => {
       // Fetch special contributions
       const {
         data: contributions
-      } = await supabase.from("special_contributions").select("current_amount").eq("user_id", userId);
-      const totalInvestments = contributions?.reduce((sum, inv) => sum + Number(inv.current_amount), 0) || 0;
+      } = await supabase.from("special_contributions").select("total_contributed").eq("user_id", userId).in("application_status", ["active", "approved"]);
+      const totalInvestments = contributions?.reduce((sum, inv) => sum + Number(inv.total_contributed), 0) || 0;
       const totalBalance = totalSavings + totalInvestments - totalLoans;
       setStats({
         totalBalance,
