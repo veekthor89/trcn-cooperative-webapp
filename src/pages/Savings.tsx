@@ -138,7 +138,7 @@ const Savings = () => {
                   <CardContent className="py-12 text-center">
                     <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground">No special contributions yet</p>
-                    <Button variant="outline" className="mt-4">
+                    <Button variant="outline" className="mt-4" onClick={() => window.location.href = '/dashboard/special-contribution/apply'}>
                       <Plus className="mr-2 h-4 w-4" />
                       Apply for Special Contribution
                     </Button>
