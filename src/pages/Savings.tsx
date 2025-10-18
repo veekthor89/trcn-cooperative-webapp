@@ -161,7 +161,7 @@ const Savings = () => {
                     <p className="text-muted-foreground">No special contributions yet</p>
                     <Button variant="outline" className="mt-4">
                       <Plus className="mr-2 h-4 w-4" />
-                      Create Your First Contribution
+                      Apply for Special Contribution
                     </Button>
                   </CardContent>
                 </Card>
