@@ -11,7 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { Loader2, ArrowLeft, Info, AlertTriangle } from "lucide-react";
+import GuarantorAutocomplete from "@/components/GuarantorAutocomplete";
 
 interface LoanTypeConfig {
   max: number;
@@ -19,11 +22,19 @@ interface LoanTypeConfig {
   requirePurpose: boolean;
 }
 
+interface LoanTypeConfig {
+  max: number;
+  min: number;
+  maxPeriod: number;
+  interestRate: number;
+  requirePurpose: boolean;
+}
+
 const LOAN_TYPES: Record<string, LoanTypeConfig> = {
-  normal: { max: 150000, min: 50000, requirePurpose: false },
-  trade: { max: 200000, min: 50000, requirePurpose: false },
-  special: { max: 3000000, min: 50000, requirePurpose: false },
-  long_term: { max: 5000000, min: 50000, requirePurpose: true },
+  special: { max: 200000, min: 50000, maxPeriod: 36, interestRate: 0.1, requirePurpose: false },
+  trade: { max: 400000, min: 50000, maxPeriod: 36, interestRate: 0.1, requirePurpose: false },
+  normal: { max: 3000000, min: 50000, maxPeriod: 36, interestRate: 0.1, requirePurpose: false },
+  housing: { max: 7000000, min: 50000, maxPeriod: 120, interestRate: 0.1, requirePurpose: true },
 };
 
 const NIGERIAN_BANKS = [
@@ -52,12 +63,8 @@ export default function LoanApplication() {
   const [purpose, setPurpose] = useState("");
   const [monthlyIncome, setMonthlyIncome] = useState("");
   
-  const [guarantor1Name, setGuarantor1Name] = useState("");
-  const [guarantor1MemberNumber, setGuarantor1MemberNumber] = useState("");
-  const [guarantor1Phone, setGuarantor1Phone] = useState("");
-  const [guarantor2Name, setGuarantor2Name] = useState("");
-  const [guarantor2MemberNumber, setGuarantor2MemberNumber] = useState("");
-  const [guarantor2Phone, setGuarantor2Phone] = useState("");
+  const [guarantor1, setGuarantor1] = useState<any>(null);
+  const [guarantor2, setGuarantor2] = useState<any>(null);
 
   const [bankName, setBankName] = useState("");
   const [accountNumber, setAccountNumber] = useState("");
@@ -119,17 +126,38 @@ export default function LoanApplication() {
   };
 
   // Real-time calculations
+  const loanConfig = loanType ? LOAN_TYPES[loanType] : null;
+  const interestRate = loanConfig?.interestRate || 0.1;
+  
   const calculations = {
-    interest: loanAmount ? parseFloat(loanAmount) * 0.1 : 0,
-    amountReceived: loanAmount ? parseFloat(loanAmount) - (parseFloat(loanAmount) * 0.1) : 0,
+    interest: loanAmount ? parseFloat(loanAmount) * interestRate : 0,
+    amountReceived: loanAmount ? parseFloat(loanAmount) - (parseFloat(loanAmount) * interestRate) : 0,
     totalRepay: loanAmount ? parseFloat(loanAmount) : 0,
     monthlyPayment: loanAmount && repaymentPeriod ? parseFloat(loanAmount) / parseInt(repaymentPeriod) : 0,
   };
 
-  // Calculate remaining capacity
+  // Calculate remaining capacity (20% threshold)
   const totalExistingMonthly = existingLoans.reduce((sum, loan) => sum + (loan.monthly_payment || 0), 0);
-  const maxAllowedMonthly = monthlyIncome ? parseFloat(monthlyIncome) * 0.4 : 0;
+  const maxAllowedMonthly = monthlyIncome ? parseFloat(monthlyIncome) * 0.2 : 0;
   const remainingCapacity = maxAllowedMonthly - totalExistingMonthly;
+  const newTotalMonthly = totalExistingMonthly + calculations.monthlyPayment;
+  const exceeds20Percent = newTotalMonthly > maxAllowedMonthly;
+
+  // Generate period options based on loan type
+  const getPeriodOptions = () => {
+    if (!loanType) return [];
+    const maxPeriod = LOAN_TYPES[loanType].maxPeriod;
+    const options = [];
+    for (let i = 3; i <= maxPeriod; i += 3) {
+      if (i <= maxPeriod) options.push(i);
+    }
+    // Ensure we include specific values for housing loans
+    if (loanType === 'housing') {
+      const housingPeriods = [3, 6, 12, 24, 36, 48, 60, 84, 96, 120];
+      return housingPeriods.filter(p => p <= maxPeriod);
+    }
+    return options;
+  };
 
   const validateForm = async () => {
     const newErrors: Record<string, string> = {};
@@ -151,46 +179,26 @@ export default function LoanApplication() {
       newErrors.purpose = "Purpose is required for long term loans (minimum 20 characters)";
     }
 
+    // Check active loan limit (max 3)
+    if (existingLoans.length >= 3) {
+      newErrors.loanType = "You already have 3 active loans. Maximum allowed is 3.";
+    }
+
     // Monthly income validation
     if (!monthlyIncome) {
       newErrors.monthlyIncome = "Please enter your monthly income";
-    } else if (calculations.monthlyPayment > remainingCapacity) {
-      newErrors.monthlyIncome = "Loan payment exceeds your remaining capacity (40% rule)";
     }
 
     // Guarantor validation
-    if (!guarantor1Name || !guarantor1MemberNumber || !guarantor1Phone) {
-      newErrors.guarantor1 = "Please complete all guarantor 1 details";
+    if (!guarantor1) {
+      newErrors.guarantor1 = "Please select guarantor 1";
     }
-    if (!guarantor2Name || !guarantor2MemberNumber || !guarantor2Phone) {
-      newErrors.guarantor2 = "Please complete all guarantor 2 details";
+    if (!guarantor2) {
+      newErrors.guarantor2 = "Please select guarantor 2";
     }
 
-    if (guarantor1MemberNumber === guarantor2MemberNumber) {
+    if (guarantor1 && guarantor2 && guarantor1.id === guarantor2.id) {
       newErrors.guarantor2 = "Guarantors must be different members";
-    }
-
-    if (guarantor1MemberNumber === profile?.staff_id || guarantor2MemberNumber === profile?.staff_id) {
-      newErrors.guarantor1 = "You cannot be your own guarantor";
-    }
-
-    // Validate guarantors exist
-    if (guarantor1MemberNumber) {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("staff_id", guarantor1MemberNumber)
-        .single();
-      if (!data) newErrors.guarantor1 = "Guarantor 1 member number not found";
-    }
-
-    if (guarantor2MemberNumber) {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("staff_id", guarantor2MemberNumber)
-        .single();
-      if (!data) newErrors.guarantor2 = "Guarantor 2 member number not found";
     }
 
     // Bank details validation
@@ -239,12 +247,12 @@ export default function LoanApplication() {
           interest_amount: calculations.interest,
           amount_received: calculations.amountReceived,
           monthly_payment: calculations.monthlyPayment,
-          guarantor_1_name: guarantor1Name,
-          guarantor_1_member_number: guarantor1MemberNumber,
-          guarantor_1_phone: guarantor1Phone,
-          guarantor_2_name: guarantor2Name,
-          guarantor_2_member_number: guarantor2MemberNumber,
-          guarantor_2_phone: guarantor2Phone,
+          guarantor_1_name: guarantor1?.full_name || "",
+          guarantor_1_member_number: guarantor1?.member_number || "",
+          guarantor_1_phone: guarantor1?.phone || "",
+          guarantor_2_name: guarantor2?.full_name || "",
+          guarantor_2_member_number: guarantor2?.member_number || "",
+          guarantor_2_phone: guarantor2?.phone || "",
           bank_name: bankName,
           account_number: accountNumber,
           account_name: accountName,
@@ -279,11 +287,11 @@ export default function LoanApplication() {
 
   const isFormValid = () => {
     return loanType && loanAmount && repaymentPeriod && 
-           (loanType !== "long_term" || (purpose && purpose.length >= 20)) &&
-           monthlyIncome && guarantor1Name && guarantor1MemberNumber && guarantor1Phone &&
-           guarantor2Name && guarantor2MemberNumber && guarantor2Phone &&
+           (loanType !== "housing" || (purpose && purpose.length >= 20)) &&
+           monthlyIncome && guarantor1 && guarantor2 &&
            bankName && accountNumber && accountName && accountType &&
-           terms1 && terms2 && terms3 && terms4;
+           terms1 && terms2 && terms3 && terms4 &&
+           existingLoans.length < 3;
   };
 
   if (loading) {
@@ -344,22 +352,50 @@ export default function LoanApplication() {
         <Card>
           <CardHeader>
             <CardTitle>2. Loan Request Details</CardTitle>
+            {existingLoans.length > 0 && (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  You have {existingLoans.length} active loan(s). You can have up to 3 active loans.
+                </AlertDescription>
+              </Alert>
+            )}
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="loanType">Loan Type *</Label>
-              <Select value={loanType} onValueChange={setLoanType}>
+              <Select value={loanType} onValueChange={(value) => {
+                setLoanType(value);
+                setRepaymentPeriod(""); // Reset period when type changes
+              }}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select loan type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="normal">Normal (Max ₦150,000)</SelectItem>
-                  <SelectItem value="trade">Trade (Max ₦200,000)</SelectItem>
-                  <SelectItem value="special">Special (Max ₦3,000,000)</SelectItem>
-                  <SelectItem value="long_term">Long Term (Max ₦5,000,000)</SelectItem>
+                  <SelectItem value="special">Special Loan (Max ₦200,000, 36 months)</SelectItem>
+                  <SelectItem value="trade">Trade Loan (Max ₦400,000, 36 months)</SelectItem>
+                  <SelectItem value="normal">Normal Loan (Max ₦3,000,000, 36 months)</SelectItem>
+                  <SelectItem value="housing">Land/Housing Loan (Max ₦7,000,000, 120 months)</SelectItem>
                 </SelectContent>
               </Select>
               {errors.loanType && <p className="text-sm text-destructive mt-1">{errors.loanType}</p>}
+              
+              {loanConfig && (
+                <div className="mt-2 p-3 bg-muted rounded-lg space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Maximum Amount:</span>
+                    <span className="font-semibold">₦{loanConfig.max.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Maximum Period:</span>
+                    <span className="font-semibold">{loanConfig.maxPeriod} months</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Interest Rate:</span>
+                    <span className="font-semibold">{loanConfig.interestRate * 100}%</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
@@ -376,30 +412,33 @@ export default function LoanApplication() {
 
             <div>
               <Label htmlFor="repaymentPeriod">Repayment Period *</Label>
-              <Select value={repaymentPeriod} onValueChange={setRepaymentPeriod}>
+              <Select 
+                value={repaymentPeriod} 
+                onValueChange={setRepaymentPeriod}
+                disabled={!loanType}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select period" />
+                  <SelectValue placeholder={loanType ? "Select period" : "Select loan type first"} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="3">3 months</SelectItem>
-                  <SelectItem value="6">6 months</SelectItem>
-                  <SelectItem value="12">12 months</SelectItem>
-                  <SelectItem value="18">18 months</SelectItem>
-                  <SelectItem value="24">24 months</SelectItem>
-                  <SelectItem value="36">36 months</SelectItem>
+                  {getPeriodOptions().map((months) => (
+                    <SelectItem key={months} value={months.toString()}>
+                      {months} months {months >= 12 ? `(${(months / 12).toFixed(1)} years)` : ""}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.repaymentPeriod && <p className="text-sm text-destructive mt-1">{errors.repaymentPeriod}</p>}
             </div>
 
-            {loanType === "long_term" && (
+            {loanType === "housing" && (
               <div>
-                <Label htmlFor="purpose">Purpose (Required for Long Term Loans) *</Label>
+                <Label htmlFor="purpose">Purpose (Required for Housing Loans) *</Label>
                 <Textarea
                   id="purpose"
                   value={purpose}
                   onChange={(e) => setPurpose(e.target.value)}
-                  placeholder="Minimum 20 characters"
+                  placeholder="Describe your land/housing project (minimum 20 characters)"
                   rows={4}
                 />
                 <p className="text-sm text-muted-foreground mt-1">{purpose.length}/20 characters</p>
@@ -415,23 +454,49 @@ export default function LoanApplication() {
             <CardTitle>3. Loan Breakdown</CardTitle>
             <CardDescription>Auto-calculated based on your inputs</CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-4">
-            <div>
-              <Label>Interest (10%)</Label>
-              <div className="text-2xl font-bold">₦{calculations.interest.toLocaleString()}</div>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Interest ({(interestRate * 100)}%)</Label>
+                <div className="text-2xl font-bold">₦{calculations.interest.toLocaleString()}</div>
+              </div>
+              <div>
+                <Label>Amount You'll Receive</Label>
+                <div className="text-2xl font-bold text-primary">₦{calculations.amountReceived.toLocaleString()}</div>
+              </div>
+              <div>
+                <Label>Total to Repay</Label>
+                <div className="text-2xl font-bold">₦{calculations.totalRepay.toLocaleString()}</div>
+              </div>
+              <div>
+                <Label>Monthly Payment</Label>
+                <div className="text-2xl font-bold">₦{calculations.monthlyPayment.toLocaleString()}</div>
+              </div>
             </div>
-            <div>
-              <Label>Amount You'll Receive</Label>
-              <div className="text-2xl font-bold text-primary">₦{calculations.amountReceived.toLocaleString()}</div>
-            </div>
-            <div>
-              <Label>Total to Repay</Label>
-              <div className="text-2xl font-bold">₦{calculations.totalRepay.toLocaleString()}</div>
-            </div>
-            <div>
-              <Label>Monthly Payment</Label>
-              <div className="text-2xl font-bold">₦{calculations.monthlyPayment.toLocaleString()}</div>
-            </div>
+
+            {monthlyIncome && calculations.monthlyPayment > 0 && (
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Salary Deduction Percentage</span>
+                  <span className={exceeds20Percent ? "text-destructive font-semibold" : ""}>
+                    {((newTotalMonthly / parseFloat(monthlyIncome)) * 100).toFixed(1)}%
+                  </span>
+                </div>
+                <Progress 
+                  value={(newTotalMonthly / parseFloat(monthlyIncome)) * 100} 
+                  className="h-2"
+                />
+                {exceeds20Percent && (
+                  <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                      Warning: Total monthly loan deductions ({((newTotalMonthly / parseFloat(monthlyIncome)) * 100).toFixed(1)}%) 
+                      exceed the recommended 20% of salary capacity.
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -454,28 +519,34 @@ export default function LoanApplication() {
             </div>
 
             {existingLoans.length > 0 && (
-              <div className="bg-muted p-4 rounded-lg">
-                <h4 className="font-semibold mb-2">Existing Loans</h4>
+              <div className="bg-muted p-4 rounded-lg space-y-3">
+                <h4 className="font-semibold">Existing Active Loans ({existingLoans.length}/3)</h4>
                 {existingLoans.map((loan) => (
-                  <div key={loan.id} className="flex justify-between text-sm mb-1">
-                    <span>{loan.loan_type}</span>
-                    <span>₦{loan.monthly_payment?.toLocaleString()}/month</span>
+                  <div key={loan.id} className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">{loan.loan_type}</span>
+                      <span>₦{loan.monthly_payment?.toLocaleString()}/month</span>
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Balance: ₦{loan.outstanding_balance?.toLocaleString()}</span>
+                      <span>{loan.repayment_period} months</span>
+                    </div>
                   </div>
                 ))}
-                <div className="border-t pt-2 mt-2">
+                <div className="border-t pt-2 space-y-1">
                   <div className="flex justify-between font-semibold">
-                    <span>Total Existing Monthly:</span>
+                    <span>Total Monthly Deduction:</span>
                     <span>₦{totalExistingMonthly.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-sm mt-1">
-                    <span>Max Allowed (40%):</span>
-                    <span>₦{maxAllowedMonthly.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between font-semibold mt-1">
-                    <span>Remaining Capacity:</span>
-                    <span className={remainingCapacity < calculations.monthlyPayment ? "text-destructive" : "text-primary"}>
-                      ₦{remainingCapacity.toLocaleString()}
-                    </span>
+                  {calculations.monthlyPayment > 0 && (
+                    <div className="flex justify-between text-sm">
+                      <span>New Loan Payment:</span>
+                      <span>₦{calculations.monthlyPayment.toLocaleString()}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between font-semibold text-primary">
+                    <span>New Total:</span>
+                    <span>₦{newTotalMonthly.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -487,46 +558,26 @@ export default function LoanApplication() {
         <Card>
           <CardHeader>
             <CardTitle>5. Guarantor Details</CardTitle>
-            <CardDescription>Two guarantors required</CardDescription>
+            <CardDescription>
+              Search and select two guarantors. They will receive approval requests.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="space-y-4">
-              <h4 className="font-semibold">Guarantor 1 *</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label>Full Name</Label>
-                  <Input value={guarantor1Name} onChange={(e) => setGuarantor1Name(e.target.value)} />
-                </div>
-                <div>
-                  <Label>Member Number</Label>
-                  <Input value={guarantor1MemberNumber} onChange={(e) => setGuarantor1MemberNumber(e.target.value)} />
-                </div>
-                <div>
-                  <Label>Phone Number</Label>
-                  <Input value={guarantor1Phone} onChange={(e) => setGuarantor1Phone(e.target.value)} />
-                </div>
-              </div>
-              {errors.guarantor1 && <p className="text-sm text-destructive">{errors.guarantor1}</p>}
-            </div>
+            <GuarantorAutocomplete
+              label="Guarantor 1 *"
+              value={guarantor1}
+              onChange={setGuarantor1}
+              excludeUserIds={[profile?.id, guarantor2?.id].filter(Boolean)}
+              error={errors.guarantor1}
+            />
 
-            <div className="space-y-4">
-              <h4 className="font-semibold">Guarantor 2 *</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <Label>Full Name</Label>
-                  <Input value={guarantor2Name} onChange={(e) => setGuarantor2Name(e.target.value)} />
-                </div>
-                <div>
-                  <Label>Member Number</Label>
-                  <Input value={guarantor2MemberNumber} onChange={(e) => setGuarantor2MemberNumber(e.target.value)} />
-                </div>
-                <div>
-                  <Label>Phone Number</Label>
-                  <Input value={guarantor2Phone} onChange={(e) => setGuarantor2Phone(e.target.value)} />
-                </div>
-              </div>
-              {errors.guarantor2 && <p className="text-sm text-destructive">{errors.guarantor2}</p>}
-            </div>
+            <GuarantorAutocomplete
+              label="Guarantor 2 *"
+              value={guarantor2}
+              onChange={setGuarantor2}
+              excludeUserIds={[profile?.id, guarantor1?.id].filter(Boolean)}
+              error={errors.guarantor2}
+            />
           </CardContent>
         </Card>
 

@@ -157,6 +157,71 @@ export type Database = {
           },
         ]
       }
+      loan_guarantor_approvals: {
+        Row: {
+          applicant_member_id: string
+          applicant_name: string
+          created_at: string | null
+          expires_at: string
+          guarantor_member_id: string
+          guarantor_name: string
+          guarantor_position: number
+          guarantor_user_id: string | null
+          id: string
+          loan_amount: number
+          loan_application_number: string | null
+          loan_id: string | null
+          loan_type: Database["public"]["Enums"]["loan_type"]
+          response_date: string | null
+          response_reason: string | null
+          status: string
+        }
+        Insert: {
+          applicant_member_id: string
+          applicant_name: string
+          created_at?: string | null
+          expires_at?: string
+          guarantor_member_id: string
+          guarantor_name: string
+          guarantor_position: number
+          guarantor_user_id?: string | null
+          id?: string
+          loan_amount: number
+          loan_application_number?: string | null
+          loan_id?: string | null
+          loan_type: Database["public"]["Enums"]["loan_type"]
+          response_date?: string | null
+          response_reason?: string | null
+          status?: string
+        }
+        Update: {
+          applicant_member_id?: string
+          applicant_name?: string
+          created_at?: string | null
+          expires_at?: string
+          guarantor_member_id?: string
+          guarantor_name?: string
+          guarantor_position?: number
+          guarantor_user_id?: string | null
+          id?: string
+          loan_amount?: number
+          loan_application_number?: string | null
+          loan_id?: string | null
+          loan_type?: Database["public"]["Enums"]["loan_type"]
+          response_date?: string | null
+          response_reason?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loan_guarantor_approvals_loan_id_fkey"
+            columns: ["loan_id"]
+            isOneToOne: false
+            referencedRelation: "loan_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       loans: {
         Row: {
           created_at: string | null
@@ -263,6 +328,7 @@ export type Database = {
           full_name: string
           gender: string | null
           id: string
+          member_number: string | null
           next_of_kin_address: string | null
           next_of_kin_email: string | null
           next_of_kin_name: string | null
@@ -294,6 +360,7 @@ export type Database = {
           full_name: string
           gender?: string | null
           id: string
+          member_number?: string | null
           next_of_kin_address?: string | null
           next_of_kin_email?: string | null
           next_of_kin_name?: string | null
@@ -325,6 +392,7 @@ export type Database = {
           full_name?: string
           gender?: string | null
           id?: string
+          member_number?: string | null
           next_of_kin_address?: string | null
           next_of_kin_email?: string | null
           next_of_kin_name?: string | null
