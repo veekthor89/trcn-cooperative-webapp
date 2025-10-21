@@ -6,6 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "sonner";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
@@ -17,8 +20,11 @@ const Dashboard = () => {
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   useEffect(() => {
     fetchDashboardData();
+    fetchNotifications();
   }, []);
   const fetchDashboardData = async () => {
     try {
@@ -74,6 +80,68 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  const fetchNotifications = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("*")
+        .eq("user_id", session.user.id)
+        .order("created_at", { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+
+      setNotifications(data || []);
+      setUnreadCount(data?.filter(n => !n.read_status).length || 0);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  const markAsRead = async (notificationId: string) => {
+    try {
+      const { error } = await supabase
+        .from("notifications")
+        .update({ read_status: true })
+        .eq("id", notificationId);
+
+      if (error) throw error;
+
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? { ...n, read_status: true } : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      toast.error("Failed to update notification");
+    }
+  };
+
+  const markAllAsRead = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { error } = await supabase
+        .from("notifications")
+        .update({ read_status: true })
+        .eq("user_id", session.user.id)
+        .eq("read_status", false);
+
+      if (error) throw error;
+
+      setNotifications(prev => prev.map(n => ({ ...n, read_status: true })));
+      setUnreadCount(0);
+      toast.success("All notifications marked as read");
+    } catch (error) {
+      console.error("Error marking all as read:", error);
+      toast.error("Failed to update notifications");
+    }
+  };
   const getActivityIcon = (type: string) => {
     switch (type) {
       case 'loan':
@@ -127,10 +195,62 @@ const Dashboard = () => {
               day: 'numeric',
               year: 'numeric'
             })}</span>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white text-xs flex items-center justify-center">3</span>
-              </Button>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="relative">
+                    <Bell className="h-5 w-5" />
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-destructive text-white text-xs flex items-center justify-center">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-0" align="end">
+                  <div className="flex items-center justify-between p-4 border-b">
+                    <h3 className="font-semibold">Notifications</h3>
+                    {unreadCount > 0 && (
+                      <Button variant="ghost" size="sm" onClick={markAllAsRead}>
+                        Mark all read
+                      </Button>
+                    )}
+                  </div>
+                  <ScrollArea className="h-[400px]">
+                    {notifications.length === 0 ? (
+                      <div className="p-8 text-center text-muted-foreground">
+                        No notifications yet
+                      </div>
+                    ) : (
+                      <div className="divide-y">
+                        {notifications.map((notification) => (
+                          <div
+                            key={notification.id}
+                            className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${
+                              !notification.read_status ? "bg-muted/30" : ""
+                            }`}
+                            onClick={() => markAsRead(notification.id)}
+                          >
+                            <div className="flex items-start gap-2">
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">{notification.type}</p>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {notification.message}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  {new Date(notification.created_at).toLocaleDateString()}
+                                </p>
+                              </div>
+                              {!notification.read_status && (
+                                <div className="w-2 h-2 rounded-full bg-blue-500 mt-1" />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </ScrollArea>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
 
