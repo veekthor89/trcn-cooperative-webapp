@@ -141,47 +141,47 @@ const Loans = () => {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
+          <Card className="bg-[#F2E4E7] border-[#F2E4E7]">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Outstanding</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-[#B21F1F]">Total Outstanding</CardTitle>
+              <DollarSign className="h-4 w-4 text-[#B21F1F]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₦{totalOutstanding.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">Across {loans.length} loan{loans.length !== 1 ? "s" : ""}</p>
+              <div className="text-2xl font-bold text-[#B21F1F]">₦{totalOutstanding.toLocaleString()}</div>
+              <p className="text-xs text-[#B21F1F]/70">Across {loans.length} loan{loans.length !== 1 ? "s" : ""}</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-[#F6E9E4] border-[#F6E9E4]">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Monthly Payment</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-[#D94F00]">Monthly Payment</CardTitle>
+              <Calendar className="h-4 w-4 text-[#D94F00]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₦{totalMonthlyPayment.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">Total monthly deduction</p>
+              <div className="text-2xl font-bold text-[#D94F00]">₦{totalMonthlyPayment.toLocaleString()}</div>
+              <p className="text-xs text-[#D94F00]/70">Total monthly deduction</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-[#E9E5E5] border-[#E9E5E5]">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Next Payment</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-[#562B08]">Next Payment</CardTitle>
+              <Clock className="h-4 w-4 text-[#562B08]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{nextPaymentDate}</div>
-              <p className="text-xs text-muted-foreground">Due date</p>
+              <div className="text-2xl font-bold text-[#562B08]">{nextPaymentDate}</div>
+              <p className="text-xs text-[#562B08]/70">Due date</p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-[#E1EFE8] border-[#E1EFE8]">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium">Total Paid</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-[#0B8C28]">Total Paid</CardTitle>
+              <TrendingUp className="h-4 w-4 text-[#0B8C28]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₦{totalPaid.toLocaleString()}</div>
-              <p className="text-xs text-muted-foreground">To date</p>
+              <div className="text-2xl font-bold text-[#0B8C28]">₦{totalPaid.toLocaleString()}</div>
+              <p className="text-xs text-[#0B8C28]/70">To date</p>
             </CardContent>
           </Card>
         </div>
