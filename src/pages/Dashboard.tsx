@@ -9,6 +9,8 @@ import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import LoanApplicationForm from "@/components/LoanApplicationForm";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
@@ -22,6 +24,7 @@ const Dashboard = () => {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showLoanDialog, setShowLoanDialog] = useState(false);
   useEffect(() => {
     fetchDashboardData();
     fetchNotifications();
@@ -410,7 +413,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </Button>
-                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900 hover:bg-blue-100 dark:hover:bg-blue-950/30 text-left" onClick={() => navigate("/dashboard/loan-application")}>
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900 hover:bg-blue-100 dark:hover:bg-blue-950/30 text-left" onClick={() => setShowLoanDialog(true)}>
                       <div className="flex items-center gap-3 w-full">
                         <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
                           <CreditCard className="h-5 w-5 text-white" />
@@ -483,6 +486,24 @@ const Dashboard = () => {
               </Card>
             </>}
       </div>
+
+      <Dialog open={showLoanDialog} onOpenChange={setShowLoanDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle>Apply for Loan</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[calc(90vh-80px)] px-6 pb-6">
+            <LoanApplicationForm 
+              onSuccess={() => {
+                setShowLoanDialog(false);
+                fetchDashboardData();
+                toast.success("Loan application submitted successfully!");
+              }}
+              onCancel={() => setShowLoanDialog(false)}
+            />
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>;
 };
 export default Dashboard;
