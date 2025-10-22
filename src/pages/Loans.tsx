@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -7,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Plus, Calendar, DollarSign, TrendingUp, Clock } from "lucide-react";
 import { toast } from "sonner";
+import LoanApplicationForm from "@/components/LoanApplicationForm";
 
 interface Loan {
   id: string;
@@ -31,10 +33,10 @@ interface Transaction {
 }
 
 const Loans = () => {
-  const navigate = useNavigate();
   const [loans, setLoans] = useState<Loan[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showLoanDialog, setShowLoanDialog] = useState(false);
 
   useEffect(() => {
     fetchLoansData();
@@ -131,7 +133,7 @@ const Loans = () => {
             </p>
           </div>
           <Button 
-            onClick={() => navigate("/dashboard/loan-application")}
+            onClick={() => setShowLoanDialog(true)}
             disabled={loans.length >= 3}
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -196,7 +198,7 @@ const Loans = () => {
             {loans.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-muted-foreground mb-4">You don't have any active loans</p>
-                <Button onClick={() => navigate("/dashboard/loan-application")}>
+                <Button onClick={() => setShowLoanDialog(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Apply for Your First Loan
                 </Button>
@@ -303,6 +305,25 @@ const Loans = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Loan Application Modal */}
+      <Dialog open={showLoanDialog} onOpenChange={setShowLoanDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0">
+          <DialogHeader className="px-6 pt-6 pb-4 border-b">
+            <DialogTitle className="text-2xl">Loan Application</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[calc(90vh-5rem)] px-6 pb-6">
+            <LoanApplicationForm
+              onSuccess={() => {
+                setShowLoanDialog(false);
+                fetchLoansData();
+                toast.success("Loan application submitted successfully!");
+              }}
+              onCancel={() => setShowLoanDialog(false)}
+            />
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };
