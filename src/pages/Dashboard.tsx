@@ -314,16 +314,16 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
 
-                <Card style={{ backgroundColor: '#E0ECFD' }} className="border-blue-200 dark:border-blue-900">
+                <Card style={{ backgroundColor: '#fff7ed' }} className="border-orange-200 dark:border-orange-900">
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-sm font-medium" style={{ color: '#006DFF' }}>Total Shares</p>
-                      <Landmark className="h-5 w-5" style={{ color: '#006DFF' }} />
+                      <p className="text-sm font-medium" style={{ color: '#fa7516' }}>Total Shares</p>
+                      <Landmark className="h-5 w-5" style={{ color: '#fa7516' }} />
                     </div>
-                    <p className="text-3xl font-bold" style={{ color: '#006DFF' }}>
+                    <p className="text-3xl font-bold" style={{ color: '#fa7516' }}>
                       ₦{stats.totalShares.toLocaleString('en-NG')}
                     </p>
-                    <p className="text-xs mt-2" style={{ color: '#006DFF' }}>Share ownership value</p>
+                    <p className="text-xs mt-2" style={{ color: '#fa7516' }}>Share ownership value</p>
                   </CardContent>
                 </Card>
               </div>
