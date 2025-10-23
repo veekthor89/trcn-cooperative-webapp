@@ -457,7 +457,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </Button>
-                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-900 hover:bg-orange-100 dark:hover:bg-orange-950/30 text-left">
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-900 hover:bg-orange-100 dark:hover:bg-orange-950/30 text-left" onClick={() => navigate("/dashboard/shares")}>
                       <div className="flex items-center gap-3 w-full">
                         <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center flex-shrink-0">
                           <Coins className="h-5 w-5 text-white" />
