@@ -409,6 +409,211 @@ export type Database = {
         }
         Relationships: []
       }
+      share_subscription_payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          id: string
+          payment_date: string | null
+          payment_type: string
+          reference_number: string | null
+          status: Database["public"]["Enums"]["payment_status"]
+          subscription_id: string
+          verified_by: string | null
+          verified_date: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          id?: string
+          payment_date?: string | null
+          payment_type: string
+          reference_number?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          subscription_id: string
+          verified_by?: string | null
+          verified_date?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          id?: string
+          payment_date?: string | null
+          payment_type?: string
+          reference_number?: string | null
+          status?: Database["public"]["Enums"]["payment_status"]
+          subscription_id?: string
+          verified_by?: string | null
+          verified_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "share_subscription_payments_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "share_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      share_subscriptions: {
+        Row: {
+          application_number: string
+          approved_by: string | null
+          approved_date: string | null
+          created_at: string | null
+          current_shares_before: number
+          declaration_1: boolean
+          declaration_2: boolean
+          declaration_3: boolean
+          deduction_months: number | null
+          id: string
+          monthly_deduction_amount: number | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_proof_url: string | null
+          payment_reference: string | null
+          price_per_share: number
+          rejection_reason: string | null
+          shares_after: number
+          shares_requested: number
+          status: Database["public"]["Enums"]["subscription_status"]
+          terms_accepted: boolean
+          total_cost: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          application_number: string
+          approved_by?: string | null
+          approved_date?: string | null
+          created_at?: string | null
+          current_shares_before?: number
+          declaration_1?: boolean
+          declaration_2?: boolean
+          declaration_3?: boolean
+          deduction_months?: number | null
+          id?: string
+          monthly_deduction_amount?: number | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          payment_proof_url?: string | null
+          payment_reference?: string | null
+          price_per_share?: number
+          rejection_reason?: string | null
+          shares_after: number
+          shares_requested: number
+          status?: Database["public"]["Enums"]["subscription_status"]
+          terms_accepted?: boolean
+          total_cost: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          application_number?: string
+          approved_by?: string | null
+          approved_date?: string | null
+          created_at?: string | null
+          current_shares_before?: number
+          declaration_1?: boolean
+          declaration_2?: boolean
+          declaration_3?: boolean
+          deduction_months?: number | null
+          id?: string
+          monthly_deduction_amount?: number | null
+          payment_method?: Database["public"]["Enums"]["payment_method"]
+          payment_proof_url?: string | null
+          payment_reference?: string | null
+          price_per_share?: number
+          rejection_reason?: string | null
+          shares_after?: number
+          shares_requested?: number
+          status?: Database["public"]["Enums"]["subscription_status"]
+          terms_accepted?: boolean
+          total_cost?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      share_transactions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          description: string | null
+          id: string
+          reference_number: string | null
+          shares_quantity: number
+          subscription_id: string | null
+          transaction_date: string | null
+          transaction_type: Database["public"]["Enums"]["share_transaction_type"]
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reference_number?: string | null
+          shares_quantity: number
+          subscription_id?: string | null
+          transaction_date?: string | null
+          transaction_type: Database["public"]["Enums"]["share_transaction_type"]
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          reference_number?: string | null
+          shares_quantity?: number
+          subscription_id?: string | null
+          transaction_date?: string | null
+          transaction_type?: Database["public"]["Enums"]["share_transaction_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "share_transactions_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "share_subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shares: {
+        Row: {
+          created_at: string | null
+          current_value: number
+          id: string
+          last_dividend_amount: number | null
+          last_dividend_date: string | null
+          total_shares: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          current_value?: number
+          id?: string
+          last_dividend_amount?: number | null
+          last_dividend_date?: string | null
+          total_shares?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          current_value?: number
+          id?: string
+          last_dividend_amount?: number | null
+          last_dividend_date?: string | null
+          total_shares?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       special_contribution_deductions: {
         Row: {
           amount: number
@@ -616,6 +821,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_share_application_number: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -656,6 +862,16 @@ export type Database = {
         | "cancelled"
       loan_status: "pending" | "approved" | "active" | "closed" | "rejected"
       loan_type: "normal" | "trade" | "special" | "long_term"
+      payment_method: "cash_deposit" | "bank_transfer" | "salary_deduction"
+      payment_status: "pending" | "verified" | "failed"
+      share_transaction_type: "purchase" | "dividend" | "transfer" | "sale"
+      subscription_status:
+        | "draft"
+        | "pending"
+        | "payment_verified"
+        | "approved"
+        | "rejected"
+        | "completed"
       transaction_type:
         | "deposit"
         | "withdrawal"
@@ -814,6 +1030,17 @@ export const Constants = {
       ],
       loan_status: ["pending", "approved", "active", "closed", "rejected"],
       loan_type: ["normal", "trade", "special", "long_term"],
+      payment_method: ["cash_deposit", "bank_transfer", "salary_deduction"],
+      payment_status: ["pending", "verified", "failed"],
+      share_transaction_type: ["purchase", "dividend", "transfer", "sale"],
+      subscription_status: [
+        "draft",
+        "pending",
+        "payment_verified",
+        "approved",
+        "rejected",
+        "completed",
+      ],
       transaction_type: [
         "deposit",
         "withdrawal",
