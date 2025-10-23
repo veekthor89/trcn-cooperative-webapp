@@ -17,7 +17,8 @@ const Dashboard = () => {
     totalBalance: 0,
     totalSavings: 0,
     totalLoans: 0,
-    totalInvestments: 0
+    totalInvestments: 0,
+    totalShares: 0
   });
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,12 +63,20 @@ const Dashboard = () => {
         data: contributions
       } = await supabase.from("special_contributions").select("total_contributed").eq("user_id", userId).in("application_status", ["active", "approved"]);
       const totalInvestments = contributions?.reduce((sum, inv) => sum + Number(inv.total_contributed), 0) || 0;
+
+      // Fetch shares
+      const {
+        data: shares
+      } = await supabase.from("shares").select("current_value").eq("user_id", userId).maybeSingle();
+      const totalShares = shares?.current_value || 0;
+
       const totalBalance = totalSavings + totalInvestments - totalLoans;
       setStats({
         totalBalance,
         totalSavings,
         totalLoans,
-        totalInvestments
+        totalInvestments,
+        totalShares
       });
 
       // Fetch recent transactions
@@ -263,7 +272,7 @@ const Dashboard = () => {
               </div>
             </div> : <>
               {/* Stats Cards - Full Width */}
-              <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
                 <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900">
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
@@ -300,6 +309,19 @@ const Dashboard = () => {
                       ₦{stats.totalInvestments.toLocaleString('en-NG')}
                     </p>
                     <p className="text-xs text-purple-600 dark:text-purple-400 mt-2">Various contributions</p>
+                  </CardContent>
+                </Card>
+
+                <Card style={{ backgroundColor: '#E0ECFD' }} className="border-blue-200 dark:border-blue-900">
+                  <CardContent className="pt-6 pb-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-medium" style={{ color: '#006DFF' }}>Total Shares</p>
+                      <Landmark className="h-5 w-5" style={{ color: '#006DFF' }} />
+                    </div>
+                    <p className="text-3xl font-bold" style={{ color: '#006DFF' }}>
+                      ₦{stats.totalShares.toLocaleString('en-NG')}
+                    </p>
+                    <p className="text-xs mt-2" style={{ color: '#006DFF' }}>Share ownership value</p>
                   </CardContent>
                 </Card>
               </div>
