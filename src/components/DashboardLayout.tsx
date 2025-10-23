@@ -89,6 +89,10 @@ const DashboardLayout = ({
     label: "Transactions",
     path: "/dashboard/transactions"
   }, {
+    icon: TrendingUp,
+    label: "Shares",
+    path: "/dashboard/shares"
+  }, {
     icon: User,
     label: "Profile",
     path: "/dashboard/profile"
@@ -161,6 +165,16 @@ const DashboardLayout = ({
             }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
                   <PiggyBank className="h-5 w-5" />
                   <span>Bulk Upload Contributions</span>
+                </button>
+                <div className="px-4 pb-3 pt-6 mt-6 border-t border-border">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin</p>
+                </div>
+                <button onClick={() => {
+              navigate("/dashboard/admin/share-subscriptions");
+              setSidebarOpen(false);
+            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                  <TrendingUp className="h-5 w-5" />
+                  <span>Share Subscriptions</span>
                 </button>
               </div>}
           </nav>

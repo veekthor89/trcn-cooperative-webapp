@@ -18,6 +18,8 @@ import BulkUploadSpecialContributions from "./pages/BulkUploadSpecialContributio
 import SpecialContributions from "./pages/SpecialContributions";
 import SpecialContributionApplication from "./pages/SpecialContributionApplication";
 import AdminSpecialContributions from "./pages/AdminSpecialContributions";
+import Shares from "./pages/Shares";
+import AdminShareSubscriptions from "./pages/AdminShareSubscriptions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +46,8 @@ const App = () => (
           <Route path="/dashboard/special-contributions" element={<SpecialContributions />} />
           <Route path="/dashboard/special-contribution/apply" element={<SpecialContributionApplication />} />
           <Route path="/dashboard/admin/special-contributions" element={<AdminSpecialContributions />} />
+          <Route path="/dashboard/shares" element={<Shares />} />
+          <Route path="/dashboard/admin/share-subscriptions" element={<AdminShareSubscriptions />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
