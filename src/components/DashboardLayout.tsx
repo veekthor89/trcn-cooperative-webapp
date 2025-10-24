@@ -19,6 +19,7 @@ const DashboardLayout = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileName, setProfileName] = useState("User");
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
+  const [pendingLoansCount, setPendingLoansCount] = useState(0);
   const {
     isAdmin
   } = useUserRole();
@@ -45,7 +46,7 @@ const DashboardLayout = ({
       if (!session) {
         navigate("/auth");
       } else {
-        // Fetch profile name and photo
+        // Fetch profile name, photo, and pending loans count
         setTimeout(async () => {
           const {
             data
@@ -72,6 +73,22 @@ const DashboardLayout = ({
     });
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  // Fetch pending loans count when admin status is determined
+  useEffect(() => {
+    const fetchPendingLoans = async () => {
+      if (isAdmin && session) {
+        const { data: pendingLoans } = await supabase
+          .from("loan_applications")
+          .select("id", { count: "exact" })
+          .eq("status", "pending");
+        
+        setPendingLoansCount(pendingLoans?.length || 0);
+      }
+    };
+
+    fetchPendingLoans();
+  }, [isAdmin, session]);
   const handleSignOut = async () => {
     const {
       error
@@ -186,6 +203,20 @@ const DashboardLayout = ({
             }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
                   <TrendingUp className="h-5 w-5" />
                   <span>Share Subscriptions</span>
+                </button>
+                <button onClick={() => {
+              navigate("/dashboard/admin/loan-applications");
+              setSidebarOpen(false);
+            }} className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                  <div className="flex items-center gap-3">
+                    <CreditCard className="h-5 w-5" />
+                    <span>Loan Applications</span>
+                  </div>
+                  {pendingLoansCount > 0 && (
+                    <span className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
+                      {pendingLoansCount}
+                    </span>
+                  )}
                 </button>
               </div>}
           </nav>
