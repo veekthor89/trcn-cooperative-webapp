@@ -83,18 +83,18 @@ const Profile = () => {
       } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
       if (profileError) throw profileError;
       if (profile) {
-        // If profile has a photo URL, fetch a signed URL for it
+        // If profile has a photo URL, get the public URL
         let photoUrl = "";
         if (profile.profile_photo_url) {
           const pathMatch = profile.profile_photo_url.match(/profile-photos\/(.+?)(\?|$)/);
           if (pathMatch) {
             const filePath = pathMatch[1];
-            const { data: signedUrlData } = await supabase.storage
+            const { data: publicUrlData } = supabase.storage
               .from("profile-photos")
-              .createSignedUrl(filePath, 3600); // 1 hour expiration
+              .getPublicUrl(filePath);
             
-            if (signedUrlData?.signedUrl) {
-              photoUrl = signedUrlData.signedUrl;
+            if (publicUrlData?.publicUrl) {
+              photoUrl = publicUrlData.publicUrl;
             }
           }
         }
@@ -260,15 +260,14 @@ const Profile = () => {
 
       if (uploadError) throw uploadError;
 
-      // Create a signed URL (1 hour expiration)
-      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+      // Get the public URL
+      const { data: publicUrlData } = supabase.storage
         .from("profile-photos")
-        .createSignedUrl(filePath, 3600);
+        .getPublicUrl(filePath);
 
-      if (signedUrlError) throw signedUrlError;
-      if (!signedUrlData?.signedUrl) throw new Error("Failed to create signed URL");
+      if (!publicUrlData?.publicUrl) throw new Error("Failed to get public URL");
 
-      // Store the file path reference (not the signed URL) for later regeneration
+      // Store the file path reference (not the full URL) for later regeneration
       const photoReference = `profile-photos/${filePath}`;
 
       // Update profile with photo reference
@@ -284,7 +283,7 @@ const Profile = () => {
       setCropperOpen(false);
       setImageToCrop(null);
 
-      // Force a page reload to update with new signed URL
+      // Force a page reload to update with new public URL
       window.location.reload();
       toast.success("Profile photo updated successfully");
     } catch (error: any) {

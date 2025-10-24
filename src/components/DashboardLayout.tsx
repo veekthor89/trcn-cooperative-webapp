@@ -54,7 +54,18 @@ const DashboardLayout = ({
             setProfileName(data.full_name);
           }
           if (data?.profile_photo_url) {
-            setProfilePhotoUrl(data.profile_photo_url);
+            // Extract file path from stored URL and get public URL
+            const pathMatch = data.profile_photo_url.match(/profile-photos\/(.+?)(\?|$)/);
+            if (pathMatch) {
+              const filePath = pathMatch[1];
+              const { data: publicUrlData } = supabase.storage
+                .from("profile-photos")
+                .getPublicUrl(filePath);
+              
+              if (publicUrlData?.publicUrl) {
+                setProfilePhotoUrl(publicUrlData.publicUrl);
+              }
+            }
           }
         }, 0);
       }
