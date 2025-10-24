@@ -100,12 +100,22 @@ serve(async (req) => {
     }
 
     // 3. Check admin role
+    console.log(`Checking admin role for user ${user.id}`);
     const { data: isAdmin, error: roleError } = await supabaseClient.rpc('has_role', {
       _user_id: user.id,
       _role: 'admin'
     });
 
-    if (roleError || !isAdmin) {
+    if (roleError) {
+      console.error('Role check error:', roleError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to verify admin privileges', details: roleError.message }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!isAdmin) {
+      console.log(`User ${user.id} is not an admin`);
       return new Response(
         JSON.stringify({ error: 'Admin privileges required' }),
         { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
