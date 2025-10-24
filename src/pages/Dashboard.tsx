@@ -453,7 +453,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </Button>
-                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900 hover:bg-purple-100 dark:hover:bg-purple-950/30 text-left" onClick={() => navigate("/dashboard/special-contribution/apply")}>
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900 hover:bg-purple-100 dark:hover:bg-purple-950/30 text-left" onClick={() => navigate("/dashboard/special-contributions")}>
                       <div className="flex items-center gap-3 w-full">
                         <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
                           <TrendingUp className="h-5 w-5 text-white" />
