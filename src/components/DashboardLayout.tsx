@@ -182,7 +182,7 @@ const DashboardLayout = ({
           <div className="p-4 border-t border-border">
             <div className="flex items-center gap-3 mb-4">
               <Avatar>
-                {profilePhotoUrl && <AvatarImage src={profilePhotoUrl} alt={profileName} />}
+                <AvatarImage src={profilePhotoUrl || undefined} alt={profileName} />
                 <AvatarFallback className="bg-muted text-foreground">
                   {profileName.charAt(0).toUpperCase()}
                 </AvatarFallback>
