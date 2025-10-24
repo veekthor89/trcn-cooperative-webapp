@@ -75,7 +75,7 @@ export type Database = {
           monthly_income: number | null
           monthly_payment: number | null
           notes: string | null
-          purpose: string
+          purpose: string | null
           repayment_period: number | null
           requested_amount: number
           status: Database["public"]["Enums"]["application_status"]
@@ -104,7 +104,7 @@ export type Database = {
           monthly_income?: number | null
           monthly_payment?: number | null
           notes?: string | null
-          purpose: string
+          purpose?: string | null
           repayment_period?: number | null
           requested_amount: number
           status?: Database["public"]["Enums"]["application_status"]
@@ -133,7 +133,7 @@ export type Database = {
           monthly_income?: number | null
           monthly_payment?: number | null
           notes?: string | null
-          purpose?: string
+          purpose?: string | null
           repayment_period?: number | null
           requested_amount?: number
           status?: Database["public"]["Enums"]["application_status"]

@@ -175,8 +175,8 @@ export default function LoanApplication() {
       }
     }
     if (!repaymentPeriod) newErrors.repaymentPeriod = "Please select repayment period";
-    if (loanType === "long_term" && (!purpose || purpose.length < 20)) {
-      newErrors.purpose = "Purpose is required for long term loans (minimum 20 characters)";
+    if (loanType === "housing" && (!purpose || purpose.length < 20)) {
+      newErrors.purpose = "Purpose is required for housing loans (minimum 20 characters)";
     }
 
     // Check active loan limit (max 3)
