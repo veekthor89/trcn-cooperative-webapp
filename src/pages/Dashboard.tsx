@@ -19,7 +19,8 @@ const Dashboard = () => {
     totalSavings: 0,
     totalLoans: 0,
     totalInvestments: 0,
-    totalShares: 0
+    totalShares: 0,
+    activeLoanCount: 0
   });
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +60,7 @@ const Dashboard = () => {
         data: loans
       } = await supabase.from("loans").select("principal_amount").eq("user_id", userId).eq("status", "active");
       const totalLoans = loans?.reduce((sum, loan) => sum + Number(loan.principal_amount), 0) || 0;
+      const activeLoanCount = loans?.length || 0;
 
       // Fetch special contributions
       const {
@@ -78,7 +80,8 @@ const Dashboard = () => {
         totalSavings,
         totalLoans,
         totalInvestments,
-        totalShares
+        totalShares,
+        activeLoanCount
       });
 
       // Fetch recent transactions
@@ -297,7 +300,9 @@ const Dashboard = () => {
                     <p className="text-3xl font-bold text-red-700 dark:text-red-300">
                       ₦{stats.totalLoans.toLocaleString('en-NG')}
                     </p>
-                    <p className="text-xs text-red-600 dark:text-red-400 mt-2">1 active loan</p>
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-2">
+                      {stats.activeLoanCount} active loan{stats.activeLoanCount !== 1 ? 's' : ''}
+                    </p>
                   </CardContent>
                 </Card>
 
