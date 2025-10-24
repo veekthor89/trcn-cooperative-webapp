@@ -287,7 +287,7 @@ const Dashboard = () => {
                     <p className="text-3xl font-bold text-green-700 dark:text-green-300">
                       ₦{stats.totalSavings.toLocaleString('en-NG')}
                     </p>
-                    <p className="text-xs text-green-600 dark:text-green-400 mt-2">+12% from last month</p>
+                    <p className="text-xs text-green-600 dark:text-green-400 mt-2">Total savings balance</p>
                   </CardContent>
                 </Card>
 
