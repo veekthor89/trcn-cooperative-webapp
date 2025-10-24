@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { PiggyBank, Calendar, TrendingUp, FileText } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
+import { SpecialContributionApplicationModal } from "@/components/SpecialContributionApplicationModal";
 
 export default function SpecialContributions() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ export default function SpecialContributions() {
   const [deductions, setDeductions] = useState<any[]>([]);
   const [historicalContributions, setHistoricalContributions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
 
   useEffect(() => {
     loadContributions();
@@ -93,7 +95,7 @@ export default function SpecialContributions() {
             <p className="text-muted-foreground">Manage your special contribution savings</p>
           </div>
           {!activeContribution && (
-            <Button onClick={() => navigate("/dashboard/special-contribution/apply")}>
+            <Button onClick={() => setShowApplicationModal(true)}>
               <PiggyBank className="mr-2 h-4 w-4" />
               Apply for New
             </Button>
@@ -175,7 +177,7 @@ export default function SpecialContributions() {
               <p className="text-muted-foreground mb-4">
                 Start saving with a special contribution plan today!
               </p>
-              <Button onClick={() => navigate("/dashboard/special-contribution/apply")}>
+              <Button onClick={() => setShowApplicationModal(true)}>
                 Apply for New Contribution
               </Button>
             </CardContent>
@@ -212,6 +214,12 @@ export default function SpecialContributions() {
           </Card>
         )}
       </div>
+
+      <SpecialContributionApplicationModal
+        open={showApplicationModal}
+        onOpenChange={setShowApplicationModal}
+        onSuccess={loadContributions}
+      />
     </DashboardLayout>
   );
 }

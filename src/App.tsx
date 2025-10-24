@@ -16,7 +16,6 @@ import BulkUploadLoans from "./pages/BulkUploadLoans";
 import BulkUploadTransactions from "./pages/BulkUploadTransactions";
 import BulkUploadSpecialContributions from "./pages/BulkUploadSpecialContributions";
 import SpecialContributions from "./pages/SpecialContributions";
-import SpecialContributionApplication from "./pages/SpecialContributionApplication";
 import AdminSpecialContributions from "./pages/AdminSpecialContributions";
 import Shares from "./pages/Shares";
 import AdminShareSubscriptions from "./pages/AdminShareSubscriptions";
@@ -45,7 +44,6 @@ const App = () => (
           <Route path="/dashboard/bulk-upload-transactions" element={<BulkUploadTransactions />} />
           <Route path="/dashboard/bulk-upload-special-contributions" element={<BulkUploadSpecialContributions />} />
           <Route path="/dashboard/special-contributions" element={<SpecialContributions />} />
-          <Route path="/dashboard/special-contribution/apply" element={<SpecialContributionApplication />} />
           <Route path="/dashboard/admin/special-contributions" element={<AdminSpecialContributions />} />
           <Route path="/dashboard/shares" element={<Shares />} />
           <Route path="/dashboard/admin/share-subscriptions" element={<AdminShareSubscriptions />} />
