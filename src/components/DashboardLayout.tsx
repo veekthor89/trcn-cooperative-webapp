@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, FileSpreadsheet, Wallet, Menu } from "lucide-react";
+import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, FileSpreadsheet, Wallet, Menu, Landmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -89,7 +89,7 @@ const DashboardLayout = ({
     label: "Transactions",
     path: "/dashboard/transactions"
   }, {
-    icon: TrendingUp,
+    icon: Landmark,
     label: "Shares",
     path: "/dashboard/shares"
   }, {
