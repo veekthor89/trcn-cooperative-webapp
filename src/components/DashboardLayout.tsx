@@ -2,12 +2,13 @@ import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, FileSpreadsheet, Wallet, Menu, Landmark } from "lucide-react";
+import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, FileSpreadsheet, Wallet, Menu, Landmark, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useUserRole } from "@/hooks/useUserRole";
 import trcnLogo from "@/assets/trcn-logo.png";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 interface DashboardLayoutProps {
   children: ReactNode;
 }
@@ -20,6 +21,8 @@ const DashboardLayout = ({
   const [profileName, setProfileName] = useState("User");
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [pendingLoansCount, setPendingLoansCount] = useState(0);
+  const [dataManagementOpen, setDataManagementOpen] = useState(false);
+  const [adminSectionOpen, setAdminSectionOpen] = useState(false);
   const {
     isAdmin
   } = useUserRole();
@@ -156,68 +159,81 @@ const DashboardLayout = ({
               </button>)}
             
             {isAdmin && <div className="pt-6 mt-6 border-t border-border space-y-1">
-                <div className="px-4 pb-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Data Management</p>
-                </div>
-                <button onClick={() => {
-              navigate("/dashboard/bulk-upload");
-              setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                  <Upload className="h-5 w-5" />
-                  <span>Bulk Upload Members</span>
-                </button>
-                <button onClick={() => {
-              navigate("/dashboard/bulk-upload-accounts");
-              setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                  <Wallet className="h-5 w-5" />
-                  <span>Bulk Upload Accounts</span>
-                </button>
-                <button onClick={() => {
-              navigate("/dashboard/bulk-upload-loans");
-              setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                  <CreditCard className="h-5 w-5" />
-                  <span>Bulk Upload Loans</span>
-                </button>
-                <button onClick={() => {
-              navigate("/dashboard/bulk-upload-transactions");
-              setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                  <TrendingUp className="h-5 w-5" />
-                  <span>Bulk Upload Transactions</span>
-                </button>
-                <button onClick={() => {
-              navigate("/dashboard/bulk-upload-special-contributions");
-              setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                  <PiggyBank className="h-5 w-5" />
-                  <span>Bulk Upload Contributions</span>
-                </button>
-                <div className="px-4 pb-3 pt-6 mt-6 border-t border-border">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin</p>
-                </div>
-                <button onClick={() => {
-              navigate("/dashboard/admin/share-subscriptions");
-              setSidebarOpen(false);
-            }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                  <TrendingUp className="h-5 w-5" />
-                  <span>Share Subscriptions</span>
-                </button>
-                <button onClick={() => {
-              navigate("/dashboard/admin/loan-applications");
-              setSidebarOpen(false);
-            }} className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="h-5 w-5" />
-                    <span>Loan Applications</span>
-                  </div>
-                  {pendingLoansCount > 0 && (
-                    <span className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
-                      {pendingLoansCount}
-                    </span>
-                  )}
-                </button>
+                {/* Data Management Collapsible Section */}
+                <Collapsible open={dataManagementOpen} onOpenChange={setDataManagementOpen}>
+                  <CollapsibleTrigger className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted rounded-lg transition-smooth group">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Data Management</p>
+                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${dataManagementOpen ? 'transform rotate-180' : ''}`} />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-1">
+                    <button onClick={() => {
+                      navigate("/dashboard/bulk-upload");
+                      setSidebarOpen(false);
+                    }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <Upload className="h-5 w-5" />
+                      <span>Bulk Upload Members</span>
+                    </button>
+                    <button onClick={() => {
+                      navigate("/dashboard/bulk-upload-accounts");
+                      setSidebarOpen(false);
+                    }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <Wallet className="h-5 w-5" />
+                      <span>Bulk Upload Accounts</span>
+                    </button>
+                    <button onClick={() => {
+                      navigate("/dashboard/bulk-upload-loans");
+                      setSidebarOpen(false);
+                    }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <CreditCard className="h-5 w-5" />
+                      <span>Bulk Upload Loans</span>
+                    </button>
+                    <button onClick={() => {
+                      navigate("/dashboard/bulk-upload-transactions");
+                      setSidebarOpen(false);
+                    }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <TrendingUp className="h-5 w-5" />
+                      <span>Bulk Upload Transactions</span>
+                    </button>
+                    <button onClick={() => {
+                      navigate("/dashboard/bulk-upload-special-contributions");
+                      setSidebarOpen(false);
+                    }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <PiggyBank className="h-5 w-5" />
+                      <span>Bulk Upload Contributions</span>
+                    </button>
+                  </CollapsibleContent>
+                </Collapsible>
+
+                {/* Admin Collapsible Section */}
+                <Collapsible open={adminSectionOpen} onOpenChange={setAdminSectionOpen} className="pt-6 mt-6 border-t border-border">
+                  <CollapsibleTrigger className="w-full flex items-center justify-between px-4 py-3 hover:bg-muted rounded-lg transition-smooth group">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Admin</p>
+                    <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${adminSectionOpen ? 'transform rotate-180' : ''}`} />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="space-y-1">
+                    <button onClick={() => {
+                      navigate("/dashboard/admin/share-subscriptions");
+                      setSidebarOpen(false);
+                    }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <TrendingUp className="h-5 w-5" />
+                      <span>Share Subscriptions</span>
+                    </button>
+                    <button onClick={() => {
+                      navigate("/dashboard/admin/loan-applications");
+                      setSidebarOpen(false);
+                    }} className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <div className="flex items-center gap-3">
+                        <CreditCard className="h-5 w-5" />
+                        <span>Loan Applications</span>
+                      </div>
+                      {pendingLoansCount > 0 && (
+                        <span className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
+                          {pendingLoansCount}
+                        </span>
+                      )}
+                    </button>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>}
           </nav>
 
