@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { PiggyBank, Plus, Target } from "lucide-react";
 import { toast } from "sonner";
+import { SpecialContributionApplicationModal } from "@/components/SpecialContributionApplicationModal";
 interface SavingsAccount {
   id: string;
   balance: number;
@@ -25,6 +26,7 @@ const Savings = () => {
   const [accounts, setAccounts] = useState<SavingsAccount[]>([]);
   const [contributions, setContributions] = useState<SpecialContribution[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showContributionDialog, setShowContributionDialog] = useState(false);
   useEffect(() => {
     fetchSavingsData();
   }, []);
@@ -138,7 +140,7 @@ const Savings = () => {
                   <CardContent className="py-12 text-center">
                     <Target className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                     <p className="text-muted-foreground">No special contributions yet</p>
-                    <Button variant="outline" className="mt-4" onClick={() => window.location.href = '/dashboard/special-contributions'}>
+                    <Button variant="outline" className="mt-4" onClick={() => setShowContributionDialog(true)}>
                       <Plus className="mr-2 h-4 w-4" />
                       Apply for Special Contribution
                     </Button>
@@ -185,6 +187,12 @@ const Savings = () => {
             </div>
           </>}
       </div>
+
+      <SpecialContributionApplicationModal
+        open={showContributionDialog}
+        onOpenChange={setShowContributionDialog}
+        onSuccess={fetchSavingsData}
+      />
     </DashboardLayout>;
 };
 export default Savings;

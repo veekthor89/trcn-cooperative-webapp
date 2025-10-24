@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import LoanApplicationForm from "@/components/LoanApplicationForm";
 import ShareSubscriptionForm from "@/components/ShareSubscriptionForm";
+import { SpecialContributionApplicationModal } from "@/components/SpecialContributionApplicationModal";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
@@ -29,6 +30,7 @@ const Dashboard = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [showLoanDialog, setShowLoanDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [showContributionDialog, setShowContributionDialog] = useState(false);
   useEffect(() => {
     fetchDashboardData();
     fetchNotifications();
@@ -453,7 +455,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </Button>
-                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900 hover:bg-purple-100 dark:hover:bg-purple-950/30 text-left" onClick={() => navigate("/dashboard/special-contributions")}>
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900 hover:bg-purple-100 dark:hover:bg-purple-950/30 text-left" onClick={() => setShowContributionDialog(true)}>
                       <div className="flex items-center gap-3 w-full">
                         <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center flex-shrink-0">
                           <TrendingUp className="h-5 w-5 text-white" />
@@ -551,6 +553,12 @@ const Dashboard = () => {
           </ScrollArea>
         </DialogContent>
       </Dialog>
+
+      <SpecialContributionApplicationModal
+        open={showContributionDialog}
+        onOpenChange={setShowContributionDialog}
+        onSuccess={fetchDashboardData}
+      />
     </DashboardLayout>;
 };
 export default Dashboard;
