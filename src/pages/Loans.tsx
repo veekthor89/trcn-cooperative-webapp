@@ -24,6 +24,18 @@ interface Loan {
   repayment_period: number;
 }
 
+interface LoanApplication {
+  id: string;
+  loan_type: string;
+  requested_amount: number;
+  status: string;
+  application_date: string;
+  approval_date: string | null;
+  repayment_period: number;
+  monthly_payment: number | null;
+  notes: string | null;
+}
+
 interface Transaction {
   id: string;
   type: string;
@@ -34,6 +46,7 @@ interface Transaction {
 
 const Loans = () => {
   const [loans, setLoans] = useState<Loan[]>([]);
+  const [loanApplications, setLoanApplications] = useState<LoanApplication[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [showLoanDialog, setShowLoanDialog] = useState(false);
@@ -58,6 +71,15 @@ const Loans = () => {
 
       if (loansError) throw loansError;
 
+      // Fetch loan applications
+      const { data: applicationsData, error: applicationsError } = await supabase
+        .from("loan_applications")
+        .select("*")
+        .eq("user_id", userId)
+        .order("application_date", { ascending: false });
+
+      if (applicationsError) throw applicationsError;
+
       // Fetch loan-related transactions
       const { data: transactionsData, error: transactionsError } = await supabase
         .from("transactions")
@@ -70,6 +92,7 @@ const Loans = () => {
       if (transactionsError) throw transactionsError;
 
       setLoans(loansData || []);
+      setLoanApplications(applicationsData || []);
       setTransactions(transactionsData || []);
     } catch (error) {
       console.error("Error fetching loans data:", error);
@@ -187,6 +210,58 @@ const Loans = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Loan Applications */}
+        {loanApplications.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Loan Applications</CardTitle>
+              <CardDescription>Track your loan application status</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {loanApplications.map((application) => {
+                  const statusColor = 
+                    application.status === "approved" ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400" :
+                    application.status === "rejected" ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400" :
+                    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+                  
+                  return (
+                    <div key={application.id} className="flex justify-between items-start p-4 border rounded-lg">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold">{formatLoanType(application.loan_type)}</h3>
+                          <Badge className={statusColor}>
+                            {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Amount: ₦{Number(application.requested_amount).toLocaleString()} • 
+                          Period: {application.repayment_period} months
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          Applied: {new Date(application.application_date).toLocaleDateString()}
+                        </p>
+                        {application.notes && (
+                          <p className="text-sm text-muted-foreground italic mt-2">
+                            Note: {application.notes}
+                          </p>
+                        )}
+                      </div>
+                      <div className="text-right text-sm">
+                        {application.approval_date && (
+                          <p className="text-muted-foreground">
+                            {application.status === "approved" ? "Approved" : "Decided"}: {new Date(application.approval_date).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Active Loans */}
         <Card>
