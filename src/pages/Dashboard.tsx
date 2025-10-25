@@ -121,14 +121,24 @@ const Dashboard = () => {
         const monthIndex = transactionDate.getMonth(); // 0-11 for Jan-Dec
         
         if (monthIndex >= 0 && monthIndex < 12) {
+          const description = transaction.description?.toLowerCase() || '';
+          const amount = Number(transaction.amount);
+          
           if (transaction.type === 'deposit') {
-            if (transaction.description?.toLowerCase().includes('savings')) {
-              monthlyData[monthIndex].savings += Number(transaction.amount);
-            } else if (transaction.description?.toLowerCase().includes('contribution')) {
-              monthlyData[monthIndex].contributions += Number(transaction.amount);
+            if (description.includes('savings')) {
+              monthlyData[monthIndex].savings += amount;
+            } else if (description.includes('contribution') || description.includes('special')) {
+              monthlyData[monthIndex].contributions += amount;
             }
-          } else if (transaction.type === 'withdrawal' && transaction.description?.toLowerCase().includes('loan')) {
-            monthlyData[monthIndex].loans += Number(transaction.amount);
+          } else if (transaction.type === 'withdrawal') {
+            if (description.includes('loan')) {
+              monthlyData[monthIndex].loans += amount;
+            }
+          }
+          
+          // Also check for loan-related deposits (disbursements)
+          if (transaction.type === 'deposit' && description.includes('loan')) {
+            monthlyData[monthIndex].loans += amount;
           }
         }
       });
