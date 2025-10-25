@@ -95,22 +95,21 @@ const Dashboard = () => {
       }).limit(5);
       setRecentActivities(transactions || []);
 
-      // Fetch transaction data for the last 12 months for the chart
-      const twelveMonthsAgo = new Date();
-      twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
+      // Fetch transaction data for the current year for the chart
+      const currentYear = new Date().getFullYear();
+      const yearStart = new Date(currentYear, 0, 1);
       
       const { data: allTransactions } = await supabase
         .from("transactions")
         .select("*")
         .eq("user_id", userId)
-        .gte("created_at", twelveMonthsAgo.toISOString());
+        .gte("created_at", yearStart.toISOString());
 
-      // Aggregate data by month - starting 11 months ago to current month
+      // Create data for all 12 months (Jan - Dec)
       const monthlyData = Array.from({ length: 12 }, (_, i) => {
-        const date = new Date();
-        date.setMonth(date.getMonth() - 11 + i);
+        const date = new Date(currentYear, i, 1);
         return {
-          month: date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+          month: date.toLocaleDateString('en-US', { month: 'short' }),
           savings: 0,
           loans: 0,
           contributions: 0,
@@ -119,7 +118,7 @@ const Dashboard = () => {
 
       allTransactions?.forEach(transaction => {
         const transactionDate = new Date(transaction.created_at);
-        const monthIndex = Math.floor((transactionDate.getTime() - twelveMonthsAgo.getTime()) / (1000 * 60 * 60 * 24 * 30));
+        const monthIndex = transactionDate.getMonth(); // 0-11 for Jan-Dec
         
         if (monthIndex >= 0 && monthIndex < 12) {
           if (transaction.type === 'deposit') {
@@ -390,7 +389,7 @@ const Dashboard = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-xl">Financial Overview</CardTitle>
-                    <p className="text-sm text-muted-foreground">Your financial performance over the last 12 months</p>
+                    <p className="text-sm text-muted-foreground">Your financial performance for {new Date().getFullYear()}</p>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>
