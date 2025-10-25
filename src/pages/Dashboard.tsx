@@ -105,12 +105,12 @@ const Dashboard = () => {
         .eq("user_id", userId)
         .gte("created_at", twelveMonthsAgo.toISOString());
 
-      // Aggregate data by month
+      // Aggregate data by month - starting 11 months ago to current month
       const monthlyData = Array.from({ length: 12 }, (_, i) => {
         const date = new Date();
-        date.setMonth(date.getMonth() - (11 - i));
+        date.setMonth(date.getMonth() - 11 + i);
         return {
-          month: date.toLocaleDateString('en-US', { month: 'short' }),
+          month: date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
           savings: 0,
           loans: 0,
           contributions: 0,
