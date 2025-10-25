@@ -31,6 +31,7 @@ const Dashboard = () => {
   const [showLoanDialog, setShowLoanDialog] = useState(false);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showContributionDialog, setShowContributionDialog] = useState(false);
+  const [chartData, setChartData] = useState<any[]>([]);
   useEffect(() => {
     fetchDashboardData();
     fetchNotifications();
@@ -93,6 +94,54 @@ const Dashboard = () => {
         ascending: false
       }).limit(5);
       setRecentActivities(transactions || []);
+
+      // Fetch transaction data for the last 12 months for the chart
+      const twelveMonthsAgo = new Date();
+      twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
+      
+      const { data: allTransactions } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("user_id", userId)
+        .gte("created_at", twelveMonthsAgo.toISOString());
+
+      // Aggregate data by month
+      const monthlyData = Array.from({ length: 12 }, (_, i) => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - (11 - i));
+        return {
+          month: date.toLocaleDateString('en-US', { month: 'short' }),
+          savings: 0,
+          loans: 0,
+          contributions: 0,
+        };
+      });
+
+      allTransactions?.forEach(transaction => {
+        const transactionDate = new Date(transaction.created_at);
+        const monthIndex = Math.floor((transactionDate.getTime() - twelveMonthsAgo.getTime()) / (1000 * 60 * 60 * 24 * 30));
+        
+        if (monthIndex >= 0 && monthIndex < 12) {
+          if (transaction.type === 'deposit') {
+            if (transaction.description?.toLowerCase().includes('savings')) {
+              monthlyData[monthIndex].savings += Number(transaction.amount);
+            } else if (transaction.description?.toLowerCase().includes('contribution')) {
+              monthlyData[monthIndex].contributions += Number(transaction.amount);
+            }
+          } else if (transaction.type === 'withdrawal' && transaction.description?.toLowerCase().includes('loan')) {
+            monthlyData[monthIndex].loans += Number(transaction.amount);
+          }
+        }
+      });
+
+      // Accumulate values over months
+      for (let i = 1; i < monthlyData.length; i++) {
+        monthlyData[i].savings += monthlyData[i - 1].savings;
+        monthlyData[i].loans += monthlyData[i - 1].loans;
+        monthlyData[i].contributions += monthlyData[i - 1].contributions;
+      }
+
+      setChartData(monthlyData);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -341,41 +390,11 @@ const Dashboard = () => {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-xl">Financial Overview</CardTitle>
-                    <p className="text-sm text-muted-foreground">Your financial performance over the last 6 months</p>
+                    <p className="text-sm text-muted-foreground">Your financial performance over the last 12 months</p>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={300}>
-                      <AreaChart data={[{
-                  month: 'Jan',
-                  savings: 45000,
-                  loans: 30000,
-                  contributions: 15000
-                }, {
-                  month: 'Feb',
-                  savings: 52000,
-                  loans: 28000,
-                  contributions: 18000
-                }, {
-                  month: 'Mar',
-                  savings: 58000,
-                  loans: 25000,
-                  contributions: 22000
-                }, {
-                  month: 'Apr',
-                  savings: 65000,
-                  loans: 23000,
-                  contributions: 28000
-                }, {
-                  month: 'May',
-                  savings: 72000,
-                  loans: 20000,
-                  contributions: 32000
-                }, {
-                  month: 'Jun',
-                  savings: 78000,
-                  loans: 18000,
-                  contributions: 38000
-                }]} margin={{
+                      <AreaChart data={chartData} margin={{
                   top: 10,
                   right: 10,
                   left: 0,
