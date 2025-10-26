@@ -21,6 +21,7 @@ const DashboardLayout = ({
   const [profileName, setProfileName] = useState("User");
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [pendingLoansCount, setPendingLoansCount] = useState(0);
+  const [pendingContributionsCount, setPendingContributionsCount] = useState(0);
   const [dataManagementOpen, setDataManagementOpen] = useState(false);
   const [adminSectionOpen, setAdminSectionOpen] = useState(false);
   const {
@@ -77,9 +78,9 @@ const DashboardLayout = ({
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Fetch pending loans count when admin status is determined
+  // Fetch pending loans and contributions count when admin status is determined
   useEffect(() => {
-    const fetchPendingLoans = async () => {
+    const fetchPendingCounts = async () => {
       if (isAdmin && session) {
         const { data: pendingLoans } = await supabase
           .from("loan_applications")
@@ -87,10 +88,17 @@ const DashboardLayout = ({
           .eq("status", "pending");
         
         setPendingLoansCount(pendingLoans?.length || 0);
+
+        const { data: pendingContributions } = await supabase
+          .from("special_contributions")
+          .select("id", { count: "exact" })
+          .eq("application_status", "pending");
+        
+        setPendingContributionsCount(pendingContributions?.length || 0);
       }
     };
 
-    fetchPendingLoans();
+    fetchPendingCounts();
   }, [isAdmin, session]);
   const handleSignOut = async () => {
     const {
@@ -229,6 +237,20 @@ const DashboardLayout = ({
                       {pendingLoansCount > 0 && (
                         <span className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
                           {pendingLoansCount}
+                        </span>
+                      )}
+                    </button>
+                    <button onClick={() => {
+                      navigate("/dashboard/admin/special-contributions");
+                      setSidebarOpen(false);
+                    }} className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <div className="flex items-center gap-3">
+                        <PiggyBank className="h-5 w-5" />
+                        <span>Special Contribution Applications</span>
+                      </div>
+                      {pendingContributionsCount > 0 && (
+                        <span className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
+                          {pendingContributionsCount}
                         </span>
                       )}
                     </button>
