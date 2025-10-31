@@ -224,7 +224,7 @@ export default function Shares() {
               <li>✓ Shares are transferable subject to board approval</li>
               <li>✓ Priority access to cooperative services</li>
               <li>✓ Maximum ownership: 3,500 shares per member</li>
-              <li>✓ Current price: ₦25per share</li>
+              <li>✓ Current price: ₦25 per share</li>
             </ul>
           </CardContent>
         </Card>
