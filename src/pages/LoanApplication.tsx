@@ -31,10 +31,10 @@ interface LoanTypeConfig {
 }
 
 const LOAN_TYPES: Record<string, LoanTypeConfig> = {
-  special: { max: 200000, min: 50000, maxPeriod: 36, interestRate: 0.1, requirePurpose: false },
-  trade: { max: 400000, min: 50000, maxPeriod: 36, interestRate: 0.1, requirePurpose: false },
-  normal: { max: 3000000, min: 50000, maxPeriod: 36, interestRate: 0.1, requirePurpose: false },
-  housing: { max: 7000000, min: 50000, maxPeriod: 120, interestRate: 0.1, requirePurpose: true },
+  special: { max: 150000, min: 10000, maxPeriod: 6, interestRate: 0.105, requirePurpose: false },
+  trade: { max: 400000, min: 10000, maxPeriod: 8, interestRate: 0.075, requirePurpose: false },
+  normal: { max: 3000000, min: 10000, maxPeriod: 36, interestRate: 0.1, requirePurpose: false },
+  housing: { max: 7000000, min: 10000, maxPeriod: 84, interestRate: 0.1, requirePurpose: true },
 };
 
 const NIGERIAN_BANKS = [
@@ -128,12 +128,21 @@ export default function LoanApplication() {
   // Real-time calculations
   const loanConfig = loanType ? LOAN_TYPES[loanType] : null;
   const interestRate = loanConfig?.interestRate || 0.1;
+  const adminCharge = 200;
+  
+  // Calculate based on loan type
+  // Normal loan: Interest deducted upfront
+  // Special, Trade, Housing: Interest added to loan amount
+  const principal = loanAmount ? parseFloat(loanAmount) : 0;
+  const interest = principal * interestRate;
   
   const calculations = {
-    interest: loanAmount ? parseFloat(loanAmount) * interestRate : 0,
-    amountReceived: loanAmount ? parseFloat(loanAmount) - (parseFloat(loanAmount) * interestRate) : 0,
-    totalRepay: loanAmount ? parseFloat(loanAmount) : 0,
-    monthlyPayment: loanAmount && repaymentPeriod ? parseFloat(loanAmount) / parseInt(repaymentPeriod) : 0,
+    interest: interest,
+    amountReceived: loanType === 'normal' ? principal - interest : principal,
+    totalRepay: loanType === 'normal' ? principal : principal + interest,
+    monthlyPayment: loanAmount && repaymentPeriod ? 
+      (loanType === 'normal' ? principal : principal + interest) / parseInt(repaymentPeriod) : 0,
+    adminCharge: adminCharge,
   };
 
   // Calculate remaining capacity (20% threshold)
@@ -147,14 +156,22 @@ export default function LoanApplication() {
   const getPeriodOptions = () => {
     if (!loanType) return [];
     const maxPeriod = LOAN_TYPES[loanType].maxPeriod;
+    
+    // Special handling for different loan types
+    if (loanType === 'special') {
+      return [3, 6]; // Only 3 and 6 months
+    }
+    if (loanType === 'trade') {
+      return [3, 6, 8]; // 3, 6, and 8 months
+    }
+    if (loanType === 'housing') {
+      const housingPeriods = [3, 6, 12, 24, 36, 48, 60, 72, 84];
+      return housingPeriods.filter(p => p <= maxPeriod);
+    }
+    // Normal loan - multiples of 3 up to 36 months
     const options = [];
     for (let i = 3; i <= maxPeriod; i += 3) {
-      if (i <= maxPeriod) options.push(i);
-    }
-    // Ensure we include specific values for housing loans
-    if (loanType === 'housing') {
-      const housingPeriods = [3, 6, 12, 24, 36, 48, 60, 84, 96, 120];
-      return housingPeriods.filter(p => p <= maxPeriod);
+      options.push(i);
     }
     return options;
   };
@@ -372,10 +389,10 @@ export default function LoanApplication() {
                   <SelectValue placeholder="Select loan type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="special">Special Loan (Max ₦200,000, 36 months)</SelectItem>
-                  <SelectItem value="trade">Trade Loan (Max ₦400,000, 36 months)</SelectItem>
-                  <SelectItem value="normal">Normal Loan (Max ₦3,000,000, 36 months)</SelectItem>
-                  <SelectItem value="housing">Land/Housing Loan (Max ₦7,000,000, 120 months)</SelectItem>
+                  <SelectItem value="special">Special Loan (Max ₦150,000, 6 months, 10.5%)</SelectItem>
+                  <SelectItem value="trade">Trade Loan (Max ₦400,000, 8 months, 7.5%)</SelectItem>
+                  <SelectItem value="normal">Normal Loan (Max ₦3,000,000, 36 months, 10%)</SelectItem>
+                  <SelectItem value="housing">Land/Housing Loan (Max ₦7,000,000, 84 months, 10%)</SelectItem>
                 </SelectContent>
               </Select>
               {errors.loanType && <p className="text-sm text-destructive mt-1">{errors.loanType}</p>}
@@ -457,8 +474,15 @@ export default function LoanApplication() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
+                <Label>Loan Amount Requested</Label>
+                <div className="text-2xl font-bold">₦{principal.toLocaleString()}</div>
+              </div>
+              <div>
                 <Label>Interest ({(interestRate * 100)}%)</Label>
                 <div className="text-2xl font-bold">₦{calculations.interest.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {loanType === 'normal' ? 'Deducted upfront' : 'Added to repayment'}
+                </p>
               </div>
               <div>
                 <Label>Amount You'll Receive</Label>
@@ -471,6 +495,11 @@ export default function LoanApplication() {
               <div>
                 <Label>Monthly Payment</Label>
                 <div className="text-2xl font-bold">₦{calculations.monthlyPayment.toLocaleString()}</div>
+              </div>
+              <div>
+                <Label>Admin Charge</Label>
+                <div className="text-2xl font-bold">₦{calculations.adminCharge.toLocaleString()}</div>
+                <p className="text-xs text-muted-foreground mt-1">Deducted from 1st payment</p>
               </div>
             </div>
 
