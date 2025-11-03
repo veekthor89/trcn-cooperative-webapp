@@ -13,7 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Eye, CheckCircle, XCircle, AlertCircle, Clock, FileText } from "lucide-react";
+import { Eye, CheckCircle, XCircle, AlertCircle, Clock, FileText, Printer } from "lucide-react";
+import PrintableLoanApplication from "@/components/PrintableLoanApplication";
 
 export default function AdminLoanApplications() {
   const [loading, setLoading] = useState(true);
@@ -27,6 +28,7 @@ export default function AdminLoanApplications() {
   const [stats, setStats] = useState({ pending: 0, approvedThisMonth: 0, rejectedThisMonth: 0 });
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
 
   useEffect(() => {
     fetchApplications();
@@ -352,17 +354,30 @@ export default function AdminLoanApplications() {
                           <TableCell>{new Date(app.application_date).toLocaleDateString()}</TableCell>
                           <TableCell>{getStatusBadge(app.status)}</TableCell>
                           <TableCell>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                setSelectedApp(app);
-                                setShowDetailDialog(true);
-                              }}
-                            >
-                              <Eye className="w-4 h-4 mr-1" />
-                              View
-                            </Button>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedApp(app);
+                                  setShowDetailDialog(true);
+                                }}
+                              >
+                                <Eye className="w-4 h-4 mr-1" />
+                                View
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedApp(app);
+                                  setShowPrintDialog(true);
+                                }}
+                              >
+                                <Printer className="w-4 h-4 mr-1" />
+                                Print
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -624,6 +639,15 @@ export default function AdminLoanApplications() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Print Dialog */}
+        {selectedApp && (
+          <PrintableLoanApplication
+            application={selectedApp}
+            isOpen={showPrintDialog}
+            onClose={() => setShowPrintDialog(false)}
+          />
+        )}
       </DashboardLayout>
     </AdminRoute>
   );

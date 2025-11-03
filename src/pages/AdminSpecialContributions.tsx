@@ -12,9 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, Eye, Download, Search, Calendar, TrendingUp, PiggyBank, User } from "lucide-react";
+import { CheckCircle, XCircle, Eye, Download, Search, Calendar, TrendingUp, PiggyBank, User, Printer } from "lucide-react";
 import { format } from "date-fns";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import PrintableSpecialContribution from "@/components/PrintableSpecialContribution";
 
 export default function AdminSpecialContributions() {
   const [contributions, setContributions] = useState<any[]>([]);
@@ -33,6 +34,7 @@ export default function AdminSpecialContributions() {
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
 
   useEffect(() => {
     loadContributions();
@@ -402,15 +404,29 @@ export default function AdminSpecialContributions() {
                           </TableCell>
                           <TableCell>{getStatusBadge(contribution.application_status)}</TableCell>
                           <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setSelectedContribution(contribution)}
-                              className="gap-2"
-                            >
-                              <Eye className="h-4 w-4" />
-                              View
-                            </Button>
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedContribution(contribution)}
+                                className="gap-2"
+                              >
+                                <Eye className="h-4 w-4" />
+                                View
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedContribution(contribution);
+                                  setShowPrintDialog(true);
+                                }}
+                                className="gap-2"
+                              >
+                                <Printer className="h-4 w-4" />
+                                Print
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -664,6 +680,15 @@ export default function AdminSpecialContributions() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Print Dialog */}
+        {selectedContribution && (
+          <PrintableSpecialContribution
+            contribution={selectedContribution}
+            isOpen={showPrintDialog}
+            onClose={() => setShowPrintDialog(false)}
+          />
+        )}
       </DashboardLayout>
     </AdminRoute>
   );

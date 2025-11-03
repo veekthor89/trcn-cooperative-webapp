@@ -148,3 +148,56 @@ All colors MUST be HSL.
     transition: var(--transition-smooth);
   }
 }
+
+/* Print styles */
+@media print {
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .print-content {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Ensure tables fit properly */
+  table {
+    page-break-inside: avoid;
+  }
+
+  /* Prevent images from breaking across pages */
+  img {
+    page-break-inside: avoid;
+  }
+
+  /* Remove shadows and rounded corners for print */
+  * {
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Ensure proper text colors */
+  .text-muted-foreground {
+    color: #666 !important;
+  }
+
+  /* Print button styles */
+  button[type="checkbox"] {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

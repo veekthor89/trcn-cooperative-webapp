@@ -10,7 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { FileText, Eye, CheckCircle, XCircle, TrendingUp, Users, DollarSign } from "lucide-react";
+import { FileText, Eye, CheckCircle, XCircle, TrendingUp, Users, DollarSign, Printer } from "lucide-react";
+import PrintableShareSubscription from "@/components/PrintableShareSubscription";
 
 export default function AdminShareSubscriptions() {
   const [loading, setLoading] = useState(true);
@@ -19,6 +20,7 @@ export default function AdminShareSubscriptions() {
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [stats, setStats] = useState({ total: 0, pending: 0, approved: 0, totalValue: 0 });
+  const [showPrintDialog, setShowPrintDialog] = useState(false);
 
   useEffect(() => {
     fetchApplications();
@@ -321,17 +323,30 @@ export default function AdminShareSubscriptions() {
                           <TableCell className="capitalize">{app.payment_method.replace("_", " ")}</TableCell>
                           <TableCell>{getStatusBadge(app.status)}</TableCell>
                           <TableCell>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                setSelectedApp(app);
-                                setShowDetailDialog(true);
-                              }}
-                            >
-                              <Eye className="w-4 h-4 mr-1" />
-                              View
-                            </Button>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedApp(app);
+                                  setShowDetailDialog(true);
+                                }}
+                              >
+                                <Eye className="w-4 h-4 mr-1" />
+                                View
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedApp(app);
+                                  setShowPrintDialog(true);
+                                }}
+                              >
+                                <Printer className="w-4 h-4 mr-1" />
+                                Print
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -508,6 +523,15 @@ export default function AdminShareSubscriptions() {
             </div>
           </DialogContent>
         </Dialog>
+      )}
+
+      {/* Print Dialog */}
+      {selectedApp && (
+        <PrintableShareSubscription
+          subscription={selectedApp}
+          isOpen={showPrintDialog}
+          onClose={() => setShowPrintDialog(false)}
+        />
       )}
     </DashboardLayout>
   );
