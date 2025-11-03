@@ -35,6 +35,42 @@ const Dashboard = () => {
   useEffect(() => {
     fetchDashboardData();
     fetchNotifications();
+
+    // Subscribe to realtime notifications
+    const setupRealtimeSubscription = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const channel = supabase
+        .channel('notifications-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${session.user.id}`
+          },
+          () => {
+            // Refetch notifications when any change occurs
+            fetchNotifications();
+          }
+        )
+        .subscribe();
+
+      return channel;
+    };
+
+    let channel: any;
+    setupRealtimeSubscription().then(ch => {
+      channel = ch;
+    });
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, []);
   const fetchDashboardData = async () => {
     try {
