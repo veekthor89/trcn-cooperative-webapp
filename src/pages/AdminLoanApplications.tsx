@@ -124,7 +124,7 @@ export default function AdminLoanApplications() {
       if (appError) throw appError;
 
       // Create or update loan record
-      const { error: loanError } = await supabase.from("loans").insert({
+      const { data: loanData, error: loanError } = await supabase.from("loans").insert({
         user_id: selectedApp.user_id,
         loan_type: selectedApp.loan_type,
         principal_amount: selectedApp.requested_amount,
@@ -134,18 +134,86 @@ export default function AdminLoanApplications() {
         monthly_payment: selectedApp.monthly_payment,
         status: "active",
         next_payment_date: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split("T")[0],
-      });
+      }).select().single();
 
       if (loanError) throw loanError;
 
-      // Create notification
+      // Create guarantor approval requests and send notifications
+      const guarantorPromises = [];
+      
+      // Process Guarantor 1
+      if (selectedApp.guarantor_1_member_number) {
+        const { data: guarantor1Profile } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .eq("member_number", selectedApp.guarantor_1_member_number)
+          .single();
+
+        if (guarantor1Profile) {
+          guarantorPromises.push(
+            supabase.from("loan_guarantor_approvals").insert({
+              loan_id: loanData.id,
+              guarantor_user_id: guarantor1Profile.id,
+              guarantor_position: 1,
+              loan_amount: selectedApp.requested_amount,
+              loan_type: selectedApp.loan_type,
+              guarantor_member_id: selectedApp.guarantor_1_member_number,
+              guarantor_name: selectedApp.guarantor_1_name,
+              applicant_member_id: selectedApp.profiles?.member_number,
+              applicant_name: selectedApp.profiles?.full_name,
+              status: "pending",
+            }),
+            supabase.from("notifications").insert({
+              user_id: guarantor1Profile.id,
+              type: "guarantor_request",
+              message: `${selectedApp.profiles?.full_name} has listed you as a guarantor for their ${selectedApp.loan_type} loan of ₦${selectedApp.requested_amount.toLocaleString()}. Please review and respond.`,
+            })
+          );
+        }
+      }
+
+      // Process Guarantor 2
+      if (selectedApp.guarantor_2_member_number) {
+        const { data: guarantor2Profile } = await supabase
+          .from("profiles")
+          .select("id, full_name")
+          .eq("member_number", selectedApp.guarantor_2_member_number)
+          .single();
+
+        if (guarantor2Profile) {
+          guarantorPromises.push(
+            supabase.from("loan_guarantor_approvals").insert({
+              loan_id: loanData.id,
+              guarantor_user_id: guarantor2Profile.id,
+              guarantor_position: 2,
+              loan_amount: selectedApp.requested_amount,
+              loan_type: selectedApp.loan_type,
+              guarantor_member_id: selectedApp.guarantor_2_member_number,
+              guarantor_name: selectedApp.guarantor_2_name,
+              applicant_member_id: selectedApp.profiles?.member_number,
+              applicant_name: selectedApp.profiles?.full_name,
+              status: "pending",
+            }),
+            supabase.from("notifications").insert({
+              user_id: guarantor2Profile.id,
+              type: "guarantor_request",
+              message: `${selectedApp.profiles?.full_name} has listed you as a guarantor for their ${selectedApp.loan_type} loan of ₦${selectedApp.requested_amount.toLocaleString()}. Please review and respond.`,
+            })
+          );
+        }
+      }
+
+      // Wait for all guarantor operations to complete
+      await Promise.all(guarantorPromises);
+
+      // Create notification for applicant
       await supabase.from("notifications").insert({
         user_id: selectedApp.user_id,
         type: "loan_approved",
-        message: `Your ${selectedApp.loan_type} loan application for ₦${selectedApp.requested_amount.toLocaleString()} has been approved.`,
+        message: `Your ${selectedApp.loan_type} loan application for ₦${selectedApp.requested_amount.toLocaleString()} has been approved. Your guarantors have been notified.`,
       });
 
-      toast.success("Loan application approved successfully");
+      toast.success("Loan application approved and guarantors notified");
       setShowApproveDialog(false);
       setShowDetailDialog(false);
       fetchApplications();
