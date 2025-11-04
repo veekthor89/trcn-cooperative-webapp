@@ -141,70 +141,99 @@ export default function AdminLoanApplications() {
       // Create guarantor approval requests and send notifications
       const guarantorPromises = [];
       
+      console.log("Processing guarantors...", {
+        guarantor1: selectedApp.guarantor_1_member_number,
+        guarantor2: selectedApp.guarantor_2_member_number
+      });
+      
       // Process Guarantor 1
       if (selectedApp.guarantor_1_member_number) {
-        const { data: guarantor1Profile } = await supabase
+        const { data: guarantor1Profile, error: g1Error } = await supabase
           .from("profiles")
           .select("id, full_name")
           .eq("member_number", selectedApp.guarantor_1_member_number)
           .single();
 
+        console.log("Guarantor 1 lookup:", { guarantor1Profile, g1Error });
+
         if (guarantor1Profile) {
-          guarantorPromises.push(
-            supabase.from("loan_guarantor_approvals").insert({
-              loan_id: loanData.id,
-              guarantor_user_id: guarantor1Profile.id,
-              guarantor_position: 1,
-              loan_amount: selectedApp.requested_amount,
-              loan_type: selectedApp.loan_type,
-              guarantor_member_id: selectedApp.guarantor_1_member_number,
-              guarantor_name: selectedApp.guarantor_1_name,
-              applicant_member_id: selectedApp.profiles?.member_number,
-              applicant_name: selectedApp.profiles?.full_name,
-              status: "pending",
-            }),
-            supabase.from("notifications").insert({
-              user_id: guarantor1Profile.id,
-              type: "guarantor_request",
-              message: `${selectedApp.profiles?.full_name} has listed you as a guarantor for their ${selectedApp.loan_type} loan of ₦${selectedApp.requested_amount.toLocaleString()}. Please review and respond.`,
-            })
-          );
+          const approvalInsert = supabase.from("loan_guarantor_approvals").insert({
+            loan_id: loanData.id,
+            guarantor_user_id: guarantor1Profile.id,
+            guarantor_position: 1,
+            loan_amount: selectedApp.requested_amount,
+            loan_type: selectedApp.loan_type,
+            guarantor_member_id: selectedApp.guarantor_1_member_number,
+            guarantor_name: selectedApp.guarantor_1_name,
+            applicant_member_id: selectedApp.profiles?.member_number,
+            applicant_name: selectedApp.profiles?.full_name,
+            status: "pending",
+          });
+
+          const notificationInsert = supabase.from("notifications").insert({
+            user_id: guarantor1Profile.id,
+            type: "guarantor_request",
+            message: `${selectedApp.profiles?.full_name} has listed you as a guarantor for their ${selectedApp.loan_type} loan of ₦${selectedApp.requested_amount.toLocaleString()}. Please review and respond.`,
+          });
+
+          guarantorPromises.push(approvalInsert, notificationInsert);
+          console.log("Added guarantor 1 notifications");
+        } else {
+          console.error("Guarantor 1 not found:", selectedApp.guarantor_1_member_number);
+          toast.error(`Guarantor 1 (${selectedApp.guarantor_1_member_number}) not found in system`);
         }
       }
 
       // Process Guarantor 2
       if (selectedApp.guarantor_2_member_number) {
-        const { data: guarantor2Profile } = await supabase
+        const { data: guarantor2Profile, error: g2Error } = await supabase
           .from("profiles")
           .select("id, full_name")
           .eq("member_number", selectedApp.guarantor_2_member_number)
           .single();
 
+        console.log("Guarantor 2 lookup:", { guarantor2Profile, g2Error });
+
         if (guarantor2Profile) {
-          guarantorPromises.push(
-            supabase.from("loan_guarantor_approvals").insert({
-              loan_id: loanData.id,
-              guarantor_user_id: guarantor2Profile.id,
-              guarantor_position: 2,
-              loan_amount: selectedApp.requested_amount,
-              loan_type: selectedApp.loan_type,
-              guarantor_member_id: selectedApp.guarantor_2_member_number,
-              guarantor_name: selectedApp.guarantor_2_name,
-              applicant_member_id: selectedApp.profiles?.member_number,
-              applicant_name: selectedApp.profiles?.full_name,
-              status: "pending",
-            }),
-            supabase.from("notifications").insert({
-              user_id: guarantor2Profile.id,
-              type: "guarantor_request",
-              message: `${selectedApp.profiles?.full_name} has listed you as a guarantor for their ${selectedApp.loan_type} loan of ₦${selectedApp.requested_amount.toLocaleString()}. Please review and respond.`,
-            })
-          );
+          const approvalInsert = supabase.from("loan_guarantor_approvals").insert({
+            loan_id: loanData.id,
+            guarantor_user_id: guarantor2Profile.id,
+            guarantor_position: 2,
+            loan_amount: selectedApp.requested_amount,
+            loan_type: selectedApp.loan_type,
+            guarantor_member_id: selectedApp.guarantor_2_member_number,
+            guarantor_name: selectedApp.guarantor_2_name,
+            applicant_member_id: selectedApp.profiles?.member_number,
+            applicant_name: selectedApp.profiles?.full_name,
+            status: "pending",
+          });
+
+          const notificationInsert = supabase.from("notifications").insert({
+            user_id: guarantor2Profile.id,
+            type: "guarantor_request",
+            message: `${selectedApp.profiles?.full_name} has listed you as a guarantor for their ${selectedApp.loan_type} loan of ₦${selectedApp.requested_amount.toLocaleString()}. Please review and respond.`,
+          });
+
+          guarantorPromises.push(approvalInsert, notificationInsert);
+          console.log("Added guarantor 2 notifications");
+        } else {
+          console.error("Guarantor 2 not found:", selectedApp.guarantor_2_member_number);
+          toast.error(`Guarantor 2 (${selectedApp.guarantor_2_member_number}) not found in system`);
         }
       }
 
       // Wait for all guarantor operations to complete
-      await Promise.all(guarantorPromises);
+      if (guarantorPromises.length > 0) {
+        const results = await Promise.all(guarantorPromises);
+        console.log("Guarantor operations results:", results);
+        results.forEach((result, index) => {
+          if (result.error) {
+            console.error(`Guarantor operation ${index} error:`, result.error);
+          }
+        });
+      } else {
+        console.warn("No guarantor promises to process");
+      }
 
       // Create notification for applicant
       await supabase.from("notifications").insert({
