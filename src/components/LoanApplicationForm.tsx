@@ -261,11 +261,68 @@ export default function LoanApplicationForm({ onSuccess, onCancel }: LoanApplica
 
       if (error) throw error;
 
+      // If not draft, send guarantor approval requests
+      if (!isDraft && data) {
+        const guarantorPromises = [];
+
+        // Send notification to Guarantor 1
+        if (guarantor1?.id) {
+          const approval1 = supabase.from("loan_guarantor_approvals").insert({
+            loan_application_number: data.id,
+            guarantor_user_id: guarantor1.id,
+            guarantor_position: 1,
+            loan_amount: parseFloat(loanAmount),
+            loan_type: loanType as any,
+            guarantor_member_id: guarantor1.member_number,
+            guarantor_name: guarantor1.full_name,
+            applicant_member_id: profile?.member_number,
+            applicant_name: profile?.full_name,
+            status: "pending",
+          });
+
+          const notification1 = supabase.from("notifications").insert({
+            user_id: guarantor1.id,
+            type: "guarantor_request",
+            message: `${profile?.full_name} (${profile?.member_number}) has requested you to be a guarantor for their ${loanType} loan of ₦${parseFloat(loanAmount).toLocaleString()}. Please review and respond.`,
+          });
+
+          guarantorPromises.push(approval1, notification1);
+        }
+
+        // Send notification to Guarantor 2
+        if (guarantor2?.id) {
+          const approval2 = supabase.from("loan_guarantor_approvals").insert({
+            loan_application_number: data.id,
+            guarantor_user_id: guarantor2.id,
+            guarantor_position: 2,
+            loan_amount: parseFloat(loanAmount),
+            loan_type: loanType as any,
+            guarantor_member_id: guarantor2.member_number,
+            guarantor_name: guarantor2.full_name,
+            applicant_member_id: profile?.member_number,
+            applicant_name: profile?.full_name,
+            status: "pending",
+          });
+
+          const notification2 = supabase.from("notifications").insert({
+            user_id: guarantor2.id,
+            type: "guarantor_request",
+            message: `${profile?.full_name} (${profile?.member_number}) has requested you to be a guarantor for their ${loanType} loan of ₦${parseFloat(loanAmount).toLocaleString()}. Please review and respond.`,
+          });
+
+          guarantorPromises.push(approval2, notification2);
+        }
+
+        if (guarantorPromises.length > 0) {
+          await Promise.all(guarantorPromises);
+        }
+      }
+
       toast({
         title: isDraft ? "Draft Saved" : "Application Submitted",
         description: isDraft 
           ? "Your loan application has been saved as draft" 
-          : `Your loan application (ID: ${data.id.slice(0, 8)}) has been submitted successfully`,
+          : `Your loan application has been submitted successfully. Guarantors have been notified.`,
       });
 
       onSuccess();

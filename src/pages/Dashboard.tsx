@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins } from "lucide-react";
+import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import LoanApplicationForm from "@/components/LoanApplicationForm";
 import ShareSubscriptionForm from "@/components/ShareSubscriptionForm";
 import { SpecialContributionApplicationModal } from "@/components/SpecialContributionApplicationModal";
+import GuarantorApprovalModal from "@/components/GuarantorApprovalModal";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
@@ -32,11 +33,15 @@ const Dashboard = () => {
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [showContributionDialog, setShowContributionDialog] = useState(false);
   const [chartData, setChartData] = useState<any[]>([]);
+  const [guarantorRequests, setGuarantorRequests] = useState<any[]>([]);
+  const [selectedGuarantorRequest, setSelectedGuarantorRequest] = useState<any>(null);
+  const [showGuarantorModal, setShowGuarantorModal] = useState(false);
   useEffect(() => {
     fetchDashboardData();
     fetchNotifications();
+    fetchGuarantorRequests();
 
-    // Subscribe to realtime notifications
+    // Subscribe to realtime notifications and guarantor requests
     const setupRealtimeSubscription = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
@@ -54,6 +59,19 @@ const Dashboard = () => {
           () => {
             // Refetch notifications when any change occurs
             fetchNotifications();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'loan_guarantor_approvals',
+            filter: `guarantor_user_id=eq.${session.user.id}`
+          },
+          () => {
+            // Refetch guarantor requests when any change occurs
+            fetchGuarantorRequests();
           }
         )
         .subscribe();
@@ -215,6 +233,36 @@ const Dashboard = () => {
     }
   };
 
+  const fetchGuarantorRequests = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data, error } = await supabase
+        .from("loan_guarantor_approvals")
+        .select("*")
+        .eq("guarantor_user_id", session.user.id)
+        .eq("status", "pending")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      setGuarantorRequests(data || []);
+    } catch (error) {
+      console.error("Error fetching guarantor requests:", error);
+    }
+  };
+
+  const handleGuarantorRequestClick = (request: any) => {
+    setSelectedGuarantorRequest(request);
+    setShowGuarantorModal(true);
+  };
+
+  const handleGuarantorSuccess = () => {
+    fetchGuarantorRequests();
+    fetchNotifications();
+  };
+
   const markAsRead = async (notificationId: string) => {
     try {
       const { error } = await supabase
@@ -336,16 +384,29 @@ const Dashboard = () => {
                     ) : (
                       <div className="divide-y">
                         {notifications.map((notification) => (
-                          <div
+                           <div
                             key={notification.id}
                             className={`p-4 hover:bg-muted/50 cursor-pointer transition-colors ${
                               !notification.read_status ? "bg-muted/30" : ""
                             }`}
-                            onClick={() => markAsRead(notification.id)}
+                            onClick={() => {
+                              markAsRead(notification.id);
+                              // If it's a guarantor request, find and open the modal
+                              if (notification.type === "guarantor_request") {
+                                const request = guarantorRequests.find(r => 
+                                  r.applicant_name === notification.message.match(/^([^(]+)/)?.[1]?.trim()
+                                );
+                                if (request) {
+                                  handleGuarantorRequestClick(request);
+                                }
+                              }
+                            }}
                           >
                             <div className="flex items-start gap-2">
                               <div className="flex-1">
-                                <p className="text-sm font-medium">{notification.type}</p>
+                                <p className="text-sm font-medium capitalize">
+                                  {notification.type.replace(/_/g, " ")}
+                                </p>
                                 <p className="text-sm text-muted-foreground mt-1">
                                   {notification.message}
                                 </p>
@@ -372,6 +433,54 @@ const Dashboard = () => {
                 {[1, 2, 3].map(i => <Card key={i} className="animate-pulse h-32" />)}
               </div>
             </div> : <>
+              {/* Guarantor Requests Alert */}
+              {guarantorRequests.length > 0 && (
+                <Card className="bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-900">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2 text-yellow-900 dark:text-yellow-100">
+                      <AlertCircle className="h-5 w-5" />
+                      Pending Guarantor Requests ({guarantorRequests.length})
+                    </CardTitle>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                      You have loan guarantor requests that need your response
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {guarantorRequests.map((request) => (
+                      <div
+                        key={request.id}
+                        className="p-4 bg-white dark:bg-yellow-950/40 rounded-lg border border-yellow-200 dark:border-yellow-800 hover:border-yellow-300 dark:hover:border-yellow-700 transition-colors cursor-pointer"
+                        onClick={() => handleGuarantorRequestClick(request)}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <p className="font-semibold text-yellow-900 dark:text-yellow-100">
+                              {request.applicant_name} ({request.applicant_member_id})
+                            </p>
+                            <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                              {request.loan_type.charAt(0).toUpperCase() + request.loan_type.slice(1)} Loan - ₦{request.loan_amount.toLocaleString()}
+                            </p>
+                            <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">
+                              Position: Guarantor {request.guarantor_position}
+                            </p>
+                          </div>
+                          <Button 
+                            size="sm" 
+                            className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleGuarantorRequestClick(request);
+                            }}
+                          >
+                            Respond
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Stats Cards - Full Width */}
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
                 <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900">
@@ -623,6 +732,18 @@ const Dashboard = () => {
         onOpenChange={setShowContributionDialog}
         onSuccess={fetchDashboardData}
       />
+
+      {selectedGuarantorRequest && (
+        <GuarantorApprovalModal
+          request={selectedGuarantorRequest}
+          open={showGuarantorModal}
+          onClose={() => {
+            setShowGuarantorModal(false);
+            setSelectedGuarantorRequest(null);
+          }}
+          onSuccess={handleGuarantorSuccess}
+        />
+      )}
     </DashboardLayout>;
 };
 export default Dashboard;
