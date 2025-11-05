@@ -393,11 +393,18 @@ const Dashboard = () => {
                               markAsRead(notification.id);
                               // If it's a guarantor request, find and open the modal
                               if (notification.type === "guarantor_request") {
+                                // Extract member number from message - format: "Name (MEMBER_NUMBER) has requested..."
+                                const memberMatch = notification.message.match(/\(([^)]+)\)/);
+                                const applicantMemberId = memberMatch ? memberMatch[1] : null;
+                                
                                 const request = guarantorRequests.find(r => 
-                                  r.applicant_name === notification.message.match(/^([^(]+)/)?.[1]?.trim()
+                                  r.applicant_member_id === applicantMemberId
                                 );
+                                
                                 if (request) {
                                   handleGuarantorRequestClick(request);
+                                } else {
+                                  toast.error("Could not find the guarantor request. It may have been processed already.");
                                 }
                               }
                             }}
