@@ -393,18 +393,30 @@ const Dashboard = () => {
                               markAsRead(notification.id);
                               // If it's a guarantor request, find and open the modal
                               if (notification.type === "guarantor_request") {
-                                // Extract member number from message - format: "Name (MEMBER_NUMBER) has requested..."
-                                const memberMatch = notification.message.match(/\(([^)]+)\)/);
-                                const applicantMemberId = memberMatch ? memberMatch[1] : null;
+                                // Extract loan ID from message - format: "... Loan ID: <uuid>"
+                                const loanIdMatch = notification.message.match(/Loan ID: ([a-f0-9-]+)/);
+                                const loanId = loanIdMatch ? loanIdMatch[1] : null;
                                 
+                                console.log("Notification clicked:", { loanId, message: notification.message });
+                                console.log("Available requests:", guarantorRequests);
+                                
+                                // Find the matching request by loan_id or loan_application_number
                                 const request = guarantorRequests.find(r => 
-                                  r.applicant_member_id === applicantMemberId
+                                  r.loan_id === loanId || r.loan_application_number === loanId
                                 );
                                 
                                 if (request) {
+                                  console.log("Found matching request:", request);
                                   handleGuarantorRequestClick(request);
                                 } else {
-                                  toast.error("Could not find the guarantor request. It may have been processed already.");
+                                  console.error("No matching request found for loan ID:", loanId);
+                                  // If we can't find by loan ID, just show the first pending request for this user
+                                  if (guarantorRequests.length > 0) {
+                                    console.log("Showing first available request");
+                                    handleGuarantorRequestClick(guarantorRequests[0]);
+                                  } else {
+                                    toast.error("Could not find the guarantor request. It may have been processed already.");
+                                  }
                                 }
                               }
                             }}

@@ -263,58 +263,112 @@ export default function LoanApplicationForm({ onSuccess, onCancel }: LoanApplica
 
       // If not draft, send guarantor approval requests
       if (!isDraft && data) {
-        const guarantorPromises = [];
+        try {
+          // Create guarantor approvals and notifications with proper error handling
+          const guarantorOps = [];
 
-        // Send notification to Guarantor 1
-        if (guarantor1?.id) {
-          const approval1 = supabase.from("loan_guarantor_approvals").insert({
-            loan_application_number: data.id,
-            guarantor_user_id: guarantor1.id,
-            guarantor_position: 1,
-            loan_amount: parseFloat(loanAmount),
-            loan_type: loanType as any,
-            guarantor_member_id: guarantor1.member_number,
-            guarantor_name: guarantor1.full_name,
-            applicant_member_id: profile?.member_number,
-            applicant_name: profile?.full_name,
-            status: "pending",
+          // Guarantor 1
+          if (guarantor1?.id) {
+            console.log("Creating guarantor 1 approval:", {
+              loan_id: data.id,
+              guarantor: guarantor1.full_name,
+              applicant: profile?.full_name
+            });
+
+            const { data: approval1Data, error: approval1Error } = await supabase
+              .from("loan_guarantor_approvals")
+              .insert({
+                loan_id: data.id,
+                loan_application_number: data.id,
+                guarantor_user_id: guarantor1.id,
+                guarantor_position: 1,
+                loan_amount: parseFloat(loanAmount),
+                loan_type: loanType as any,
+                guarantor_member_id: guarantor1.member_number || guarantor1.staff_id || "N/A",
+                guarantor_name: guarantor1.full_name,
+                applicant_member_id: profile?.member_number || profile?.staff_id || "N/A",
+                applicant_name: profile?.full_name,
+                status: "pending",
+              })
+              .select()
+              .single();
+
+            if (approval1Error) {
+              console.error("Error creating guarantor 1 approval:", approval1Error);
+              throw new Error(`Failed to create guarantor approval: ${approval1Error.message}`);
+            }
+
+            // Create notification with loan ID reference for easy matching
+            const { error: notif1Error } = await supabase
+              .from("notifications")
+              .insert({
+                user_id: guarantor1.id,
+                type: "guarantor_request",
+                message: `${profile?.full_name} has requested you to be a guarantor for their ${loanType} loan of ₦${parseFloat(loanAmount).toLocaleString()}. Loan ID: ${data.id}`,
+              });
+
+            if (notif1Error) {
+              console.error("Error creating guarantor 1 notification:", notif1Error);
+            }
+
+            console.log("Guarantor 1 approval created successfully:", approval1Data);
+          }
+
+          // Guarantor 2
+          if (guarantor2?.id) {
+            console.log("Creating guarantor 2 approval:", {
+              loan_id: data.id,
+              guarantor: guarantor2.full_name,
+              applicant: profile?.full_name
+            });
+
+            const { data: approval2Data, error: approval2Error } = await supabase
+              .from("loan_guarantor_approvals")
+              .insert({
+                loan_id: data.id,
+                loan_application_number: data.id,
+                guarantor_user_id: guarantor2.id,
+                guarantor_position: 2,
+                loan_amount: parseFloat(loanAmount),
+                loan_type: loanType as any,
+                guarantor_member_id: guarantor2.member_number || guarantor2.staff_id || "N/A",
+                guarantor_name: guarantor2.full_name,
+                applicant_member_id: profile?.member_number || profile?.staff_id || "N/A",
+                applicant_name: profile?.full_name,
+                status: "pending",
+              })
+              .select()
+              .single();
+
+            if (approval2Error) {
+              console.error("Error creating guarantor 2 approval:", approval2Error);
+              throw new Error(`Failed to create guarantor approval: ${approval2Error.message}`);
+            }
+
+            // Create notification with loan ID reference
+            const { error: notif2Error } = await supabase
+              .from("notifications")
+              .insert({
+                user_id: guarantor2.id,
+                type: "guarantor_request",
+                message: `${profile?.full_name} has requested you to be a guarantor for their ${loanType} loan of ₦${parseFloat(loanAmount).toLocaleString()}. Loan ID: ${data.id}`,
+              });
+
+            if (notif2Error) {
+              console.error("Error creating guarantor 2 notification:", notif2Error);
+            }
+
+            console.log("Guarantor 2 approval created successfully:", approval2Data);
+          }
+
+          console.log("All guarantor operations completed successfully");
+        } catch (guarantorError: any) {
+          console.error("Error in guarantor operations:", guarantorError);
+          toast({
+            title: "Warning",
+            description: "Loan application submitted but there was an issue notifying guarantors. Please contact admin.",
+            variant: "destructive",
           });
-
-          const notification1 = supabase.from("notifications").insert({
-            user_id: guarantor1.id,
-            type: "guarantor_request",
-            message: `${profile?.full_name} (${profile?.member_number}) has requested you to be a guarantor for their ${loanType} loan of ₦${parseFloat(loanAmount).toLocaleString()}. Please review and respond.`,
-          });
-
-          guarantorPromises.push(approval1, notification1);
-        }
-
-        // Send notification to Guarantor 2
-        if (guarantor2?.id) {
-          const approval2 = supabase.from("loan_guarantor_approvals").insert({
-            loan_application_number: data.id,
-            guarantor_user_id: guarantor2.id,
-            guarantor_position: 2,
-            loan_amount: parseFloat(loanAmount),
-            loan_type: loanType as any,
-            guarantor_member_id: guarantor2.member_number,
-            guarantor_name: guarantor2.full_name,
-            applicant_member_id: profile?.member_number,
-            applicant_name: profile?.full_name,
-            status: "pending",
-          });
-
-          const notification2 = supabase.from("notifications").insert({
-            user_id: guarantor2.id,
-            type: "guarantor_request",
-            message: `${profile?.full_name} (${profile?.member_number}) has requested you to be a guarantor for their ${loanType} loan of ₦${parseFloat(loanAmount).toLocaleString()}. Please review and respond.`,
-          });
-
-          guarantorPromises.push(approval2, notification2);
-        }
-
-        if (guarantorPromises.length > 0) {
-          await Promise.all(guarantorPromises);
         }
       }
 
