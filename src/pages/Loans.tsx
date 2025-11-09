@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Calendar, DollarSign, TrendingUp, Clock } from "lucide-react";
+import { Plus, Calendar, DollarSign, TrendingUp, CalendarDays, CalendarCheck } from "lucide-react";
 import { toast } from "sonner";
 import LoanApplicationForm from "@/components/LoanApplicationForm";
 
@@ -22,6 +22,7 @@ interface Loan {
   next_payment_date: string | null;
   monthly_payment: number | null;
   repayment_period: number;
+  created_at: string;
 }
 
 interface LoanApplication {
@@ -124,8 +125,27 @@ const Loans = () => {
   const totalPaid = loans.reduce((sum, loan) => 
     sum + (Number(loan.principal_amount) - Number(loan.outstanding_balance)), 0
   );
-  const nextPaymentDate = loans.length > 0 
-    ? new Date(Math.min(...loans.filter(l => l.next_payment_date).map(l => new Date(l.next_payment_date!).getTime()))).toLocaleDateString()
+  
+  // Calculate start date (earliest loan creation date + 1 month)
+  const startDate = loans.length > 0 
+    ? (() => {
+        const earliestLoan = new Date(Math.min(...loans.map(l => new Date(l.created_at).getTime())));
+        earliestLoan.setMonth(earliestLoan.getMonth() + 1);
+        return earliestLoan.toLocaleDateString();
+      })()
+    : "N/A";
+  
+  // Calculate end date (latest completion date among all loans)
+  const endDate = loans.length > 0 
+    ? (() => {
+        const latestEnd = Math.max(...loans.map(l => {
+          const loanStart = new Date(l.created_at);
+          loanStart.setMonth(loanStart.getMonth() + 1); // Start is 1 month after creation
+          loanStart.setMonth(loanStart.getMonth() + l.repayment_period); // Add repayment period
+          return loanStart.getTime();
+        }));
+        return new Date(latestEnd).toLocaleDateString();
+      })()
     : "N/A";
 
   if (loading) {
@@ -133,8 +153,8 @@ const Loans = () => {
       <DashboardLayout>
         <div className="space-y-6">
           <Skeleton className="h-12 w-64" />
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            {[1, 2, 3, 4, 5].map(i => (
               <Skeleton key={i} className="h-32" />
             ))}
           </div>
@@ -165,7 +185,7 @@ const Loans = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <Card className="bg-[#F2E4E7] border-[#F2E4E7]">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-[#B21F1F]">Total Outstanding</CardTitle>
@@ -188,14 +208,25 @@ const Loans = () => {
             </CardContent>
           </Card>
 
-          <Card className="bg-[#E9E5E5] border-[#E9E5E5]">
+          <Card className="bg-[#E0ECFD] border-[#E0ECFD]">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-[#562B08]">Next Payment</CardTitle>
-              <Clock className="h-4 w-4 text-[#562B08]" />
+              <CardTitle className="text-sm font-medium text-[#1E40AF]">Start Date</CardTitle>
+              <CalendarDays className="h-4 w-4 text-[#1E40AF]" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-[#562B08]">{nextPaymentDate}</div>
-              <p className="text-xs text-[#562B08]/70">Due date</p>
+              <div className="text-2xl font-bold text-[#1E40AF]">{startDate}</div>
+              <p className="text-xs text-[#1E40AF]/70">Loan start date</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-[#E9E5E5] border-[#E9E5E5]">
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-[#562B08]">End Date</CardTitle>
+              <CalendarCheck className="h-4 w-4 text-[#562B08]" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-[#562B08]">{endDate}</div>
+              <p className="text-xs text-[#562B08]/70">Expected completion</p>
             </CardContent>
           </Card>
 
