@@ -502,7 +502,10 @@ const Dashboard = () => {
 
               {/* Stats Cards - Full Width */}
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-                <Card className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900">
+                <Card 
+                  className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900 cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => navigate('/savings')}
+                >
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-sm font-medium text-green-900 dark:text-green-100">Total Savings</p>
@@ -515,7 +518,10 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900">
+                <Card 
+                  className="bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900 cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => navigate('/loans')}
+                >
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-sm font-medium text-red-900 dark:text-red-100">Active Loans</p>
@@ -530,7 +536,10 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900">
+                <Card 
+                  className="bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900 cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => navigate('/special-contributions')}
+                >
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-sm font-medium text-purple-900 dark:text-purple-100">Special Contributions</p>
@@ -543,7 +552,11 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
 
-                <Card style={{ backgroundColor: '#fff7ed' }} className="border-orange-200 dark:border-orange-900">
+                <Card 
+                  style={{ backgroundColor: '#fff7ed' }} 
+                  className="border-orange-200 dark:border-orange-900 cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => navigate('/shares')}
+                >
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-sm font-medium" style={{ color: '#fa7516' }}>Total Shares</p>
