@@ -132,10 +132,10 @@ export default function LoanApplicationForm({ onSuccess, onCancel }: LoanApplica
   };
 
   const totalExistingMonthly = existingLoans.reduce((sum, loan) => sum + (loan.monthly_payment || 0), 0);
-  const maxAllowedMonthly = monthlyIncome ? parseFloat(monthlyIncome) * 0.2 : 0;
+  const maxAllowedMonthly = monthlyIncome ? parseFloat(monthlyIncome) * 0.4 : 0;
   const remainingCapacity = maxAllowedMonthly - totalExistingMonthly;
   const newTotalMonthly = totalExistingMonthly + calculations.monthlyPayment;
-  const exceeds20Percent = newTotalMonthly > maxAllowedMonthly;
+  const exceeds40Percent = newTotalMonthly > maxAllowedMonthly;
 
   const getPeriodOptions = () => {
     if (!loanType) return [];
@@ -578,7 +578,7 @@ export default function LoanApplicationForm({ onSuccess, onCancel }: LoanApplica
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Salary Deduction Percentage</span>
-                <span className={exceeds20Percent ? "text-destructive font-semibold" : ""}>
+                <span className={exceeds40Percent ? "text-destructive font-semibold" : ""}>
                   {((newTotalMonthly / parseFloat(monthlyIncome)) * 100).toFixed(1)}%
                 </span>
               </div>
@@ -586,12 +586,12 @@ export default function LoanApplicationForm({ onSuccess, onCancel }: LoanApplica
                 value={(newTotalMonthly / parseFloat(monthlyIncome)) * 100} 
                 className="h-2"
               />
-              {exceeds20Percent && (
+              {exceeds40Percent && (
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
                     Warning: Total monthly loan deductions ({((newTotalMonthly / parseFloat(monthlyIncome)) * 100).toFixed(1)}%) 
-                    exceed the recommended 20% of salary capacity.
+                    exceed the recommended 40% of salary capacity.
                   </AlertDescription>
                 </Alert>
               )}
