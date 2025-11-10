@@ -504,7 +504,7 @@ const Dashboard = () => {
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
                 <Card 
                   className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900 cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => navigate('/savings')}
+                  onClick={() => navigate('/dashboard/savings')}
                 >
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
@@ -520,7 +520,7 @@ const Dashboard = () => {
 
                 <Card 
                   className="bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900 cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => navigate('/loans')}
+                  onClick={() => navigate('/dashboard/loans')}
                 >
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
@@ -538,7 +538,7 @@ const Dashboard = () => {
 
                 <Card 
                   className="bg-purple-50 dark:bg-purple-950/20 border-purple-200 dark:border-purple-900 cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => navigate('/special-contributions')}
+                  onClick={() => navigate('/dashboard/special-contributions')}
                 >
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
@@ -555,7 +555,7 @@ const Dashboard = () => {
                 <Card 
                   style={{ backgroundColor: '#fff7ed' }} 
                   className="border-orange-200 dark:border-orange-900 cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => navigate('/shares')}
+                  onClick={() => navigate('/dashboard/shares')}
                 >
                   <CardContent className="pt-6 pb-6">
                     <div className="flex items-center justify-between mb-3">
