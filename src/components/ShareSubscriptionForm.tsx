@@ -16,13 +16,12 @@ import { AlertCircle, CheckCircle2, Upload } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const MAX_SHARES = 3500;
-const PRICE_PER_SHARE = 1000;
+const PRICE_PER_SHARE = 25;
 
 const formSchema = z.object({
   sharesRequested: z.number().min(1, "Must request at least 1 share"),
-  paymentMethod: z.enum(["cash_deposit", "bank_transfer", "salary_deduction"]),
+  paymentMethod: z.enum(["cash_deposit", "bank_transfer"]),
   paymentReference: z.string().optional(),
-  deductionMonths: z.number().optional(),
   termsAccepted: z.boolean().refine(val => val === true, "You must accept the terms"),
   declaration1: z.boolean().refine(val => val === true, "This declaration is required"),
   declaration2: z.boolean().refine(val => val === true, "This declaration is required"),
@@ -48,7 +47,7 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
     resolver: zodResolver(formSchema),
     defaultValues: {
       sharesRequested: 1,
-      paymentMethod: "salary_deduction",
+      paymentMethod: "cash_deposit",
       termsAccepted: false,
       declaration1: false,
       declaration2: false,
@@ -58,13 +57,11 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
 
   const sharesRequested = watch("sharesRequested") || 0;
   const paymentMethod = watch("paymentMethod");
-  const deductionMonths = watch("deductionMonths") || 1;
 
   const currentSharesOwned = currentShares?.total_shares || 0;
   const totalCost = sharesRequested * PRICE_PER_SHARE;
   const newTotalShares = currentSharesOwned + sharesRequested;
   const remainingCapacity = MAX_SHARES - newTotalShares;
-  const monthlyDeduction = paymentMethod === "salary_deduction" ? totalCost / deductionMonths : 0;
 
   useEffect(() => {
     fetchUserData();
@@ -158,8 +155,6 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
         paymentProofUrl = await uploadPaymentProof(paymentProofFile);
       }
 
-      const monthlyAmount = paymentMethod === "salary_deduction" ? totalCost / data.deductionMonths! : null;
-
       const { data: subscription, error } = await supabase
         .from("share_subscriptions")
         .insert({
@@ -173,8 +168,8 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
           payment_method: data.paymentMethod,
           payment_reference: data.paymentReference || null,
           payment_proof_url: paymentProofUrl || null,
-          deduction_months: data.deductionMonths || null,
-          monthly_deduction_amount: monthlyAmount,
+          deduction_months: null,
+          monthly_deduction_amount: null,
           status: "pending",
           terms_accepted: data.termsAccepted,
           declaration_1: data.declaration1,
@@ -189,8 +184,8 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
       // Create initial payment record
       await supabase.from("share_subscription_payments").insert({
         subscription_id: subscription.id,
-        amount: paymentMethod === "salary_deduction" ? monthlyAmount : totalCost,
-        payment_type: paymentMethod === "salary_deduction" ? "deduction_1" : "initial",
+        amount: totalCost,
+        payment_type: "initial",
         reference_number: data.paymentReference || null,
         status: "pending",
       });
@@ -380,10 +375,6 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
               onValueChange={(value) => setValue("paymentMethod", value as any)}
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="salary_deduction" id="salary" />
-                <Label htmlFor="salary">Salary Deduction</Label>
-              </div>
-              <div className="flex items-center space-x-2">
                 <RadioGroupItem value="cash_deposit" id="cash" />
                 <Label htmlFor="cash">Cash Deposit</Label>
               </div>
@@ -393,29 +384,6 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
               </div>
             </RadioGroup>
           </div>
-
-          {paymentMethod === "salary_deduction" && (
-            <div>
-              <Label>Deduction Period (Months) *</Label>
-              <Select
-                value={deductionMonths?.toString()}
-                onValueChange={(value) => setValue("deductionMonths", parseInt(value))}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1 Month</SelectItem>
-                  <SelectItem value="3">3 Months</SelectItem>
-                  <SelectItem value="6">6 Months</SelectItem>
-                  <SelectItem value="12">12 Months</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-sm text-muted-foreground mt-1">
-                Monthly Deduction: ₦{monthlyDeduction.toLocaleString()}
-              </p>
-            </div>
-          )}
 
           {(paymentMethod === "cash_deposit" || paymentMethod === "bank_transfer") && (
             <>
@@ -455,7 +423,7 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
         <CardContent className="space-y-2 text-sm">
           <ul className="list-disc list-inside space-y-1">
             <li>Maximum of 3,500 shares per member</li>
-            <li>Current share price: ₦1,000 per share</li>
+            <li>Current share price: ₦25 per share</li>
             <li>Shares earn annual dividends based on cooperative performance</li>
             <li>Application period: Open year-round</li>
             <li>Shares are transferable subject to board approval</li>
@@ -518,7 +486,7 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
               onCheckedChange={(checked) => setValue("declaration3", checked as boolean)}
             />
             <Label htmlFor="dec3" className="text-sm leading-relaxed">
-              I authorize salary deductions (if applicable) for the payment of shares as specified
+              I commit to making payment as per the selected payment method and understand that my application is subject to payment verification
             </Label>
           </div>
           {errors.declaration3 && (
