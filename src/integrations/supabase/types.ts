@@ -319,6 +319,7 @@ export type Database = {
           bank_name: string | null
           bvn: string | null
           city: string | null
+          cooperative_id: string | null
           created_at: string | null
           date_of_birth: string | null
           department: string | null
@@ -351,6 +352,7 @@ export type Database = {
           bank_name?: string | null
           bvn?: string | null
           city?: string | null
+          cooperative_id?: string | null
           created_at?: string | null
           date_of_birth?: string | null
           department?: string | null
@@ -383,6 +385,7 @@ export type Database = {
           bank_name?: string | null
           bvn?: string | null
           city?: string | null
+          cooperative_id?: string | null
           created_at?: string | null
           date_of_birth?: string | null
           department?: string | null

@@ -40,6 +40,7 @@ const Profile = () => {
     department: "",
     state_of_deployment: "",
     staff_id: "",
+    cooperative_id: "",
     years_of_service: 0,
     next_of_kin_name: "",
     next_of_kin_relationship: "",
@@ -113,6 +114,7 @@ const Profile = () => {
           department: profile.department || "",
           state_of_deployment: profile.state_of_deployment || "",
           staff_id: profile.staff_id || "",
+          cooperative_id: profile.cooperative_id || "",
           years_of_service: profile.years_of_service || 0,
           next_of_kin_name: profile.next_of_kin_name || "",
           next_of_kin_relationship: profile.next_of_kin_relationship || "",
@@ -178,6 +180,7 @@ const Profile = () => {
         department: profileData.department,
         state_of_deployment: profileData.state_of_deployment,
         staff_id: profileData.staff_id,
+        cooperative_id: profileData.cooperative_id,
         years_of_service: profileData.years_of_service,
         next_of_kin_name: profileData.next_of_kin_name,
         next_of_kin_relationship: profileData.next_of_kin_relationship,
@@ -544,6 +547,13 @@ const Profile = () => {
                 <Input id="staff_id" value={profileData.staff_id} onChange={e => setProfileData({
                 ...profileData,
                 staff_id: e.target.value
+              })} disabled={!editMode} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cooperative_id">Cooperative ID</Label>
+                <Input id="cooperative_id" value={profileData.cooperative_id} onChange={e => setProfileData({
+                ...profileData,
+                cooperative_id: e.target.value
               })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
