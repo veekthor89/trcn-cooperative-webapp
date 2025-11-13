@@ -177,6 +177,10 @@ export default function PrintableSpecialContribution({
                 <p className="text-muted-foreground">Account Name:</p>
                 <p className="font-semibold border-b border-dotted pb-1">{contribution.account_name}</p>
               </div>
+              <div>
+                <p className="text-muted-foreground">Account Type:</p>
+                <p className="font-semibold border-b border-dotted pb-1">{contribution.account_type || 'N/A'}</p>
+              </div>
             </div>
           </div>
 

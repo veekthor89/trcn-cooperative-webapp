@@ -46,6 +46,7 @@ export function SpecialContributionApplicationModal({
     bank_name: "",
     account_number: "",
     account_name: "",
+    account_type: "",
     salary_deduction_auth: false,
     terms_understanding: false,
     terms_acceptance: false
@@ -141,6 +142,7 @@ export function SpecialContributionApplicationModal({
           bank_name: formData.bank_name,
           account_number: formData.account_number,
           account_name: formData.account_name,
+          account_type: formData.account_type,
           application_status: (isDraft ? "draft" : "pending") as any
         }]);
 
@@ -180,6 +182,7 @@ export function SpecialContributionApplicationModal({
       bank_name: "",
       account_number: "",
       account_name: "",
+      account_type: "",
       salary_deduction_auth: false,
       terms_understanding: false,
       terms_acceptance: false
@@ -234,6 +237,7 @@ export function SpecialContributionApplicationModal({
                   <p><strong>Bank:</strong> {formData.bank_name}</p>
                   <p><strong>Account Number:</strong> {formData.account_number}</p>
                   <p><strong>Account Name:</strong> {formData.account_name}</p>
+                  <p><strong>Account Type:</strong> {formData.account_type}</p>
                 </div>
               </div>
 
@@ -363,6 +367,18 @@ export function SpecialContributionApplicationModal({
                         onChange={(e) => setFormData({...formData, account_number: e.target.value.replace(/\D/g, '')})}
                         placeholder="10-digit account number"
                       />
+                    </div>
+                    <div>
+                      <Label>Account Type</Label>
+                      <Select value={formData.account_type} onValueChange={(value) => setFormData({...formData, account_type: value})}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select account type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Savings">Savings</SelectItem>
+                          <SelectItem value="Current">Current</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="md:col-span-2">
                       <Label>Account Name</Label>
