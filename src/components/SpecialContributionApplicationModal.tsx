@@ -424,7 +424,7 @@ export function SpecialContributionApplicationModal({
                 <Button 
                   type="button" 
                   onClick={() => setShowPreview(true)} 
-                  disabled={!formData.monthly_amount || !formData.purpose_category}
+                  disabled={!formData.monthly_amount}
                 >
                   Preview Application
                 </Button>

@@ -678,7 +678,9 @@ export type Database = {
           maturity_date: string | null
           member_number: string | null
           monthly_amount: number
-          purpose_category: Database["public"]["Enums"]["contribution_purpose"]
+          purpose_category:
+            | Database["public"]["Enums"]["contribution_purpose"]
+            | null
           purpose_description: string | null
           state_of_assignment: string | null
           total_contributed: number | null
@@ -704,7 +706,9 @@ export type Database = {
           maturity_date?: string | null
           member_number?: string | null
           monthly_amount: number
-          purpose_category: Database["public"]["Enums"]["contribution_purpose"]
+          purpose_category?:
+            | Database["public"]["Enums"]["contribution_purpose"]
+            | null
           purpose_description?: string | null
           state_of_assignment?: string | null
           total_contributed?: number | null
@@ -730,7 +734,9 @@ export type Database = {
           maturity_date?: string | null
           member_number?: string | null
           monthly_amount?: number
-          purpose_category?: Database["public"]["Enums"]["contribution_purpose"]
+          purpose_category?:
+            | Database["public"]["Enums"]["contribution_purpose"]
+            | null
           purpose_description?: string | null
           state_of_assignment?: string | null
           total_contributed?: number | null
