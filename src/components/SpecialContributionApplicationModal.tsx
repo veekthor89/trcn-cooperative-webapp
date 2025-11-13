@@ -21,18 +21,6 @@ const NIGERIAN_BANKS = [
   "Union Bank", "United Bank for Africa", "Unity Bank", "Wema Bank", "Zenith Bank"
 ];
 
-const PURPOSE_OPTIONS = [
-  { value: "emergency_fund", label: "Emergency Fund" },
-  { value: "house_purchase", label: "House Purchase" },
-  { value: "car_purchase", label: "Car Purchase" },
-  { value: "children_education", label: "Children's Education" },
-  { value: "wedding", label: "Wedding" },
-  { value: "medical", label: "Medical" },
-  { value: "business_capital", label: "Business Capital" },
-  { value: "end_of_year_expenses", label: "End of Year Expenses" },
-  { value: "other", label: "Other" }
-];
-
 interface SpecialContributionApplicationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -55,8 +43,6 @@ export function SpecialContributionApplicationModal({
     state_of_assignment: "",
     monthly_amount: "",
     contribution_year: currentYear.toString(),
-    purpose_category: "",
-    purpose_description: "",
     bank_name: "",
     account_number: "",
     account_name: "",
@@ -147,11 +133,9 @@ export function SpecialContributionApplicationModal({
         .from("special_contributions")
         .insert([{
           user_id: user.id,
-          member_number: profile?.staff_id,
+          member_number: profile?.cooperative_id,
           contribution_year: parseInt(formData.contribution_year),
           monthly_amount: amount,
-          purpose_category: formData.purpose_category as any,
-          purpose_description: formData.purpose_description,
           department: formData.department,
           state_of_assignment: formData.state_of_assignment,
           bank_name: formData.bank_name,
@@ -193,8 +177,6 @@ export function SpecialContributionApplicationModal({
       state_of_assignment: "",
       monthly_amount: "",
       contribution_year: currentYear.toString(),
-      purpose_category: "",
-      purpose_description: "",
       bank_name: "",
       account_number: "",
       account_name: "",
@@ -233,7 +215,7 @@ export function SpecialContributionApplicationModal({
                 <div>
                   <h3 className="font-semibold mb-2">Member Information</h3>
                   <p><strong>Name:</strong> {profile.full_name}</p>
-                  <p><strong>Member Number:</strong> {profile.staff_id}</p>
+                  <p><strong>Cooperative Number:</strong> {profile.cooperative_id}</p>
                   <p><strong>Department:</strong> {formData.department}</p>
                   <p><strong>State of Assignment:</strong> {formData.state_of_assignment}</p>
                 </div>
@@ -245,14 +227,6 @@ export function SpecialContributionApplicationModal({
                   <p><strong>Period:</strong> January to November (11 months)</p>
                   <p><strong>Total Expected:</strong> ₦{totalExpected.toLocaleString()}</p>
                   <p><strong>Maturity Date:</strong> {maturityDate}</p>
-                </div>
-
-                <div>
-                  <h3 className="font-semibold mb-2">Purpose</h3>
-                  <p>{PURPOSE_OPTIONS.find(p => p.value === formData.purpose_category)?.label}</p>
-                  {formData.purpose_description && (
-                    <p className="text-sm text-muted-foreground mt-1">{formData.purpose_description}</p>
-                  )}
                 </div>
 
                 <div>
@@ -295,8 +269,8 @@ export function SpecialContributionApplicationModal({
                       <Input value={profile.full_name} disabled />
                     </div>
                     <div>
-                      <Label>Member Number</Label>
-                      <Input value={profile.staff_id || "N/A"} disabled />
+                      <Label>Cooperative Number</Label>
+                      <Input value={profile.cooperative_id || "N/A"} disabled />
                     </div>
                     <div>
                       <Label>Department</Label>
@@ -358,32 +332,6 @@ export function SpecialContributionApplicationModal({
                     <p className="text-base"><strong>Total Expected:</strong> ₦{totalExpected.toLocaleString()}</p>
                     <p><strong>Maturity Date:</strong> {maturityDate}</p>
                   </div>
-
-                  <div>
-                    <Label>Purpose</Label>
-                    <Select value={formData.purpose_category} onValueChange={(value) => setFormData({...formData, purpose_category: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select purpose" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PURPOSE_OPTIONS.map(option => (
-                          <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {formData.purpose_category === "other" && (
-                    <div>
-                      <Label>Describe Purpose</Label>
-                      <Textarea 
-                        value={formData.purpose_description}
-                        onChange={(e) => setFormData({...formData, purpose_description: e.target.value})}
-                        placeholder="Please describe your purpose"
-                        rows={3}
-                      />
-                    </div>
-                  )}
                 </CardContent>
               </Card>
 
