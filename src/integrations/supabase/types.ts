@@ -665,6 +665,7 @@ export type Database = {
         Row: {
           account_name: string
           account_number: string
+          account_type: string | null
           application_status: Database["public"]["Enums"]["contribution_status"]
           approved_by: string | null
           approved_date: string | null
@@ -693,6 +694,7 @@ export type Database = {
         Insert: {
           account_name: string
           account_number: string
+          account_type?: string | null
           application_status?: Database["public"]["Enums"]["contribution_status"]
           approved_by?: string | null
           approved_date?: string | null
@@ -721,6 +723,7 @@ export type Database = {
         Update: {
           account_name?: string
           account_number?: string
+          account_type?: string | null
           application_status?: Database["public"]["Enums"]["contribution_status"]
           approved_by?: string | null
           approved_date?: string | null

@@ -20,6 +20,7 @@ const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isSignUp, setIsSignUp] = useState(searchParams.get("mode") === "signup");
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -43,44 +44,59 @@ const Auth = () => {
     setLoading(true);
 
     try {
-      // Validate form data
-      const validationData = isSignUp 
-        ? authSchema.parse(formData)
-        : authSchema.omit({ fullName: true }).parse(formData);
-
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email: validationData.email,
-          password: validationData.password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: {
-              full_name: formData.fullName,
-            },
-          },
-        });
-
-        if (error) {
-          if (error.message.includes("already registered")) {
-            toast.error("This email is already registered. Please sign in instead.");
-          } else {
-            toast.error(error.message);
-          }
-        } else {
-          toast.success("Account created successfully! Redirecting to dashboard...");
-          setTimeout(() => navigate("/dashboard"), 1000);
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: validationData.email,
-          password: validationData.password,
+      if (isForgotPassword) {
+        // Handle password reset
+        const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
+          redirectTo: `${window.location.origin}/auth?mode=reset`,
         });
 
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success("Signed in successfully!");
-          navigate("/dashboard");
+          toast.success("Password reset email sent! Check your inbox.");
+          setIsForgotPassword(false);
+          setFormData({ email: "", password: "", fullName: "" });
+        }
+      } else {
+        // Validate form data
+        const validationData = isSignUp 
+          ? authSchema.parse(formData)
+          : authSchema.omit({ fullName: true }).parse(formData);
+
+        if (isSignUp) {
+          const { error } = await supabase.auth.signUp({
+            email: validationData.email,
+            password: validationData.password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/dashboard`,
+              data: {
+                full_name: formData.fullName,
+              },
+            },
+          });
+
+          if (error) {
+            if (error.message.includes("already registered")) {
+              toast.error("This email is already registered. Please sign in instead.");
+            } else {
+              toast.error(error.message);
+            }
+          } else {
+            toast.success("Account created successfully! Redirecting to dashboard...");
+            setTimeout(() => navigate("/dashboard"), 1000);
+          }
+        } else {
+          const { error } = await supabase.auth.signInWithPassword({
+            email: validationData.email,
+            password: validationData.password,
+          });
+
+          if (error) {
+            toast.error(error.message);
+          } else {
+            toast.success("Signed in successfully!");
+            navigate("/dashboard");
+          }
         }
       }
     } catch (error) {
@@ -129,17 +145,19 @@ const Auth = () => {
               />
             </div>
             <CardTitle className="text-2xl">
-              {isSignUp ? "Create your account" : "Welcome back"}
+              {isForgotPassword ? "Reset your password" : isSignUp ? "Create your account" : "Welcome back"}
             </CardTitle>
             <CardDescription>
-              {isSignUp
+              {isForgotPassword
+                ? "Enter your email to receive a password reset link"
+                : isSignUp
                 ? "Join your cooperative society today"
                 : "Sign into your Cooperative Account"}
             </CardDescription>
           </CardHeader>
           <CardContent className="py-8">
             <form onSubmit={handleSubmit} className="space-y-6">
-              {isSignUp && (
+              {isSignUp && !isForgotPassword && (
                 <div className="space-y-2">
                   <Label htmlFor="fullName">Full Name</Label>
                   <Input
@@ -163,23 +181,27 @@ const Auth = () => {
                   required
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  required
-                />
-              </div>
+              {!isForgotPassword && (
+                <div className="space-y-2">
+                  <Label htmlFor="password">Password</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    required
+                  />
+                </div>
+              )}
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Please wait...
                   </>
+                ) : isForgotPassword ? (
+                  "Send Reset Link"
                 ) : isSignUp ? (
                   "Create Account"
                 ) : (
@@ -188,16 +210,37 @@ const Auth = () => {
               </Button>
             </form>
             
-            <div className="mt-6 text-center text-sm">
+            <div className="mt-6 space-y-3 text-center text-sm">
+              {!isForgotPassword && !isSignUp && (
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPassword(true)}
+                  className="text-primary hover:underline block w-full"
+                >
+                  Forgot password?
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => setIsSignUp(!isSignUp)}
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setIsForgotPassword(false);
+                }}
                 className="text-primary hover:underline"
               >
                 {isSignUp
                   ? "Already have an account? Sign in"
                   : "Don't have an account? Sign up"}
               </button>
+              {isForgotPassword && (
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPassword(false)}
+                  className="text-primary hover:underline"
+                >
+                  Back to sign in
+                </button>
+              )}
             </div>
           </CardContent>
         </Card>
