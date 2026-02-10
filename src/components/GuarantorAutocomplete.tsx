@@ -11,8 +11,6 @@ interface GuarantorProfile {
   full_name: string;
   member_number: string;
   department: string;
-  phone: string;
-  email: string;
 }
 
 interface GuarantorAutocompleteProps {
@@ -46,31 +44,16 @@ export default function GuarantorAutocomplete({
   const searchGuarantors = async () => {
     setLoading(true);
     try {
-      // Search by name or member number
+      // Use secure RPC that only returns safe fields
       const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, member_number, department, phone, email")
-        .not("id", "in", `(${excludeUserIds.join(",")})`)
-        .or(`full_name.ilike.%${search}%,member_number.ilike.%${search}%`)
-        .limit(10);
+        .rpc('search_guarantor_profiles', {
+          search_term: search,
+          exclude_ids: excludeUserIds
+        });
 
       if (error) throw error;
 
-      // Filter out users with rejected or closed loans (bad history)
-      const validGuarantors = await Promise.all(
-        (data || []).map(async (profile) => {
-          const { data: badLoans } = await supabase
-            .from("loans")
-            .select("id")
-            .eq("user_id", profile.id)
-            .in("status", ["rejected"])
-            .limit(1);
-
-          return !badLoans || badLoans.length === 0 ? profile : null;
-        })
-      );
-
-      setGuarantors(validGuarantors.filter(Boolean) as GuarantorProfile[]);
+      setGuarantors((data || []) as GuarantorProfile[]);
     } catch (error) {
       console.error("Error searching guarantors:", error);
     } finally {
@@ -144,8 +127,6 @@ export default function GuarantorAutocomplete({
             <p className="font-medium">{value.full_name}</p>
             <p className="text-sm text-muted-foreground">Member: {value.member_number}</p>
             <p className="text-sm text-muted-foreground">Department: {value.department}</p>
-            {value.phone && <p className="text-sm text-muted-foreground">Phone: {value.phone}</p>}
-            {value.email && <p className="text-sm text-muted-foreground">Email: {value.email}</p>}
           </div>
           <Button
             variant="ghost"

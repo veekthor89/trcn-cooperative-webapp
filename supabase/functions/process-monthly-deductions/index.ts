@@ -13,13 +13,51 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    // 1. Check authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // 2. Verify user and admin role
+    const supabaseAuth = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+      global: { headers: { Authorization: authHeader } },
+      auth: { autoRefreshToken: false, persistSession: false }
+    });
+
+    const { data: { user }, error: userError } = await supabaseAuth.auth.getUser();
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { data: isAdmin } = await supabaseAuth.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin'
+    });
+
+    if (!isAdmin) {
+      return new Response(
+        JSON.stringify({ error: 'Admin privileges required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Admin user ${user.id} authorized for monthly deductions`);
+
+    // Use service role for actual operations
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const now = new Date();
-    const currentMonth = now.getMonth() + 1; // 1-11 for Jan-Nov
+    const currentMonth = now.getMonth() + 1;
     const currentYear = now.getFullYear();
 
-    // Only process January to November
     if (currentMonth > 11) {
       return new Response(
         JSON.stringify({ message: "Deductions only processed January-November" }),
@@ -29,7 +67,6 @@ Deno.serve(async (req) => {
 
     console.log(`Processing deductions for month ${currentMonth}, year ${currentYear}`);
 
-    // Get all active contributions for current year
     const { data: contributions, error: contributionsError } = await supabase
       .from('special_contributions')
       .select('*')
@@ -46,7 +83,6 @@ Deno.serve(async (req) => {
 
     for (const contribution of contributions || []) {
       try {
-        // Check if deduction already exists for this month
         const { data: existingDeduction } = await supabase
           .from('special_contribution_deductions')
           .select('id')
@@ -56,12 +92,10 @@ Deno.serve(async (req) => {
           .maybeSingle();
 
         if (existingDeduction) {
-          console.log(`Deduction already exists for contribution ${contribution.id}, month ${currentMonth}`);
           skipped++;
           continue;
         }
 
-        // Create deduction record
         const { error: deductionError } = await supabase
           .from('special_contribution_deductions')
           .insert({
@@ -73,11 +107,8 @@ Deno.serve(async (req) => {
             reference_number: `SC-${contribution.id.slice(0, 8)}-${currentYear}${currentMonth.toString().padStart(2, '0')}`
           });
 
-        if (deductionError) {
-          throw deductionError;
-        }
+        if (deductionError) throw deductionError;
 
-        // Update contribution total_contributed
         const newTotalContributed = parseFloat(contribution.total_contributed || 0) + parseFloat(contribution.monthly_amount);
         
         const { error: updateError } = await supabase
@@ -88,11 +119,8 @@ Deno.serve(async (req) => {
           })
           .eq('id', contribution.id);
 
-        if (updateError) {
-          throw updateError;
-        }
+        if (updateError) throw updateError;
 
-        // Create notification
         const monthsRemaining = 11 - currentMonth;
         await supabase
           .from('notifications')
@@ -103,7 +131,6 @@ Deno.serve(async (req) => {
           });
 
         processed++;
-        console.log(`Processed deduction for contribution ${contribution.id}`);
       } catch (error: any) {
         console.error(`Error processing contribution ${contribution.id}:`, error.message);
         errors.push(`Contribution ${contribution.id}: ${error.message}`);
@@ -124,7 +151,7 @@ Deno.serve(async (req) => {
   } catch (error: any) {
     console.error('Error in process-monthly-deductions:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Internal server error' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
