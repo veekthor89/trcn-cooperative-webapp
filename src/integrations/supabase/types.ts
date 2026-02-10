@@ -914,6 +914,7 @@ export type Database = {
     }
     Functions: {
       generate_share_application_number: { Args: never; Returns: string }
+      has_any_exco_role: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -276,7 +276,7 @@ export default function LoanApplication() {
           account_type: accountType,
           terms_accepted: !isDraft,
           draft: isDraft,
-          status: isDraft ? "pending" : "pending" as any,
+          status: isDraft ? "pending" : "pending_financial_review" as any,
         }])
         .select()
         .single();
