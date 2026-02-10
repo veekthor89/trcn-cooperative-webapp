@@ -848,6 +848,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      search_guarantor_profiles: {
+        Args: { exclude_ids: string[]; search_term: string }
+        Returns: {
+          department: string
+          full_name: string
+          id: string
+          member_number: string
+        }[]
+      }
     }
     Enums: {
       account_status: "active" | "inactive" | "closed"
