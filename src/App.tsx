@@ -20,6 +20,10 @@ import AdminSpecialContributions from "./pages/AdminSpecialContributions";
 import Shares from "./pages/Shares";
 import AdminShareSubscriptions from "./pages/AdminShareSubscriptions";
 import AdminLoanApplications from "./pages/AdminLoanApplications";
+import FinancialSecretaryDashboard from "./pages/FinancialSecretaryDashboard";
+import PresidentDashboard from "./pages/PresidentDashboard";
+import TreasurerDashboard from "./pages/TreasurerDashboard";
+import ExcoViewDashboard from "./pages/ExcoViewDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +53,11 @@ const App = () => (
           <Route path="/dashboard/shares" element={<Shares />} />
           <Route path="/dashboard/admin/share-subscriptions" element={<AdminShareSubscriptions />} />
           <Route path="/dashboard/admin/loan-applications" element={<AdminLoanApplications />} />
+          {/* EXCO Role-Based Dashboards */}
+          <Route path="/dashboard/exco/financial-review" element={<FinancialSecretaryDashboard />} />
+          <Route path="/dashboard/exco/president" element={<PresidentDashboard />} />
+          <Route path="/dashboard/exco/treasurer" element={<TreasurerDashboard />} />
+          <Route path="/dashboard/exco/overview" element={<ExcoViewDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
