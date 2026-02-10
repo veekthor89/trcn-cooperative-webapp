@@ -62,7 +62,15 @@ export type Database = {
           approval_date: string | null
           approved_by: string | null
           bank_name: string | null
+          disbursed_by: string | null
+          disbursement_date: string | null
+          disbursement_method: string | null
+          disbursement_notes: string | null
+          disbursement_reference: string | null
           draft: boolean | null
+          financial_review_comments: string | null
+          financial_review_date: string | null
+          financial_reviewer_id: string | null
           guarantor_1_member_number: string | null
           guarantor_1_name: string | null
           guarantor_1_phone: string | null
@@ -70,11 +78,14 @@ export type Database = {
           guarantor_2_name: string | null
           guarantor_2_phone: string | null
           id: string
+          info_request_message: string | null
           interest_amount: number | null
           loan_type: Database["public"]["Enums"]["loan_type"]
           monthly_income: number | null
           monthly_payment: number | null
           notes: string | null
+          presidential_approval_date: string | null
+          presidential_comments: string | null
           purpose: string | null
           repayment_period: number | null
           requested_amount: number
@@ -91,7 +102,15 @@ export type Database = {
           approval_date?: string | null
           approved_by?: string | null
           bank_name?: string | null
+          disbursed_by?: string | null
+          disbursement_date?: string | null
+          disbursement_method?: string | null
+          disbursement_notes?: string | null
+          disbursement_reference?: string | null
           draft?: boolean | null
+          financial_review_comments?: string | null
+          financial_review_date?: string | null
+          financial_reviewer_id?: string | null
           guarantor_1_member_number?: string | null
           guarantor_1_name?: string | null
           guarantor_1_phone?: string | null
@@ -99,11 +118,14 @@ export type Database = {
           guarantor_2_name?: string | null
           guarantor_2_phone?: string | null
           id?: string
+          info_request_message?: string | null
           interest_amount?: number | null
           loan_type: Database["public"]["Enums"]["loan_type"]
           monthly_income?: number | null
           monthly_payment?: number | null
           notes?: string | null
+          presidential_approval_date?: string | null
+          presidential_comments?: string | null
           purpose?: string | null
           repayment_period?: number | null
           requested_amount: number
@@ -120,7 +142,15 @@ export type Database = {
           approval_date?: string | null
           approved_by?: string | null
           bank_name?: string | null
+          disbursed_by?: string | null
+          disbursement_date?: string | null
+          disbursement_method?: string | null
+          disbursement_notes?: string | null
+          disbursement_reference?: string | null
           draft?: boolean | null
+          financial_review_comments?: string | null
+          financial_review_date?: string | null
+          financial_reviewer_id?: string | null
           guarantor_1_member_number?: string | null
           guarantor_1_name?: string | null
           guarantor_1_phone?: string | null
@@ -128,11 +158,14 @@ export type Database = {
           guarantor_2_name?: string | null
           guarantor_2_phone?: string | null
           id?: string
+          info_request_message?: string | null
           interest_amount?: number | null
           loan_type?: Database["public"]["Enums"]["loan_type"]
           monthly_income?: number | null
           monthly_payment?: number | null
           notes?: string | null
+          presidential_approval_date?: string | null
+          presidential_comments?: string | null
           purpose?: string | null
           repayment_period?: number | null
           requested_amount?: number
@@ -153,6 +186,53 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loan_approval_history: {
+        Row: {
+          action: string
+          comments: string | null
+          created_at: string | null
+          id: string
+          loan_application_id: string
+          new_status: string | null
+          performed_by: string
+          performer_name: string | null
+          performer_role: string
+          previous_status: string | null
+        }
+        Insert: {
+          action: string
+          comments?: string | null
+          created_at?: string | null
+          id?: string
+          loan_application_id: string
+          new_status?: string | null
+          performed_by: string
+          performer_name?: string | null
+          performer_role: string
+          previous_status?: string | null
+        }
+        Update: {
+          action?: string
+          comments?: string | null
+          created_at?: string | null
+          id?: string
+          loan_application_id?: string
+          new_status?: string | null
+          performed_by?: string
+          performer_name?: string | null
+          performer_role?: string
+          previous_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loan_approval_history_loan_application_id_fkey"
+            columns: ["loan_application_id"]
+            isOneToOne: false
+            referencedRelation: "loan_applications"
             referencedColumns: ["id"]
           },
         ]
@@ -861,8 +941,28 @@ export type Database = {
     Enums: {
       account_status: "active" | "inactive" | "closed"
       account_type: "savings" | "loan"
-      app_role: "member" | "admin" | "loan_officer"
-      application_status: "pending" | "approved" | "rejected"
+      app_role:
+        | "member"
+        | "admin"
+        | "loan_officer"
+        | "president"
+        | "vice_president"
+        | "general_secretary"
+        | "assistant_general_secretary"
+        | "financial_secretary"
+        | "assistant_financial_secretary"
+        | "treasurer"
+        | "assistant_treasurer"
+        | "pro"
+      application_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "pending_financial_review"
+        | "pending_presidential_approval"
+        | "approved_awaiting_disbursement"
+        | "disbursed"
+        | "info_requested"
       contribution_purpose:
         | "emergency_fund"
         | "house_purchase"
@@ -1027,8 +1127,30 @@ export const Constants = {
     Enums: {
       account_status: ["active", "inactive", "closed"],
       account_type: ["savings", "loan"],
-      app_role: ["member", "admin", "loan_officer"],
-      application_status: ["pending", "approved", "rejected"],
+      app_role: [
+        "member",
+        "admin",
+        "loan_officer",
+        "president",
+        "vice_president",
+        "general_secretary",
+        "assistant_general_secretary",
+        "financial_secretary",
+        "assistant_financial_secretary",
+        "treasurer",
+        "assistant_treasurer",
+        "pro",
+      ],
+      application_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "pending_financial_review",
+        "pending_presidential_approval",
+        "approved_awaiting_disbursement",
+        "disbursed",
+        "info_requested",
+      ],
       contribution_purpose: [
         "emergency_fund",
         "house_purchase",
