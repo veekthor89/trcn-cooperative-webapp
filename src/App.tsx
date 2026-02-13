@@ -24,6 +24,7 @@ import FinancialSecretaryDashboard from "./pages/FinancialSecretaryDashboard";
 import PresidentDashboard from "./pages/PresidentDashboard";
 import TreasurerDashboard from "./pages/TreasurerDashboard";
 import ExcoViewDashboard from "./pages/ExcoViewDashboard";
+import AdminReports from "./pages/AdminReports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
           <Route path="/dashboard/exco/president" element={<PresidentDashboard />} />
           <Route path="/dashboard/exco/treasurer" element={<TreasurerDashboard />} />
           <Route path="/dashboard/exco/overview" element={<ExcoViewDashboard />} />
+          <Route path="/dashboard/admin/reports" element={<AdminReports />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
