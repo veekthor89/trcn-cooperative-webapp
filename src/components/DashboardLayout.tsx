@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, Wallet, Menu, Landmark, ChevronDown, Shield, Banknote, Crown, Eye } from "lucide-react";
+import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, Wallet, Menu, Landmark, ChevronDown, Shield, Banknote, Crown, Eye, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -174,6 +174,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform duration-200 ${adminSectionOpen ? 'transform rotate-180' : ''}`} />
                   </CollapsibleTrigger>
                   <CollapsibleContent className="space-y-1">
+                    <button onClick={() => { navigate("/dashboard/admin/reports"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <BarChart3 className="h-5 w-5" /><span>Reports & Analytics</span>
+                    </button>
                     <button onClick={() => { navigate("/dashboard/admin/share-subscriptions"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
                       <TrendingUp className="h-5 w-5" /><span>Share Subscriptions</span>
                     </button>
