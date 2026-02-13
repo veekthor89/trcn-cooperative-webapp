@@ -112,11 +112,12 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
 
     if (uploadError) throw uploadError;
 
-    const { data: { publicUrl } } = supabase.storage
+    const { data: signedUrlData } = await supabase.storage
       .from("profile-photos")
-      .getPublicUrl(filePath);
+      .createSignedUrl(filePath, 3600);
 
-    return publicUrl;
+    if (!signedUrlData?.signedUrl) throw new Error("Failed to get signed URL");
+    return signedUrlData.signedUrl;
   };
 
   const onSubmit = async (data: FormData) => {

@@ -90,12 +90,12 @@ const Profile = () => {
           const pathMatch = profile.profile_photo_url.match(/profile-photos\/(.+?)(\?|$)/);
           if (pathMatch) {
             const filePath = pathMatch[1];
-            const { data: publicUrlData } = supabase.storage
+            const { data: signedUrlData } = await supabase.storage
               .from("profile-photos")
-              .getPublicUrl(filePath);
+              .createSignedUrl(filePath, 3600);
             
-            if (publicUrlData?.publicUrl) {
-              photoUrl = publicUrlData.publicUrl;
+            if (signedUrlData?.signedUrl) {
+              photoUrl = signedUrlData.signedUrl;
             }
           }
         }
@@ -263,12 +263,12 @@ const Profile = () => {
 
       if (uploadError) throw uploadError;
 
-      // Get the public URL
-      const { data: publicUrlData } = supabase.storage
+      // Get a signed URL
+      const { data: signedUrlData } = await supabase.storage
         .from("profile-photos")
-        .getPublicUrl(filePath);
+        .createSignedUrl(filePath, 3600);
 
-      if (!publicUrlData?.publicUrl) throw new Error("Failed to get public URL");
+      if (!signedUrlData?.signedUrl) throw new Error("Failed to get signed URL");
 
       // Store the file path reference (not the full URL) for later regeneration
       const photoReference = `profile-photos/${filePath}`;

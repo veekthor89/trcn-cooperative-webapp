@@ -45,8 +45,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             const pathMatch = data.profile_photo_url.match(/profile-photos\/(.+?)(\?|$)/);
             if (pathMatch) {
               const filePath = pathMatch[1];
-              const { data: publicUrlData } = supabase.storage.from("profile-photos").getPublicUrl(filePath);
-              if (publicUrlData?.publicUrl) setProfilePhotoUrl(publicUrlData.publicUrl);
+              const { data: signedUrlData } = await supabase.storage.from("profile-photos").createSignedUrl(filePath, 3600);
+              if (signedUrlData?.signedUrl) setProfilePhotoUrl(signedUrlData.signedUrl);
             }
           }
         }, 0);
