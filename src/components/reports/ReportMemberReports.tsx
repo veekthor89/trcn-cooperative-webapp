@@ -4,8 +4,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { formatNaira } from "@/hooks/useReportsData";
-import { Search, Users, UserPlus, AlertTriangle, Trophy } from "lucide-react";
+import { Search, Users, UserPlus, AlertTriangle, Trophy, RotateCcw, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Props {
   profiles: any[];
@@ -15,6 +18,23 @@ interface Props {
 
 export default function ReportMemberReports({ profiles, loans, accounts }: Props) {
   const [search, setSearch] = useState("");
+  const [resettingId, setResettingId] = useState<string | null>(null);
+
+  const handleResetPassword = async (memberId: string, memberName: string) => {
+    if (!confirm(`Reset password to default for ${memberName}? They will be required to change it on next login.`)) return;
+    setResettingId(memberId);
+    try {
+      const { data, error } = await supabase.functions.invoke('admin-reset-password', {
+        body: { member_id: memberId },
+      });
+      if (error) throw error;
+      toast.success(data.message || `Password reset for ${memberName}`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to reset password");
+    } finally {
+      setResettingId(null);
+    }
+  };
 
   const activeLoans = loans.filter(l => l.status === "active");
   const savingsMap = Object.fromEntries(accounts.filter(a => a.account_type === "savings").map(a => [a.user_id, Number(a.balance || 0)]));
@@ -84,7 +104,7 @@ export default function ReportMemberReports({ profiles, loans, accounts }: Props
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Member</TableHead><TableHead>Member ID</TableHead><TableHead>Password Status</TableHead><TableHead className="text-right">Savings</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead>
+                    <TableHead>Member</TableHead><TableHead>Member ID</TableHead><TableHead>Password Status</TableHead><TableHead>Actions</TableHead><TableHead className="text-right">Savings</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -96,6 +116,17 @@ export default function ReportMemberReports({ profiles, loans, accounts }: Props
                         <Badge variant={m.must_change_password ? "destructive" : "secondary"}>
                           {m.must_change_password ? "Default" : "Changed"}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleResetPassword(m.id, m.full_name)}
+                          disabled={resettingId === m.id}
+                        >
+                          {resettingId === m.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <RotateCcw className="h-3 w-3 mr-1" />}
+                          Reset
+                        </Button>
                       </TableCell>
                       <TableCell className="text-right">{formatNaira(m.savings)}</TableCell>
                       <TableCell className="text-right">{m.activeLoansCount}</TableCell>

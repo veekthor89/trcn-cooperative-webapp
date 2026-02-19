@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import cooperativeLogo from "@/assets/cooperative-logo.png";
@@ -55,15 +55,15 @@ const Auth = () => {
 
     try {
       if (isForgotPassword) {
-        // Handle password reset
-        const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
-          redirectTo: `${window.location.origin}/auth?mode=reset`,
+        // Send password reset request to admin
+        const { error } = await supabase.functions.invoke('request-password-reset', {
+          body: { email: formData.email },
         });
 
         if (error) {
-          toast.error(error.message);
+          toast.error("Failed to submit reset request. Please try again.");
         } else {
-          toast.success("Password reset email sent! Check your inbox.");
+          toast.success("Your password reset request has been sent to the admin. You will be contacted shortly.");
           setIsForgotPassword(false);
           setFormData({ email: "", password: "", fullName: "" });
         }
