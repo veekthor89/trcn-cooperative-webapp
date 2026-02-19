@@ -182,17 +182,16 @@ serve(async (req) => {
 
         console.log(`Processing member: ${sanitizedMember.full_name} (user will be assigned ID)`);
 
-        // Generate secure random password
-        const randomPassword = generateSecurePassword(16);
+        // Use default password for all new accounts
+        const defaultPassword = "trcn2026";
 
         // Create auth user with random password
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
           email: sanitizedMember.email,
-          password: randomPassword,
+          password: defaultPassword,
           email_confirm: true,
           user_metadata: {
             full_name: sanitizedMember.full_name,
-            must_change_password: true
           }
         });
 
@@ -213,7 +212,8 @@ serve(async (req) => {
             email: sanitizedMember.email,
             phone: sanitizedMember.phone,
             address: sanitizedMember.address,
-            date_of_birth: sanitizedMember.date_of_birth
+            date_of_birth: sanitizedMember.date_of_birth,
+            must_change_password: true
           }, {
             onConflict: 'id'
           });
@@ -222,8 +222,8 @@ serve(async (req) => {
           console.error(`Profile update error:`, profileError);
           results.errors.push({ email: sanitizedMember.email, error: sanitizeError(profileError) });
         } else {
-          results.success.push({ email: sanitizedMember.email, password: randomPassword });
-          console.log(`Successfully created user ${authData.user.id} with random password`);
+          results.success.push({ email: sanitizedMember.email, password: defaultPassword });
+          console.log(`Successfully created user ${authData.user.id} with default password`);
         }
       } catch (error) {
         console.error(`Error processing member:`, error);

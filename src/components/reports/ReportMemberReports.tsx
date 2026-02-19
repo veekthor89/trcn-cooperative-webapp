@@ -84,7 +84,7 @@ export default function ReportMemberReports({ profiles, loans, accounts }: Props
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Member</TableHead><TableHead>Member ID</TableHead><TableHead className="text-right">Savings</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead>
+                    <TableHead>Member</TableHead><TableHead>Member ID</TableHead><TableHead>Password Status</TableHead><TableHead className="text-right">Savings</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -92,6 +92,11 @@ export default function ReportMemberReports({ profiles, loans, accounts }: Props
                     <TableRow key={m.id}>
                       <TableCell className="font-medium">{m.full_name}</TableCell>
                       <TableCell>{m.member_number || "N/A"}</TableCell>
+                      <TableCell>
+                        <Badge variant={m.must_change_password ? "destructive" : "secondary"}>
+                          {m.must_change_password ? "Default" : "Changed"}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="text-right">{formatNaira(m.savings)}</TableCell>
                       <TableCell className="text-right">{m.activeLoansCount}</TableCell>
                       <TableCell className="text-right">{formatNaira(m.totalOutstanding)}</TableCell>
