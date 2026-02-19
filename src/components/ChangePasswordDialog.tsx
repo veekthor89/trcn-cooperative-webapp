@@ -73,6 +73,15 @@ export const ChangePasswordDialog = ({
 
       if (error) throw error;
 
+      // Mark password as changed in profile
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from("profiles")
+          .update({ must_change_password: false })
+          .eq("id", user.id);
+      }
+
       toast.success("Password changed successfully");
       setNewPassword("");
       setConfirmPassword("");

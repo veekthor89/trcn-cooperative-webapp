@@ -25,6 +25,7 @@ import PresidentDashboard from "./pages/PresidentDashboard";
 import TreasurerDashboard from "./pages/TreasurerDashboard";
 import ExcoViewDashboard from "./pages/ExcoViewDashboard";
 import AdminReports from "./pages/AdminReports";
+import ForceChangePassword from "./pages/ForceChangePassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Auth />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/change-password" element={<ForceChangePassword />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/savings" element={<Savings />} />

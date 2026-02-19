@@ -410,6 +410,7 @@ export type Database = {
           gender: string | null
           id: string
           member_number: string | null
+          must_change_password: boolean
           next_of_kin_address: string | null
           next_of_kin_email: string | null
           next_of_kin_name: string | null
@@ -443,6 +444,7 @@ export type Database = {
           gender?: string | null
           id: string
           member_number?: string | null
+          must_change_password?: boolean
           next_of_kin_address?: string | null
           next_of_kin_email?: string | null
           next_of_kin_name?: string | null
@@ -476,6 +478,7 @@ export type Database = {
           gender?: string | null
           id?: string
           member_number?: string | null
+          must_change_password?: boolean
           next_of_kin_address?: string | null
           next_of_kin_email?: string | null
           next_of_kin_name?: string | null
