@@ -14,6 +14,7 @@ import LoanApplicationForm from "@/components/LoanApplicationForm";
 import ShareSubscriptionForm from "@/components/ShareSubscriptionForm";
 import { SpecialContributionApplicationModal } from "@/components/SpecialContributionApplicationModal";
 import GuarantorApprovalModal from "@/components/GuarantorApprovalModal";
+import MakeDepositModal from "@/components/MakeDepositModal";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
@@ -36,6 +37,7 @@ const Dashboard = () => {
   const [guarantorRequests, setGuarantorRequests] = useState<any[]>([]);
   const [selectedGuarantorRequest, setSelectedGuarantorRequest] = useState<any>(null);
   const [showGuarantorModal, setShowGuarantorModal] = useState(false);
+  const [showDepositDialog, setShowDepositDialog] = useState(false);
   useEffect(() => {
     fetchDashboardData();
     fetchNotifications();
@@ -638,7 +640,7 @@ const Dashboard = () => {
                     <p className="text-xs text-muted-foreground">Common tasks you can perform</p>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900 hover:bg-green-100 dark:hover:bg-green-950/30 text-left">
+                    <Button variant="outline" className="w-full justify-start h-auto py-3 bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-900 hover:bg-green-100 dark:hover:bg-green-950/30 text-left" onClick={() => setShowDepositDialog(true)}>
                       <div className="flex items-center gap-3 w-full">
                         <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
                           <Landmark className="h-5 w-5 text-white" />
@@ -762,6 +764,12 @@ const Dashboard = () => {
       <SpecialContributionApplicationModal
         open={showContributionDialog}
         onOpenChange={setShowContributionDialog}
+        onSuccess={fetchDashboardData}
+      />
+
+      <MakeDepositModal
+        open={showDepositDialog}
+        onOpenChange={setShowDepositDialog}
         onSuccess={fetchDashboardData}
       />
 

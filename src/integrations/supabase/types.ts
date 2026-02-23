@@ -52,6 +52,68 @@ export type Database = {
           },
         ]
       }
+      deposit_requests: {
+        Row: {
+          amount: number
+          created_at: string
+          deposit_type: string
+          id: string
+          loan_id: string | null
+          notes: string | null
+          payment_type: string | null
+          receipt_url: string
+          reference_number: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          deposit_type: string
+          id?: string
+          loan_id?: string | null
+          notes?: string | null
+          payment_type?: string | null
+          receipt_url: string
+          reference_number?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          deposit_type?: string
+          id?: string
+          loan_id?: string | null
+          notes?: string | null
+          payment_type?: string | null
+          receipt_url?: string
+          reference_number?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deposit_requests_loan_id_fkey"
+            columns: ["loan_id"]
+            isOneToOne: false
+            referencedRelation: "loans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       loan_applications: {
         Row: {
           account_name: string | null
