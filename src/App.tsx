@@ -27,6 +27,8 @@ import ExcoViewDashboard from "./pages/ExcoViewDashboard";
 import AdminReports from "./pages/AdminReports";
 import ForceChangePassword from "./pages/ForceChangePassword";
 import AdminDepositRequests from "./pages/AdminDepositRequests";
+import AdminAnnouncements from "./pages/AdminAnnouncements";
+import MemberAnnouncements from "./pages/MemberAnnouncements";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +66,8 @@ const App = () => (
           <Route path="/dashboard/exco/overview" element={<ExcoViewDashboard />} />
           <Route path="/dashboard/admin/reports" element={<AdminReports />} />
           <Route path="/dashboard/admin/deposit-requests" element={<AdminDepositRequests />} />
+          <Route path="/dashboard/admin/announcements" element={<AdminAnnouncements />} />
+          <Route path="/dashboard/announcements" element={<MemberAnnouncements />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
