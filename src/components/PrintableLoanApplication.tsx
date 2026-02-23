@@ -1,4 +1,5 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "@/components/ui/button";
 import { Printer, X } from "lucide-react";
 import trcnLogo from "@/assets/trcn-smcs-logo.png";
@@ -39,8 +40,9 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[850px] max-h-[95vh] overflow-y-auto p-0">
-        <div className="print-hide flex justify-end gap-2 p-3 border-b sticky top-0 bg-background z-10">
+      <DialogContent className="max-w-[850px] max-h-[95vh] overflow-y-auto p-0 border-none shadow-none">
+        <VisuallyHidden><DialogTitle>Loan Application</DialogTitle></VisuallyHidden>
+        <div className="print-hide flex justify-end gap-2 p-3 sticky top-0 bg-background z-10">
           <Button onClick={handlePrint} size="sm" className="gap-2">
             <Printer className="w-4 h-4" /> Print
           </Button>
@@ -49,14 +51,14 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
           </Button>
         </div>
 
-        <div className="print-content a4-page px-10 py-6" style={{ fontSize: "14px", lineHeight: "1.7" }}>
+        <div className="print-content a4-page px-10 py-6" style={{ fontSize: "16px", lineHeight: "1.8" }}>
           {/* Header */}
-          <div className="text-center mb-5 pb-4 border-b-2 border-black flex flex-col items-center">
+          <div className="text-center mb-6 pb-4 border-b-2 border-black flex flex-col items-center">
             <img src={trcnLogo} alt="TRCN SMCS Logo" className="h-20 mb-3" />
-            <h1 className="text-xl font-bold tracking-wide">TRCN STAFF MULTIPURPOSE COOPERATIVE SOCIETY</h1>
-            <p className="text-sm text-gray-600 mt-1">No 12, Oda Crescent off Aminu Kano Crescent, Wuse 2, Abuja</p>
-            <h2 className="text-lg font-bold mt-3 uppercase tracking-wider">Loan Application Form</h2>
-            <div className="flex justify-between w-full mt-2 text-sm">
+            <h1 className="text-2xl font-bold tracking-wide">TRCN STAFF MULTIPURPOSE COOPERATIVE SOCIETY</h1>
+            <p className="text-base mt-1" style={{ color: "#555" }}>No 12, Oda Crescent off Aminu Kano Crescent, Wuse 2, Abuja</p>
+            <h2 className="text-xl font-bold mt-3 uppercase tracking-wider">Loan Application Form</h2>
+            <div className="flex justify-between w-full mt-3 text-base">
               <span><strong>Application Date:</strong> {application.application_date ? new Date(application.application_date).toLocaleDateString("en-GB") : "N/A"}</span>
               <span><strong>Ref No:</strong> {application.id?.slice(0, 8).toUpperCase() || ""}</span>
             </div>
@@ -64,7 +66,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
 
           {/* Section 1: Member Information */}
           <SectionHeader title="1. Member Information" />
-          <div className="grid grid-cols-2 gap-x-8 gap-y-2 mb-4">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-3 mb-5">
             <Field label="Full Name" value={application.profiles?.full_name} />
             <Field label="Member ID" value={application.profiles?.member_number} />
             <Field label="Phone Number" value={application.profiles?.phone} />
@@ -75,7 +77,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
 
           {/* Section 2: Loan Details */}
           <SectionHeader title="2. Loan Details" />
-          <div className="grid grid-cols-2 gap-x-8 gap-y-2 mb-4">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-3 mb-5">
             <Field label="Loan Type" value={loanTypeLabel(application.loan_type)} />
             <Field label="Amount Requested" value={`₦${application.requested_amount?.toLocaleString()}`} />
             <Field label="Loan Duration" value={`${application.repayment_period} months`} />
@@ -93,7 +95,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
           {application.bank_name && (
             <>
               <SectionHeader title="3. Bank Details" />
-              <div className="grid grid-cols-3 gap-x-8 gap-y-2 mb-4">
+              <div className="grid grid-cols-3 gap-x-8 gap-y-3 mb-5">
                 <Field label="Bank Name" value={application.bank_name} />
                 <Field label="Account Number" value={application.account_number} />
                 <Field label="Account Name" value={application.account_name} />
@@ -105,16 +107,16 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
           {application.guarantor_1_name && (
             <>
               <SectionHeader title="4. Guarantor Information" />
-              <div className="grid grid-cols-2 gap-x-8 gap-y-2 mb-4">
-                <div>
-                  <p className="font-semibold text-[10px] mb-0.5">Guarantor 1:</p>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-3 mb-5">
+                <div className="space-y-2">
+                  <p className="font-semibold text-base mb-1">Guarantor 1:</p>
                   <Field label="Name" value={application.guarantor_1_name} />
                   <Field label="Member ID" value={application.guarantor_1_member_number} />
                   <Field label="Phone" value={application.guarantor_1_phone} />
                 </div>
                 {application.guarantor_2_name && (
-                  <div>
-                    <p className="font-semibold text-[10px] mb-0.5">Guarantor 2:</p>
+                  <div className="space-y-2">
+                    <p className="font-semibold text-base mb-1">Guarantor 2:</p>
                     <Field label="Name" value={application.guarantor_2_name} />
                     <Field label="Member ID" value={application.guarantor_2_member_number} />
                     <Field label="Phone" value={application.guarantor_2_phone} />
@@ -126,21 +128,21 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
 
           {/* Section 5: Official Use Only */}
           <SectionHeader title="5. Official Use Only" />
-          <div className="mt-2">
-            <p className="font-semibold text-sm mb-3">Presidential Approval:</p>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+          <div className="mt-3">
+            <p className="font-semibold text-base mb-4">Presidential Approval:</p>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-6">
               <div>
-                <p className="text-sm mb-8">Signature:</p>
+                <p className="text-base mb-10">Signature:</p>
                 <div className="border-b border-black w-full"></div>
               </div>
               <div>
-                <p className="text-sm mb-8">Date Approved:</p>
+                <p className="text-base mb-10">Date Approved:</p>
                 <div className="border-b border-black w-full"></div>
               </div>
               <div className="col-span-2">
-                <p className="text-sm mb-8">Comments:</p>
+                <p className="text-base mb-10">Comments:</p>
                 <div className="border-b border-black w-full"></div>
-                <div className="border-b border-black w-full mt-6"></div>
+                <div className="border-b border-black w-full mt-8"></div>
               </div>
             </div>
           </div>
@@ -152,7 +154,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <h4 className="font-bold text-sm bg-gray-100 px-3 py-1.5 mb-2 border-b border-gray-300 uppercase tracking-wide">
+    <h4 className="font-bold text-base px-3 py-2 mb-3 border-b-2 border-black uppercase tracking-wide" style={{ backgroundColor: "#f3f4f6" }}>
       {title}
     </h4>
   );
@@ -160,9 +162,9 @@ function SectionHeader({ title }: { title: string }) {
 
 function Field({ label, value }: { label: string; value?: string | null }) {
   return (
-    <div className="flex gap-1.5 text-sm">
-      <span className="text-gray-600 shrink-0">{label}:</span>
-      <span className="font-semibold border-b border-dotted border-gray-400 flex-1">{value || "N/A"}</span>
+    <div className="flex gap-2 text-base">
+      <span style={{ color: "#555" }} className="shrink-0">{label}:</span>
+      <span className="font-semibold border-b border-dotted flex-1" style={{ borderColor: "#999" }}>{value || "N/A"}</span>
     </div>
   );
 }
