@@ -46,13 +46,13 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
           </Button>
         </div>
 
-        <div className="print-content a4-page px-8 py-4" style={{ fontSize: "13px", lineHeight: "1.5" }}>
+        <div className="print-content a4-page px-8 py-4" style={{ fontSize: "14px", lineHeight: "1.6" }}>
           {/* Header */}
-          <div className="text-center mb-3 pb-2 border-b-2 border-black">
-            <img src={trcnLogo} alt="TRCN SMCS Logo" className="h-14 mx-auto mb-1" />
-            <h1 className="text-base font-bold tracking-wide">TRCN STAFF MULTIPURPOSE COOPERATIVE SOCIETY</h1>
-            <p className="text-[10px] text-gray-600">No. 8 Zambezi Crescent, Off Aguiyi Ironsi Street, Maitama, Abuja</p>
-            <h2 className="text-sm font-bold mt-1 uppercase tracking-wider">Loan Application Form</h2>
+          <div className="text-center mb-4 pb-3 border-b-2 border-black flex flex-col items-center">
+            <img src={trcnLogo} alt="TRCN SMCS Logo" className="h-16 mb-2" />
+            <h1 className="text-lg font-bold tracking-wide">TRCN STAFF MULTIPURPOSE COOPERATIVE SOCIETY</h1>
+            <p className="text-[11px] text-gray-600">No 12, Oda Crescent off Aminu Kano Crescent, Wuse 2, Abuja</p>
+            <h2 className="text-base font-bold mt-2 uppercase tracking-wider">Loan Application Form</h2>
             <div className="flex justify-between mt-1 text-[10px]">
               <span><strong>Application Date:</strong> {application.application_date ? new Date(application.application_date).toLocaleDateString("en-GB") : "N/A"}</span>
               <span><strong>Ref No:</strong> {application.id?.slice(0, 8).toUpperCase() || ""}</span>
