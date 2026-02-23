@@ -149,11 +149,20 @@ All colors MUST be HSL.
   }
 }
 
+/* A4 page simulation for on-screen preview */
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
 /* Print styles */
 @media print {
   @page {
-    size: A4;
-    margin: 1cm;
+    size: A4 portrait;
+    margin: 10mm 15mm;
   }
 
   .print-hide {
@@ -162,7 +171,9 @@ All colors MUST be HSL.
 
   .print-content {
     padding: 0 !important;
-    max-width: 100% !important;
+    max-width: 210mm !important;
+    width: 210mm !important;
+    min-height: auto !important;
   }
 
   .page-break {
