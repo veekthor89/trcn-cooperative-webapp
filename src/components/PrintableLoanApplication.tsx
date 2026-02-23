@@ -11,7 +11,10 @@ interface PrintableLoanApplicationProps {
 
 export default function PrintableLoanApplication({ application, isOpen, onClose }: PrintableLoanApplicationProps) {
   const handlePrint = () => {
+    const originalTitle = document.title;
+    document.title = " ";
     window.print();
+    document.title = originalTitle;
   };
 
   const loanTypeLabel = (type: string) => {
