@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, Wallet, Menu, Landmark, ChevronDown, Shield, Banknote, Crown, Eye, BarChart3, ArrowDownToLine } from "lucide-react";
+import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, Wallet, Menu, Landmark, ChevronDown, Shield, Banknote, Crown, Eye, BarChart3, ArrowDownToLine, Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -26,7 +26,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [dataManagementOpen, setDataManagementOpen] = useState(false);
   const [adminSectionOpen, setAdminSectionOpen] = useState(false);
   const [excoSectionOpen, setExcoSectionOpen] = useState(false);
-  const { isAdmin, isFinancialSecretary, isPresident, isTreasurer, isExco, isViewOnlyExco, primaryRole } = useUserRole();
+  const { isAdmin, isFinancialSecretary, isPresident, isTreasurer, isExco, isViewOnlyExco, hasRole, primaryRole } = useUserRole();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -85,6 +85,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     { icon: CreditCard, label: "Loans", path: "/dashboard/loans" },
     { icon: TrendingUp, label: "Transactions", path: "/dashboard/transactions" },
     { icon: Landmark, label: "Shares", path: "/dashboard/shares" },
+    { icon: Megaphone, label: "Announcements", path: "/dashboard/announcements" },
     { icon: User, label: "Profile", path: "/dashboard/profile" },
   ];
 
@@ -130,9 +131,14 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                       </button>
                     )}
                     {isPresident && (
-                      <button onClick={() => { navigate("/dashboard/exco/president"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                        <Crown className="h-5 w-5" /><span>President Dashboard</span>
-                      </button>
+                      <>
+                        <button onClick={() => { navigate("/dashboard/exco/president"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                          <Crown className="h-5 w-5" /><span>President Dashboard</span>
+                        </button>
+                        <button onClick={() => { navigate("/dashboard/admin/announcements"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                          <Megaphone className="h-5 w-5" /><span>Manage Announcements</span>
+                        </button>
+                      </>
                     )}
                     {isTreasurer && (
                       <button onClick={() => { navigate("/dashboard/exco/treasurer"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
@@ -140,9 +146,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                       </button>
                     )}
                     {isViewOnlyExco && (
-                      <button onClick={() => { navigate("/dashboard/exco/overview"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                        <Eye className="h-5 w-5" /><span>EXCO Overview</span>
-                      </button>
+                      <>
+                        <button onClick={() => { navigate("/dashboard/exco/overview"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                          <Eye className="h-5 w-5" /><span>EXCO Overview</span>
+                        </button>
+                        {(hasRole('general_secretary') || hasRole('pro')) && (
+                          <button onClick={() => { navigate("/dashboard/admin/announcements"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                            <Megaphone className="h-5 w-5" /><span>Manage Announcements</span>
+                          </button>
+                        )}
+                      </>
                     )}
                   </CollapsibleContent>
                 </Collapsible>
@@ -198,6 +211,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <button onClick={() => { navigate("/dashboard/admin/deposit-requests"); setSidebarOpen(false); }} className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
                       <div className="flex items-center gap-3"><ArrowDownToLine className="h-5 w-5" /><span>Deposit Requests</span></div>
                       {pendingDepositsCount > 0 && <span className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">{pendingDepositsCount}</span>}
+                    </button>
+                    <button onClick={() => { navigate("/dashboard/admin/announcements"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <Megaphone className="h-5 w-5" /><span>Announcements</span>
                     </button>
                   </CollapsibleContent>
                 </Collapsible>

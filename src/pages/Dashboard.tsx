@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins, AlertCircle } from "lucide-react";
+import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins, AlertCircle, Megaphone } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -38,10 +39,12 @@ const Dashboard = () => {
   const [selectedGuarantorRequest, setSelectedGuarantorRequest] = useState<any>(null);
   const [showGuarantorModal, setShowGuarantorModal] = useState(false);
   const [showDepositDialog, setShowDepositDialog] = useState(false);
+  const [latestAnnouncements, setLatestAnnouncements] = useState<any[]>([]);
   useEffect(() => {
     fetchDashboardData();
     fetchNotifications();
     fetchGuarantorRequests();
+    fetchLatestAnnouncements();
 
     // Subscribe to realtime notifications and guarantor requests
     const setupRealtimeSubscription = async () => {
@@ -258,6 +261,20 @@ const Dashboard = () => {
   const handleGuarantorRequestClick = (request: any) => {
     setSelectedGuarantorRequest(request);
     setShowGuarantorModal(true);
+  };
+
+  const fetchLatestAnnouncements = async () => {
+    try {
+      const { data } = await supabase
+        .from("announcements")
+        .select("id, title, published_at, category, priority")
+        .eq("status", "published")
+        .order("published_at", { ascending: false })
+        .limit(3);
+      setLatestAnnouncements(data || []);
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+    }
   };
 
   const handleGuarantorSuccess = () => {
@@ -722,6 +739,45 @@ const Dashboard = () => {
                     </Button>}
                 </CardContent>
               </Card>
+
+              {/* Latest Announcements */}
+              {latestAnnouncements.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-xl flex items-center gap-2">
+                        <Megaphone className="h-5 w-5 text-primary" />
+                        Latest Announcements
+                      </CardTitle>
+                      <Button variant="link" onClick={() => navigate("/dashboard/announcements")}>View All</Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {latestAnnouncements.map((ann) => (
+                      <div
+                        key={ann.id}
+                        className="p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors cursor-pointer"
+                        onClick={() => navigate("/dashboard/announcements")}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <p className="font-medium text-sm">{ann.title}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(ann.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                            </p>
+                          </div>
+                          {ann.priority === "urgent" && (
+                            <Badge className="bg-red-600 text-white text-[10px]">Urgent</Badge>
+                          )}
+                          {ann.priority === "important" && (
+                            <Badge className="bg-yellow-100 text-yellow-800 text-[10px]">Important</Badge>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
             </>}
       </div>
 
