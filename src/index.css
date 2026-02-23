@@ -162,18 +162,32 @@ All colors MUST be HSL.
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm 15mm;
+    margin: 12mm 15mm;
+  }
+
+  /* Hide everything except print content */
+  body * {
+    visibility: hidden;
+  }
+
+  .print-content,
+  .print-content * {
+    visibility: visible;
+  }
+
+  .print-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
   .print-hide {
     display: none !important;
-  }
-
-  .print-content {
-    padding: 0 !important;
-    max-width: 210mm !important;
-    width: 210mm !important;
-    min-height: auto !important;
   }
 
   .page-break {
@@ -185,30 +199,31 @@ All colors MUST be HSL.
     color: black !important;
   }
 
-  /* Ensure tables fit properly */
   table {
     page-break-inside: avoid;
   }
 
-  /* Prevent images from breaking across pages */
   img {
     page-break-inside: avoid;
   }
 
-  /* Remove shadows and rounded corners for print */
   * {
     box-shadow: none !important;
     border-radius: 0 !important;
   }
 
-  /* Ensure proper text colors */
   .text-muted-foreground {
     color: #666 !important;
   }
 
-  /* Print button styles */
-  button[type="checkbox"] {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  /* Hide dialog overlay and close button */
+  [data-radix-dialog-overlay],
+  [data-radix-dialog-content] > button:last-child {
+    display: none !important;
+  }
+
+  /* Remove scrollbars in print */
+  * {
+    overflow: visible !important;
   }
 }
