@@ -162,48 +162,47 @@ All colors MUST be HSL.
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm 12mm 10mm 12mm;
+    margin: 10mm 12mm;
   }
 
-  /* Hide everything */
-  html, body {
+  body {
     background: white !important;
     color: black !important;
-    margin: 0 !important;
-    padding: 0 !important;
   }
 
-  body > * {
+  .print-hide {
     display: none !important;
   }
 
-  /* But show the print content by moving it out of dialog flow */
-  .print-content {
-    display: block !important;
-    visibility: visible !important;
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-height: auto !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    z-index: 999999 !important;
+  /* Hide dialog chrome */
+  [data-radix-dialog-overlay] {
     background: white !important;
-    color: black !important;
   }
 
-  .print-content,
-  .print-content * {
-    visibility: visible !important;
+  [data-radix-dialog-content] {
+    position: static !important;
+    transform: none !important;
+    max-width: 100% !important;
+    max-height: none !important;
+    width: 100% !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
     overflow: visible !important;
   }
 
-  .print-hide,
-  [data-radix-dialog-overlay],
   [data-radix-dialog-content] > button:last-child {
     display: none !important;
+  }
+
+  .print-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: auto !important;
+    padding: 5mm !important;
+    margin: 0 !important;
+    overflow: visible !important;
   }
 
   .page-break {
@@ -217,5 +216,6 @@ All colors MUST be HSL.
   * {
     box-shadow: none !important;
     border-radius: 0 !important;
+    overflow: visible !important;
   }
 }
