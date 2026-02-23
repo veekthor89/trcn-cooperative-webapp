@@ -46,7 +46,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
           </Button>
         </div>
 
-        <div className="print-content a4-page px-8 py-4" style={{ fontSize: "11px", lineHeight: "1.4" }}>
+        <div className="print-content a4-page px-8 py-4" style={{ fontSize: "13px", lineHeight: "1.5" }}>
           {/* Header */}
           <div className="text-center mb-3 pb-2 border-b-2 border-black">
             <img src={trcnLogo} alt="TRCN SMCS Logo" className="h-14 mx-auto mb-1" />
