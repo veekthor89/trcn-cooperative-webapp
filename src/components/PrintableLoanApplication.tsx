@@ -36,7 +36,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto p-0">
+      <DialogContent className="max-w-[850px] max-h-[95vh] overflow-y-auto p-0">
         <div className="print-hide flex justify-end gap-2 p-3 border-b sticky top-0 bg-background z-10">
           <Button onClick={handlePrint} size="sm" className="gap-2">
             <Printer className="w-4 h-4" /> Print
@@ -46,7 +46,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
           </Button>
         </div>
 
-        <div className="print-content px-8 py-4" style={{ fontSize: "11px", lineHeight: "1.4" }}>
+        <div className="print-content a4-page px-8 py-4" style={{ fontSize: "11px", lineHeight: "1.4" }}>
           {/* Header */}
           <div className="text-center mb-3 pb-2 border-b-2 border-black">
             <img src={trcnLogo} alt="TRCN SMCS Logo" className="h-14 mx-auto mb-1" />
