@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
-import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, Wallet, Menu, Landmark, ChevronDown, Shield, Banknote, Crown, Eye, BarChart3 } from "lucide-react";
+import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, Wallet, Menu, Landmark, ChevronDown, Shield, Banknote, Crown, Eye, BarChart3, ArrowDownToLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
@@ -22,6 +22,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [profilePhotoUrl, setProfilePhotoUrl] = useState<string | null>(null);
   const [pendingLoansCount, setPendingLoansCount] = useState(0);
   const [pendingContributionsCount, setPendingContributionsCount] = useState(0);
+  const [pendingDepositsCount, setPendingDepositsCount] = useState(0);
   const [dataManagementOpen, setDataManagementOpen] = useState(false);
   const [adminSectionOpen, setAdminSectionOpen] = useState(false);
   const [excoSectionOpen, setExcoSectionOpen] = useState(false);
@@ -66,6 +67,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         setPendingLoansCount(pendingLoans?.length || 0);
         const { data: pendingContributions } = await supabase.from("special_contributions").select("id", { count: "exact" }).eq("application_status", "pending");
         setPendingContributionsCount(pendingContributions?.length || 0);
+        const { data: pendingDeposits } = await supabase.from("deposit_requests").select("id", { count: "exact" }).eq("status", "pending");
+        setPendingDepositsCount(pendingDeposits?.length || 0);
       }
     };
     fetchPendingCounts();
@@ -191,6 +194,10 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <button onClick={() => { navigate("/dashboard/admin/special-contributions"); setSidebarOpen(false); }} className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
                       <div className="flex items-center gap-3"><PiggyBank className="h-5 w-5" /><span>Special Contribution Applications</span></div>
                       {pendingContributionsCount > 0 && <span className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">{pendingContributionsCount}</span>}
+                    </button>
+                    <button onClick={() => { navigate("/dashboard/admin/deposit-requests"); setSidebarOpen(false); }} className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <div className="flex items-center gap-3"><ArrowDownToLine className="h-5 w-5" /><span>Deposit Requests</span></div>
+                      {pendingDepositsCount > 0 && <span className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-0.5 rounded-full">{pendingDepositsCount}</span>}
                     </button>
                   </CollapsibleContent>
                 </Collapsible>
