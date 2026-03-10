@@ -112,6 +112,7 @@ serve(async (req) => {
     });
     const formData = await req.formData();
     const file = formData.get('file') as File;
+    const includedInOpeningBalance = formData.get('included_in_opening_balance') === 'true';
 
     if (!file) {
       return new Response(
