@@ -190,21 +190,10 @@ serve(async (req) => {
           }
         }
 
-        // Check if transaction with this reference number already exists
-        const referenceNumber = row.reference_number || `TXN-${Date.now()}-${i}`;
-        
-        const { data: existingTransaction } = await supabaseAdmin
-          .from('transactions')
-          .select('id')
-          .eq('reference_number', referenceNumber)
-          .single();
-
-        if (existingTransaction) {
-          console.log(`Skipping duplicate transaction: ${referenceNumber}`);
-          results.failed++;
-          results.errors.push(`Row ${i}: Duplicate transaction reference`);
-          continue;
-        }
+        // Auto-generate unique reference number, or use provided one
+        const referenceNumber = row.reference_number?.trim() 
+          ? row.reference_number.trim() 
+          : `TXN-${Date.now()}-${Math.random().toString(36).substring(2, 8)}-${i}`;
 
         // Create transaction (balance is automatically updated by database trigger)
         const { error: insertError } = await supabaseAdmin
@@ -213,7 +202,7 @@ serve(async (req) => {
             user_id: profile.id,
             account_id: accountId,
             type: row.type || 'deposit',
-            amount: parseFloat(row.amount) || 0,
+            amount: parseFloat(row.amount.replace(/,/g, '')) || 0,
             description: row.description || '',
             reference_number: referenceNumber,
           });
