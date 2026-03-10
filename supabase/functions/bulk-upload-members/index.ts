@@ -57,6 +57,15 @@ function sanitizeCsvField(field: string): string {
   return field;
 }
 
+// Convert DD-MM-YYYY to YYYY-MM-DD, pass through if already YYYY-MM-DD
+function normalizeDateOfBirth(dob: string): string {
+  if (/^\d{2}-\d{2}-\d{4}$/.test(dob)) {
+    const [dd, mm, yyyy] = dob.split('-');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return dob;
+}
+
 // Generate cryptographically secure random password
 function generateSecurePassword(length = 16): string {
   const array = new Uint8Array(length);
