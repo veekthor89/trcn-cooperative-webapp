@@ -112,6 +112,7 @@ serve(async (req) => {
     });
     const formData = await req.formData();
     const file = formData.get('file') as File;
+    const includedInOpeningBalance = formData.get('included_in_opening_balance') === 'true';
 
     if (!file) {
       return new Response(
@@ -205,6 +206,7 @@ serve(async (req) => {
             amount: parseFloat(row.amount.replace(/,/g, '')) || 0,
             description: row.description || '',
             reference_number: referenceNumber,
+            included_in_opening_balance: includedInOpeningBalance,
           });
 
         if (insertError) throw insertError;

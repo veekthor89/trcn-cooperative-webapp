@@ -980,6 +980,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
+          included_in_opening_balance: boolean
           reference_number: string | null
           type: Database["public"]["Enums"]["transaction_type"]
           user_id: string
@@ -990,6 +991,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          included_in_opening_balance?: boolean
           reference_number?: string | null
           type: Database["public"]["Enums"]["transaction_type"]
           user_id: string
@@ -1000,6 +1002,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          included_in_opening_balance?: boolean
           reference_number?: string | null
           type?: Database["public"]["Enums"]["transaction_type"]
           user_id?: string

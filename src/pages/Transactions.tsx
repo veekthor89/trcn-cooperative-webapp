@@ -13,6 +13,7 @@ interface Transaction {
   description: string | null;
   reference_number: string | null;
   created_at: string;
+  included_in_opening_balance: boolean;
 }
 
 const Transactions = () => {
@@ -151,6 +152,11 @@ const Transactions = () => {
                           <p className="text-xs text-muted-foreground">
                             Ref: {transaction.reference_number}
                           </p>
+                        )}
+                        {transaction.included_in_opening_balance && (
+                          <Badge variant="secondary" className="text-xs">
+                            Opening balance — included in total
+                          </Badge>
                         )}
                       </div>
                     </div>
