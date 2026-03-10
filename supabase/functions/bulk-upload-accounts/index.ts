@@ -198,7 +198,7 @@ serve(async (req) => {
           .insert({
             user_id: profile.id,
             account_type: sanitizedAccount.account_type,
-            balance: sanitizedAccount.balance || 0.00,
+            balance: parseFloat(String(sanitizedAccount.balance || 0).replace(/,/g, '')) || 0.00,
             status: sanitizedAccount.status || 'active'
           });
 
