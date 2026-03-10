@@ -10,7 +10,6 @@ import { Upload, Download, CheckCircle, XCircle } from "lucide-react";
 
 const BulkUploadTransactions = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [results, setResults] = useState<{
     successful: number;
