@@ -41,8 +41,8 @@ function validateMember(member: any): { valid: boolean; errors: string[] } {
     errors.push('Address must be less than 500 characters');
   }
   
-  if (member.date_of_birth && !/^\d{4}-\d{2}-\d{2}$/.test(member.date_of_birth)) {
-    errors.push('Date of birth must be in YYYY-MM-DD format');
+  if (member.date_of_birth && !/^\d{2}-\d{2}-\d{4}$/.test(member.date_of_birth) && !/^\d{4}-\d{2}-\d{2}$/.test(member.date_of_birth)) {
+    errors.push('Date of birth must be in DD-MM-YYYY or YYYY-MM-DD format');
   }
   
   return { valid: errors.length === 0, errors };
