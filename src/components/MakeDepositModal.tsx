@@ -183,7 +183,7 @@ const MakeDepositModal = ({ open, onOpenChange, onSuccess }: MakeDepositModalPro
   };
 
   const copyAccountNumber = () => {
-    navigator.clipboard.writeText("2345678901");
+    navigator.clipboard.writeText("2006186959");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -210,7 +210,7 @@ const MakeDepositModal = ({ open, onOpenChange, onSuccess }: MakeDepositModalPro
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Account Number:</span>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold font-mono text-lg">2345678901</span>
+                    <span className="font-semibold font-mono text-lg">2006186959</span>
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={copyAccountNumber}>
                       {copied ? <CheckCircle2 className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
                     </Button>
@@ -218,7 +218,7 @@ const MakeDepositModal = ({ open, onOpenChange, onSuccess }: MakeDepositModalPro
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Account Name:</span>
-                  <span className="font-semibold">TRCN Cooperative Society</span>
+                  <span className="font-semibold">TRCN Staff Multipurpose Cooperative Society</span>
                 </div>
               </div>
               <p className="text-xs text-[hsl(216,100%,40%)] mt-3 italic">
