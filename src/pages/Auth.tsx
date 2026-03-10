@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import cooperativeLogo from "@/assets/cooperative-logo.png";
+import PasswordInput from "@/components/PasswordInput";
 
 const authSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
