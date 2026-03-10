@@ -120,8 +120,8 @@ const BulkUpload = () => {
 
   const downloadTemplate = () => {
     const template = `id,full_name,email,phone,address,date_of_birth,created_at,updated_at
-,John Doe,johndoe@example.com,08012345678,123 Main St,1990-01-01,,
-,Jane Smith,janesmith@example.com,08012345679,456 Oak Ave,1985-05-15,,`;
+,John Doe,johndoe@example.com,08012345678,123 Main St,01-01-1990,,
+,Jane Smith,janesmith@example.com,08012345679,456 Oak Ave,15-05-1985,,`;
     
     const blob = new Blob([template], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
