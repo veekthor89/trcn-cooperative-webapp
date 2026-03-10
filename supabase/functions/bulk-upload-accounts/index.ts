@@ -28,7 +28,8 @@ function validateAccount(account: any): { valid: boolean; errors: string[] } {
   }
   
   if (account.balance !== undefined) {
-    const balance = parseFloat(account.balance);
+    const balanceStr = String(account.balance).replace(/,/g, '');
+    const balance = parseFloat(balanceStr);
     if (isNaN(balance) || balance < 0 || balance > 100000000) {
       errors.push('Balance must be between 0 and 100,000,000');
     }
@@ -197,7 +198,7 @@ serve(async (req) => {
           .insert({
             user_id: profile.id,
             account_type: sanitizedAccount.account_type,
-            balance: sanitizedAccount.balance || 0.00,
+            balance: parseFloat(String(sanitizedAccount.balance || 0).replace(/,/g, '')) || 0.00,
             status: sanitizedAccount.status || 'active'
           });
 

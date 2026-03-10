@@ -18,21 +18,46 @@ const BulkUploadAccounts = () => {
   const [uploading, setUploading] = useState(false);
   const [results, setResults] = useState<{ success: string[]; errors: Array<{ email: string; error: string }> } | null>(null);
 
+  const parseCsvLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+      } else if (ch === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  };
+
+  const parseLocalizedNumber = (value: string): number => {
+    if (!value) return 0;
+    // Remove thousand separators (commas) and parse
+    const cleaned = value.replace(/,/g, '');
+    const parsed = parseFloat(cleaned);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
   const parseCsv = (text: string): AccountData[] => {
     const lines = text.split('\n').filter(line => line.trim());
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-    
     const accounts: AccountData[] = [];
     
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',');
-      if (values.length < 2 || !values[0]?.trim() || !values[1]?.trim()) continue;
+      const values = parseCsvLine(lines[i]);
+      if (values.length < 2 || !values[0] || !values[1]) continue;
       
       const account: AccountData = {
-        email: values[0]?.trim() || '',
-        account_type: (values[1]?.trim()?.toLowerCase() || 'savings') as 'savings' | 'shares' | 'loan',
-        balance: values[2]?.trim() ? parseFloat(values[2].trim()) : 0.00,
-        status: (values[3]?.trim()?.toLowerCase() || 'active') as 'active' | 'inactive' | 'suspended'
+        email: values[0] || '',
+        account_type: (values[1]?.toLowerCase() || 'savings') as 'savings' | 'shares' | 'loan',
+        balance: parseLocalizedNumber(values[2] || ''),
+        status: (values[3]?.toLowerCase() || 'active') as 'active' | 'inactive' | 'suspended'
       };
       
       if (account.email && account.account_type) {
