@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import cooperativeLogo from "@/assets/cooperative-logo.png";
+import PasswordInput from "@/components/PasswordInput";
 
 const authSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -209,13 +210,13 @@ const Auth = () => {
               {!isForgotPassword && (
                 <div className="space-y-2">
                   <Label htmlFor="password">Password</Label>
-                  <Input
+                  <PasswordInput
                     id="password"
-                    type="password"
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
+                    showDisclaimer
                   />
                 </div>
               )}

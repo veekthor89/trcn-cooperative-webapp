@@ -9,11 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import PasswordInput from "@/components/PasswordInput";
 
 const passwordSchema = z
   .object({
@@ -35,14 +34,9 @@ interface ChangePasswordDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export const ChangePasswordDialog = ({
-  open,
-  onOpenChange,
-}: ChangePasswordDialogProps) => {
+export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialogProps) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ newPassword?: string; confirmPassword?: string }>({});
 
@@ -50,16 +44,12 @@ export const ChangePasswordDialog = ({
     e.preventDefault();
     setErrors({});
 
-    // Validate inputs
     const result = passwordSchema.safeParse({ newPassword, confirmPassword });
     if (!result.success) {
       const fieldErrors: { newPassword?: string; confirmPassword?: string } = {};
       result.error.errors.forEach((error) => {
-        if (error.path[0] === "newPassword") {
-          fieldErrors.newPassword = error.message;
-        } else if (error.path[0] === "confirmPassword") {
-          fieldErrors.confirmPassword = error.message;
-        }
+        if (error.path[0] === "newPassword") fieldErrors.newPassword = error.message;
+        else if (error.path[0] === "confirmPassword") fieldErrors.confirmPassword = error.message;
       });
       setErrors(fieldErrors);
       return;
@@ -67,19 +57,12 @@ export const ChangePasswordDialog = ({
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
 
-      // Mark password as changed in profile
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase
-          .from("profiles")
-          .update({ must_change_password: false })
-          .eq("id", user.id);
+        await supabase.from("profiles").update({ must_change_password: false }).eq("id", user.id);
       }
 
       toast.success("Password changed successfully");
@@ -97,13 +80,11 @@ export const ChangePasswordDialog = ({
   const getPasswordStrength = (password: string) => {
     if (password.length === 0) return { strength: 0, label: "" };
     if (password.length < 8) return { strength: 1, label: "Weak" };
-    
     let strength = 1;
     if (/[A-Z]/.test(password)) strength++;
     if (/[a-z]/.test(password)) strength++;
     if (/[0-9]/.test(password)) strength++;
     if (/[^A-Za-z0-9]/.test(password)) strength++;
-    
     if (strength <= 2) return { strength: 1, label: "Weak" };
     if (strength === 3) return { strength: 2, label: "Medium" };
     return { strength: 3, label: "Strong" };
@@ -124,29 +105,14 @@ export const ChangePasswordDialog = ({
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="new-password">New Password</Label>
-              <div className="relative">
-                <Input
-                  id="new-password"
-                  type={showNewPassword ? "text" : "password"}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                >
-                  {showNewPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
+              <PasswordInput
+                id="new-password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
+                required
+                showDisclaimer
+              />
               {newPassword && (
                 <div className="space-y-1">
                   <div className="flex gap-1">
@@ -165,53 +131,26 @@ export const ChangePasswordDialog = ({
                       />
                     ))}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Strength: {passwordStrength.label}
-                  </p>
+                  <p className="text-xs text-muted-foreground">Strength: {passwordStrength.label}</p>
                 </div>
               )}
-              {errors.newPassword && (
-                <p className="text-sm text-destructive">{errors.newPassword}</p>
-              )}
+              {errors.newPassword && <p className="text-sm text-destructive">{errors.newPassword}</p>}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="confirm-password">Confirm Password</Label>
-              <div className="relative">
-                <Input
-                  id="confirm-password"
-                  type={showConfirmPassword ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
-                  required
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full px-3"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-              {errors.confirmPassword && (
-                <p className="text-sm text-destructive">{errors.confirmPassword}</p>
-              )}
+              <PasswordInput
+                id="confirm-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm new password"
+                required
+              />
+              {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
             </div>
           </div>
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={loading}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
