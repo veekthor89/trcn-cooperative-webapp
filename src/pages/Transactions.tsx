@@ -13,6 +13,7 @@ interface Transaction {
   description: string | null;
   reference_number: string | null;
   created_at: string;
+  included_in_opening_balance: boolean;
 }
 
 const Transactions = () => {
