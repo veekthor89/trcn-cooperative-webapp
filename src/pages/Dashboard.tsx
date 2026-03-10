@@ -154,17 +154,12 @@ const Dashboard = () => {
       }).limit(5);
       setRecentActivities(transactions || []);
 
-      // Fetch transaction data for the current year for the chart
+      // Build chart showing actual balances per month
+      // Use current balances and work backwards from transactions to estimate monthly snapshots
       const currentYear = new Date().getFullYear();
-      const yearStart = new Date(currentYear, 0, 1);
+      const currentMonth = new Date().getMonth(); // 0-11
       
-      const { data: allTransactions } = await supabase
-        .from("transactions")
-        .select("*")
-        .eq("user_id", userId)
-        .gte("created_at", yearStart.toISOString());
-
-      // Create data for all 12 months (Jan - Dec)
+      // Create data for all 12 months
       const monthlyData = Array.from({ length: 12 }, (_, i) => {
         const date = new Date(currentYear, i, 1);
         return {
@@ -175,40 +170,62 @@ const Dashboard = () => {
         };
       });
 
+      // Set current month values to actual balances
+      const currentSavingsBalance = totalSavings;
+      const currentLoansBalance = totalLoans;
+      const currentContributionsBalance = totalInvestments;
+
+      // Fetch all transactions this year to compute monthly deltas
+      const yearStart = new Date(currentYear, 0, 1);
+      const { data: allTransactions } = await supabase
+        .from("transactions")
+        .select("*")
+        .eq("user_id", userId)
+        .gte("created_at", yearStart.toISOString());
+
+      // Calculate net change per month for each category
+      const monthlyDeltas = Array.from({ length: 12 }, () => ({
+        savings: 0, loans: 0, contributions: 0,
+      }));
+
       allTransactions?.forEach(transaction => {
         const transactionDate = new Date(transaction.created_at);
-        const monthIndex = transactionDate.getMonth(); // 0-11 for Jan-Dec
-        
-        if (monthIndex >= 0 && monthIndex < 12) {
-          const description = transaction.description?.toLowerCase() || '';
-          const amount = Number(transaction.amount);
-          
-          if (transaction.type === 'deposit') {
-            if (description.includes('savings')) {
-              monthlyData[monthIndex].savings += amount;
-            } else if (description.includes('contribution') || description.includes('special')) {
-              monthlyData[monthIndex].contributions += amount;
-            }
-          } else if (transaction.type === 'withdrawal') {
-            if (description.includes('loan')) {
-              monthlyData[monthIndex].loans += amount;
-            }
+        const monthIndex = transactionDate.getMonth();
+        const amount = Number(transaction.amount);
+        const description = transaction.description?.toLowerCase() || '';
+
+        if (transaction.type === 'deposit') {
+          if (description.includes('contribution') || description.includes('special')) {
+            monthlyDeltas[monthIndex].contributions += amount;
+          } else {
+            monthlyDeltas[monthIndex].savings += amount;
           }
-          
-          // Also check for loan-related deposits (disbursements)
-          if (transaction.type === 'deposit' && description.includes('loan')) {
-            monthlyData[monthIndex].loans += amount;
-          }
+        } else if (transaction.type === 'withdrawal') {
+          monthlyDeltas[monthIndex].savings -= amount;
+        } else if (transaction.type === 'repayment') {
+          monthlyDeltas[monthIndex].loans -= amount;
+        } else if (transaction.type === 'loan_disbursement') {
+          monthlyDeltas[monthIndex].loans += amount;
         }
       });
 
-      // Accumulate values over months
-      for (let i = 1; i < monthlyData.length; i++) {
-        monthlyData[i].savings += monthlyData[i - 1].savings;
-        monthlyData[i].loans += monthlyData[i - 1].loans;
-        monthlyData[i].contributions += monthlyData[i - 1].contributions;
+      // Work backwards from current balance to reconstruct each month's ending balance
+      // Start at current month with actual balance, subtract future deltas going back
+      let savBal = currentSavingsBalance;
+      let loanBal = currentLoansBalance;
+      let contBal = currentContributionsBalance;
+
+      for (let i = currentMonth; i >= 0; i--) {
+        monthlyData[i].savings = Math.max(0, savBal);
+        monthlyData[i].loans = Math.max(0, loanBal);
+        monthlyData[i].contributions = Math.max(0, contBal);
+        // Subtract this month's delta to get the balance at end of previous month
+        savBal -= monthlyDeltas[i].savings;
+        loanBal -= monthlyDeltas[i].loans;
+        contBal -= monthlyDeltas[i].contributions;
       }
 
+      // Future months stay at 0 (no data yet)
       setChartData(monthlyData);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
