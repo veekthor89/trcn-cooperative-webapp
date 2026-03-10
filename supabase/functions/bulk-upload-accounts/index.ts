@@ -28,7 +28,8 @@ function validateAccount(account: any): { valid: boolean; errors: string[] } {
   }
   
   if (account.balance !== undefined) {
-    const balance = parseFloat(account.balance);
+    const balanceStr = String(account.balance).replace(/,/g, '');
+    const balance = parseFloat(balanceStr);
     if (isNaN(balance) || balance < 0 || balance > 100000000) {
       errors.push('Balance must be between 0 and 100,000,000');
     }
