@@ -183,7 +183,7 @@ const MakeDepositModal = ({ open, onOpenChange, onSuccess }: MakeDepositModalPro
   };
 
   const copyAccountNumber = () => {
-    navigator.clipboard.writeText("2345678901");
+    navigator.clipboard.writeText("2006186959");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
