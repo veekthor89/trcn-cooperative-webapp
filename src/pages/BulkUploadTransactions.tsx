@@ -86,7 +86,7 @@ const BulkUploadTransactions = () => {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("included_in_opening_balance", String(includedInOpeningBalance));
+      formData.append("included_in_opening_balance", "false");
 
       const response = await supabase.functions.invoke("bulk-upload-transactions", {
         body: formData,
