@@ -206,6 +206,7 @@ serve(async (req) => {
             amount: parseFloat(row.amount.replace(/,/g, '')) || 0,
             description: row.description || '',
             reference_number: referenceNumber,
+            included_in_opening_balance: includedInOpeningBalance,
           });
 
         if (insertError) throw insertError;
