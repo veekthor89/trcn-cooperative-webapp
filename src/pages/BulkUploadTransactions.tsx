@@ -156,25 +156,7 @@ const BulkUploadTransactions = () => {
               </Button>
             </div>
 
-            <Alert className="border-yellow-500/50 bg-yellow-50 dark:bg-yellow-950/20">
-              <AlertTriangle className="h-4 w-4 text-yellow-600" />
-              <AlertDescription className="text-sm">
-                If the opening balance you uploaded already includes the current month's contributions, 
-                check the box below so they won't be double-counted.
-              </AlertDescription>
-            </Alert>
-
             <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Checkbox 
-                  id="opening-balance" 
-                  checked={includedInOpeningBalance}
-                  onCheckedChange={(checked) => setIncludedInOpeningBalance(checked === true)}
-                />
-                <Label htmlFor="opening-balance" className="text-sm font-medium leading-none cursor-pointer">
-                  Current month already included in opening balance (transactions won't affect totals)
-                </Label>
-              </div>
 
               <Input
                 type="file"
