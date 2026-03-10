@@ -153,6 +153,11 @@ const Transactions = () => {
                             Ref: {transaction.reference_number}
                           </p>
                         )}
+                        {transaction.included_in_opening_balance && (
+                          <Badge variant="secondary" className="text-xs">
+                            Opening balance — included in total
+                          </Badge>
+                        )}
                       </div>
                     </div>
                     <div className="text-right">
