@@ -176,7 +176,7 @@ serve(async (req) => {
           email: member.email?.trim().toLowerCase() || '',
           phone: member.phone ? sanitizeCsvField(member.phone.trim()) : undefined,
           address: member.address ? sanitizeCsvField(member.address.trim()) : undefined,
-          date_of_birth: member.date_of_birth?.trim() || undefined
+          date_of_birth: member.date_of_birth?.trim() ? normalizeDateOfBirth(member.date_of_birth.trim()) : undefined
         };
 
         // Validate input
