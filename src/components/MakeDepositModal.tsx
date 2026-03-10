@@ -218,7 +218,7 @@ const MakeDepositModal = ({ open, onOpenChange, onSuccess }: MakeDepositModalPro
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Account Name:</span>
-                  <span className="font-semibold">TRCN Cooperative Society</span>
+                  <span className="font-semibold">TRCN Staff Multipurpose Cooperative Society</span>
                 </div>
               </div>
               <p className="text-xs text-[hsl(216,100%,40%)] mt-3 italic">
