@@ -41,8 +41,8 @@ function validateMember(member: any): { valid: boolean; errors: string[] } {
     errors.push('Address must be less than 500 characters');
   }
   
-  if (member.date_of_birth && !/^\d{4}-\d{2}-\d{2}$/.test(member.date_of_birth)) {
-    errors.push('Date of birth must be in YYYY-MM-DD format');
+  if (member.date_of_birth && !/^\d{2}-\d{2}-\d{4}$/.test(member.date_of_birth) && !/^\d{4}-\d{2}-\d{2}$/.test(member.date_of_birth)) {
+    errors.push('Date of birth must be in DD-MM-YYYY or YYYY-MM-DD format');
   }
   
   return { valid: errors.length === 0, errors };
@@ -55,6 +55,15 @@ function sanitizeCsvField(field: string): string {
     return "'" + field;
   }
   return field;
+}
+
+// Convert DD-MM-YYYY to YYYY-MM-DD, pass through if already YYYY-MM-DD
+function normalizeDateOfBirth(dob: string): string {
+  if (/^\d{2}-\d{2}-\d{4}$/.test(dob)) {
+    const [dd, mm, yyyy] = dob.split('-');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  return dob;
 }
 
 // Generate cryptographically secure random password
@@ -167,7 +176,7 @@ serve(async (req) => {
           email: member.email?.trim().toLowerCase() || '',
           phone: member.phone ? sanitizeCsvField(member.phone.trim()) : undefined,
           address: member.address ? sanitizeCsvField(member.address.trim()) : undefined,
-          date_of_birth: member.date_of_birth?.trim() || undefined
+          date_of_birth: member.date_of_birth?.trim() ? normalizeDateOfBirth(member.date_of_birth.trim()) : undefined
         };
 
         // Validate input
