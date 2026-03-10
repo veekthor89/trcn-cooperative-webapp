@@ -621,7 +621,7 @@ const Dashboard = () => {
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
                         <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={value => `₦${(value / 1000).toFixed(0)}k`} />
+                        <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={value => value >= 1000000 ? `₦${(value / 1000000).toFixed(1)}M` : value >= 1000 ? `₦${(value / 1000).toFixed(0)}k` : `₦${value}`} width={70} />
                         <Tooltip contentStyle={{
                     backgroundColor: 'hsl(var(--background))',
                     border: '1px solid hsl(var(--border))',
