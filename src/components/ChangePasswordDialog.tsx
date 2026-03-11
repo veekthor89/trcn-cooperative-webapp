@@ -12,7 +12,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { z } from "zod";
-import PasswordInput from "@/components/PasswordInput";
+import { getEdgeFunctionErrorMessage } from "@/lib/edgeFunctionError";
 
 const passwordSchema = z
   .object({
