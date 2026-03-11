@@ -54,14 +54,18 @@ const ForceChangePassword = () => {
         body: { new_password: newPassword },
       });
 
-      if (error) throw new Error(error.message || "Failed to change password");
+      if (error) {
+        const message = await getEdgeFunctionErrorMessage(error, "Failed to change password");
+        throw new Error(message);
+      }
       if (data?.error) throw new Error(data.error);
 
       toast.success("Password changed successfully! Redirecting to dashboard...");
       setTimeout(() => navigate("/dashboard"), 1000);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Password change error:", error);
-      toast.error(error.message || "Failed to change password");
+      const message = await getEdgeFunctionErrorMessage(error, "Failed to change password");
+      toast.error(message);
     } finally {
       setLoading(false);
     }
