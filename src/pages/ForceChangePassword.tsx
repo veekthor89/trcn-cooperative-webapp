@@ -14,9 +14,7 @@ const passwordSchema = z
   .object({
     newPassword: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Must contain at least one lowercase letter")
+      .min(6, "Password must be at least 6 characters")
       .regex(/[0-9]/, "Must contain at least one number"),
     confirmPassword: z.string(),
   })
@@ -104,7 +102,7 @@ const ForceChangePassword = () => {
                 showDisclaimer
               />
               {errors.newPassword && <p className="text-sm text-destructive">{errors.newPassword}</p>}
-              <p className="text-xs text-muted-foreground">Min 8 characters with uppercase, lowercase, and number</p>
+              <p className="text-xs text-muted-foreground">Min 6 characters with at least one number</p>
             </div>
 
             <div className="space-y-2">
