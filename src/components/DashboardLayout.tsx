@@ -40,11 +40,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
         navigate("/auth");
       } else {
         setTimeout(async () => {
-          const { data } = await supabase.from("profiles").select("full_name, profile_photo_url, must_change_password").eq("id", session.user.id).single();
-          if (data?.must_change_password) {
-            navigate("/change-password");
-            return;
-          }
+          const { data } = await supabase.from("profiles").select("full_name, profile_photo_url").eq("id", session.user.id).single();
           if (data?.full_name) setProfileName(data.full_name);
           if (data?.profile_photo_url) {
             const pathMatch = data.profile_photo_url.match(/profile-photos\/(.+?)(\?|$)/);

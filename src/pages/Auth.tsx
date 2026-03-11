@@ -94,21 +94,6 @@ const Auth = () => {
           if (error) {
             toast.error(error.message);
           } else {
-            // Check if user must change password
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-              const { data: profile } = await supabase
-                .from("profiles")
-                .select("must_change_password")
-                .eq("id", user.id)
-                .single();
-              
-              if (profile?.must_change_password) {
-                toast.info("Please change your default password to continue.");
-                navigate("/change-password");
-                return;
-              }
-            }
             toast.success("Signed in successfully!");
             navigate("/dashboard");
           }
