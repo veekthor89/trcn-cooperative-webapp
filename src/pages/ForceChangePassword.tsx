@@ -48,7 +48,7 @@ const ForceChangePassword = () => {
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Not authenticated");
+      if (!session?.user?.email) throw new Error("Session expired. Please sign in again.");
 
       const { data, error } = await supabase.functions.invoke('change-password', {
         body: { new_password: newPassword },
@@ -60,8 +60,19 @@ const ForceChangePassword = () => {
       }
       if (data?.error) throw new Error(data.error);
 
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: session.user.email,
+        password: newPassword,
+      });
+
+      if (signInError) {
+        toast.success("Password changed successfully. Please sign in with your new password.");
+        navigate("/auth", { replace: true });
+        return;
+      }
+
       toast.success("Password changed successfully! Redirecting to dashboard...");
-      setTimeout(() => navigate("/dashboard"), 1000);
+      navigate("/dashboard", { replace: true });
     } catch (error) {
       console.error("Password change error:", error);
       const message = await getEdgeFunctionErrorMessage(error, "Failed to change password");
