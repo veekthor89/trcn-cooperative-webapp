@@ -29,31 +29,70 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const { isAdmin, isFinancialSecretary, isPresident, isTreasurer, isExco, isViewOnlyExco, hasRole, primaryRole } = useUserRole();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      if (!session) navigate("/auth");
-    });
+    let isMounted = true;
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (!session) {
-        navigate("/auth");
-      } else {
-        setTimeout(async () => {
-          const { data } = await supabase.from("profiles").select("full_name, profile_photo_url").eq("id", session.user.id).single();
-          if (data?.full_name) setProfileName(data.full_name);
-          if (data?.profile_photo_url) {
-            const pathMatch = data.profile_photo_url.match(/profile-photos\/(.+?)(\?|$)/);
-            if (pathMatch) {
-              const filePath = pathMatch[1];
-              const { data: signedUrlData } = await supabase.storage.from("profile-photos").createSignedUrl(filePath, 3600);
-              if (signedUrlData?.signedUrl) setProfilePhotoUrl(signedUrlData.signedUrl);
-            }
+    const loadProfile = async (userId: string) => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name, profile_photo_url")
+        .eq("id", userId)
+        .single();
+
+      if (!isMounted) return;
+
+      if (data?.full_name) setProfileName(data.full_name);
+
+      if (data?.profile_photo_url) {
+        const pathMatch = data.profile_photo_url.match(/profile-photos\/(.+?)(\?|$)/);
+        if (pathMatch) {
+          const filePath = pathMatch[1];
+          const { data: signedUrlData } = await supabase.storage
+            .from("profile-photos")
+            .createSignedUrl(filePath, 3600);
+
+          if (isMounted && signedUrlData?.signedUrl) {
+            setProfilePhotoUrl(signedUrlData.signedUrl);
           }
-        }, 0);
+        }
+      }
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (!isMounted) return;
+
+      setSession(nextSession);
+
+      if (event === "SIGNED_OUT") {
+        navigate("/auth", { replace: true });
+        return;
+      }
+
+      if (nextSession && ["SIGNED_IN", "TOKEN_REFRESHED", "USER_UPDATED"].includes(event)) {
+        void loadProfile(nextSession.user.id);
       }
     });
-    return () => subscription.unsubscribe();
+
+    const initializeAuth = async () => {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+
+      if (!isMounted) return;
+
+      setSession(currentSession);
+
+      if (!currentSession) {
+        navigate("/auth", { replace: true });
+        return;
+      }
+
+      await loadProfile(currentSession.user.id);
+    };
+
+    void initializeAuth();
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   useEffect(() => {
