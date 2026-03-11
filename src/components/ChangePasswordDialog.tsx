@@ -55,13 +55,12 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
 
     setLoading(true);
     try {
-      const { error } = await supabase.auth.updateUser({ password: newPassword });
-      if (error) throw error;
+      const { data, error } = await supabase.functions.invoke('change-password', {
+        body: { new_password: newPassword },
+      });
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from("profiles").update({ must_change_password: false }).eq("id", user.id);
-      }
+      if (error) throw new Error(error.message || "Failed to change password");
+      if (data?.error) throw new Error(data.error);
 
       toast.success("Password changed successfully");
       setNewPassword("");

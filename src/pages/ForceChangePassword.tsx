@@ -47,17 +47,15 @@ const ForceChangePassword = () => {
 
     setLoading(true);
     try {
-      const { error: pwError } = await supabase.auth.updateUser({ password: newPassword });
-      if (pwError) throw pwError;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Not authenticated");
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data, error } = await supabase.functions.invoke('change-password', {
+        body: { new_password: newPassword },
+      });
 
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ must_change_password: false })
-        .eq("id", user.id);
-      if (profileError) throw profileError;
+      if (error) throw new Error(error.message || "Failed to change password");
+      if (data?.error) throw new Error(data.error);
 
       toast.success("Password changed successfully! Redirecting to dashboard...");
       setTimeout(() => navigate("/dashboard"), 1000);
