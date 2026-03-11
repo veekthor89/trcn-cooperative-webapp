@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import cooperativeLogo from "@/assets/cooperative-logo.png";
 import { getEdgeFunctionErrorMessage } from "@/lib/edgeFunctionError";
-
+import PasswordInput from "@/components/PasswordInput";
 const passwordSchema = z
   .object({
     newPassword: z
