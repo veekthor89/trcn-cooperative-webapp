@@ -34,11 +34,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     const loadProfile = async (userId: string) => {
       const { data } = await supabase
         .from("profiles")
-        .select("full_name, profile_photo_url")
+        .select("full_name, profile_photo_url, must_change_password")
         .eq("id", userId)
         .single();
 
       if (!isMounted) return;
+
+      if (data?.must_change_password) {
+        navigate("/change-password", { replace: true });
+        return;
+      }
 
       if (data?.full_name) setProfileName(data.full_name);
 
