@@ -12,8 +12,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { z } from "zod";
+import { getEdgeFunctionErrorMessage } from "@/lib/edgeFunctionError";
 import PasswordInput from "@/components/PasswordInput";
-
 const passwordSchema = z
   .object({
     newPassword: z
@@ -59,16 +59,20 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
         body: { new_password: newPassword },
       });
 
-      if (error) throw new Error(error.message || "Failed to change password");
+      if (error) {
+        const message = await getEdgeFunctionErrorMessage(error, "Failed to change password");
+        throw new Error(message);
+      }
       if (data?.error) throw new Error(data.error);
 
       toast.success("Password changed successfully");
       setNewPassword("");
       setConfirmPassword("");
       onOpenChange(false);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Password change error:", error);
-      toast.error(error.message || "Failed to change password");
+      const message = await getEdgeFunctionErrorMessage(error, "Failed to change password");
+      toast.error(message);
     } finally {
       setLoading(false);
     }

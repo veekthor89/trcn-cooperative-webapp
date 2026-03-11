@@ -72,8 +72,20 @@ serve(async (req) => {
 
     if (updateError) {
       console.error('Password update error:', updateError);
+
+      if (updateError.code === 'weak_password') {
+        return new Response(
+          JSON.stringify({
+            error: 'This password is too common. Please pick an easy but unique password (for example: sunrise47market).',
+            code: updateError.code,
+            reasons: (updateError as { reasons?: string[] }).reasons ?? [],
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
       return new Response(
-        JSON.stringify({ error: 'Failed to update password' }),
+        JSON.stringify({ error: updateError.message || 'Failed to update password' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
