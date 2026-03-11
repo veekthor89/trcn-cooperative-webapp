@@ -77,14 +77,12 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
 
   const getPasswordStrength = (password: string) => {
     if (password.length === 0) return { strength: 0, label: "" };
-    if (password.length < 8) return { strength: 1, label: "Weak" };
+    if (password.length < 6) return { strength: 1, label: "Weak" };
     let strength = 1;
-    if (/[A-Z]/.test(password)) strength++;
-    if (/[a-z]/.test(password)) strength++;
     if (/[0-9]/.test(password)) strength++;
-    if (/[^A-Za-z0-9]/.test(password)) strength++;
-    if (strength <= 2) return { strength: 1, label: "Weak" };
-    if (strength === 3) return { strength: 2, label: "Medium" };
+    if (password.length >= 8) strength++;
+    if (strength <= 1) return { strength: 1, label: "Weak" };
+    if (strength === 2) return { strength: 2, label: "Medium" };
     return { strength: 3, label: "Strong" };
   };
 
