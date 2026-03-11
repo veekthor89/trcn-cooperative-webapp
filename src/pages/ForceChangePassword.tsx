@@ -102,7 +102,7 @@ const ForceChangePassword = () => {
                 showDisclaimer
               />
               {errors.newPassword && <p className="text-sm text-destructive">{errors.newPassword}</p>}
-              <p className="text-xs text-muted-foreground">Min 8 characters with uppercase, lowercase, and number</p>
+              <p className="text-xs text-muted-foreground">Min 6 characters with at least one number</p>
             </div>
 
             <div className="space-y-2">

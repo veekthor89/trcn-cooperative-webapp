@@ -95,7 +95,7 @@ export const ChangePasswordDialog = ({ open, onOpenChange }: ChangePasswordDialo
           <DialogHeader>
             <DialogTitle>Change Password</DialogTitle>
             <DialogDescription>
-              Create a strong password with at least 8 characters, including uppercase, lowercase, and numbers.
+              Choose a password with at least 6 characters and include a number.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
