@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX unique_user_account_type ON accounts (user_id, account_type);
