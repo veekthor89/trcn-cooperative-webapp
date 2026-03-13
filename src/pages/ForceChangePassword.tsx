@@ -8,7 +8,6 @@ import { Loader2, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import cooperativeLogo from "@/assets/cooperative-logo.png";
-import DeveloperFooter from "@/components/DeveloperFooter";
 import { getEdgeFunctionErrorMessage } from "@/lib/edgeFunctionError";
 import PasswordInput from "@/components/PasswordInput";
 const passwordSchema = z
@@ -141,7 +140,6 @@ const ForceChangePassword = () => {
           </form>
         </CardContent>
       </Card>
-      <DeveloperFooter />
     </div>
   );
 };

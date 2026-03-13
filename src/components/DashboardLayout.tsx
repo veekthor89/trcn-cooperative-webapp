@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import DeveloperFooter from "@/components/DeveloperFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, Wallet, Menu, Landmark, ChevronDown, Shield, Banknote, Crown, Eye, BarChart3, ArrowDownToLine, Megaphone } from "lucide-react";
@@ -285,10 +284,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}><Menu className="h-5 w-5" /></Button>
           <div className="flex items-center gap-2"><img src={trcnLogo} alt="TRCN" className="h-8 w-auto" /></div>
         </header>
-        <main className="flex-1 overflow-auto p-6">
-          {children}
-          <DeveloperFooter />
-        </main>
+        <main className="flex-1 overflow-auto p-6 pb-20">{children}</main>
       </div>
     </div>
   );

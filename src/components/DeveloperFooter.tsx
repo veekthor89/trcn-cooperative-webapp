@@ -2,7 +2,7 @@ import vanniLogo from "@/assets/vanni-logo.png";
 
 const DeveloperFooter = () => {
   return (
-    <footer className="w-full border-t-2 border-border bg-background py-4 px-4 shadow-[0_-2px_8px_rgba(0,0,0,0.05)]">
+    <footer className="fixed bottom-0 left-0 right-0 z-40 border-t-2 border-border bg-background py-4 px-4 shadow-[0_-2px_8px_rgba(0,0,0,0.05)]">
       <a
         href="https://vanni.dev"
         target="_blank"
