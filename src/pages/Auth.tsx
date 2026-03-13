@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import DeveloperFooter from "@/components/DeveloperFooter";
 import cooperativeLogo from "@/assets/cooperative-logo.png";
 import PasswordInput from "@/components/PasswordInput";
 
@@ -245,6 +246,7 @@ const Auth = () => {
           </CardContent>
         </Card>
       </div>
+      <DeveloperFooter />
     </div>
   );
 };
