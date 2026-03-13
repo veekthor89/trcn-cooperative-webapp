@@ -8,17 +8,17 @@ const DeveloperFooter = () => {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Visit developer's website"
-        className="flex items-center justify-center gap-3 text-foreground/70 hover:text-foreground transition-colors"
-      >
-        <span className="text-sm font-medium">Developed by</span>
+        className="flex items-center justify-center gap-3 text-foreground/70 hover:text-foreground transition-colors">
+        
+        <span className="text-sm font-medium">Developed by VANNI </span>
         <img
-          src={vanniLogo}
+
           alt="VANNI - Design Build Think"
-          className="h-8 md:h-9 w-auto"
-        />
+          className="h-8 md:h-9 w-auto" src="/lovable-uploads/6d8dc3e3-7a32-4b7d-aaac-3ba804de4562.png" />
+        
       </a>
-    </footer>
-  );
+    </footer>);
+
 };
 
 export default DeveloperFooter;
