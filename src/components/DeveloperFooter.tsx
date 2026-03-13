@@ -14,7 +14,7 @@ const DeveloperFooter = () => {
         <img
 
           alt="VANNI - Design Build Think"
-          className="h-8 md:h-9 w-auto" src="/lovable-uploads/7c07fa68-ac94-4e03-a51e-f4a09b4dff0b.png" />
+          className="h-8 md:h-9 w-auto" src="/lovable-uploads/793ed939-1ece-476a-ac27-8c1f53c27011.png" />
         
       </a>
     </footer>);
