@@ -141,6 +141,7 @@ const ForceChangePassword = () => {
           </form>
         </CardContent>
       </Card>
+      <DeveloperFooter />
     </div>
   );
 };

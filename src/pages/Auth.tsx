@@ -246,6 +246,7 @@ const Auth = () => {
           </CardContent>
         </Card>
       </div>
+      <DeveloperFooter />
     </div>
   );
 };
