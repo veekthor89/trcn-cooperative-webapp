@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
-import DeveloperFooter from "@/components/DeveloperFooter";
 import cooperativeLogo from "@/assets/cooperative-logo.png";
 import PasswordInput from "@/components/PasswordInput";
 
@@ -114,8 +113,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-      <div className="flex-1 flex">
+    <div className="min-h-screen flex bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       {/* Left side - Logo */}
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center p-12">
         <div className="max-w-md space-y-6 text-center">
@@ -247,8 +245,6 @@ const Auth = () => {
           </CardContent>
         </Card>
       </div>
-      </div>
-      <DeveloperFooter />
     </div>
   );
 };
