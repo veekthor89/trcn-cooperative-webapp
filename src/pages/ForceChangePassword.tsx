@@ -89,7 +89,8 @@ const ForceChangePassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
+      <div className="flex-1 flex items-center justify-center">
       <Card className="w-full max-w-lg shadow-elevated">
         <CardHeader className="text-center space-y-4">
           <div className="flex justify-center">
