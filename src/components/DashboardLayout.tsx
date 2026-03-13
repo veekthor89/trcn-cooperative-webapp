@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DeveloperFooter from "@/components/DeveloperFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { Session } from "@supabase/supabase-js";
 import { LayoutDashboard, TrendingUp, CreditCard, User, LogOut, X, PiggyBank, Upload, Wallet, Menu, Landmark, ChevronDown, Shield, Banknote, Crown, Eye, BarChart3, ArrowDownToLine, Megaphone } from "lucide-react";
