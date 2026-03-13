@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useUserRole, ROLE_LABELS } from "@/hooks/useUserRole";
 import trcnLogo from "@/assets/trcn-logo.png";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import DeveloperFooter from "@/components/DeveloperFooter";
 
 interface DashboardLayoutProps {
   children: ReactNode;
