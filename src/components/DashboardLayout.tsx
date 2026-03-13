@@ -284,7 +284,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(true)}><Menu className="h-5 w-5" /></Button>
           <div className="flex items-center gap-2"><img src={trcnLogo} alt="TRCN" className="h-8 w-auto" /></div>
         </header>
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-6 pb-14">{children}</main>
       </div>
     </div>
   );
