@@ -1,0 +1,1 @@
+SELECT auth.uid(); -- just checking we need an edge function approach instead
