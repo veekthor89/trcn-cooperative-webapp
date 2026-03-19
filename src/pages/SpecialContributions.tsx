@@ -118,7 +118,7 @@ export default function SpecialContributions() {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <div className="bg-muted p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground">Total Contributed</p>
                   <p className="text-2xl font-bold">
@@ -133,11 +133,7 @@ export default function SpecialContributions() {
                 </div>
                 <div className="bg-muted p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground">Months Completed</p>
-                  <p className="text-2xl font-bold">{deductions.length}/11</p>
-                </div>
-                <div className="bg-muted p-4 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Days Remaining</p>
-                  <p className="text-2xl font-bold">{getDaysRemaining()}</p>
+                  <p className="text-2xl font-bold">{getMonthsCompleted()}/11</p>
                 </div>
               </div>
 
@@ -158,16 +154,6 @@ export default function SpecialContributions() {
                   <TrendingUp className="h-4 w-4" />
                   <span>Balance: ₦{parseFloat(activeContribution.balance || 0).toLocaleString()}</span>
                 </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Button variant="outline" onClick={() => navigate(`/dashboard/special-contribution/${activeContribution.id}`)}>
-                  <FileText className="mr-2 h-4 w-4" />
-                  View Details
-                </Button>
-                <Button variant="outline">
-                  View Statement
-                </Button>
               </div>
             </CardContent>
           </Card>
