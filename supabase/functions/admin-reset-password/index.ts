@@ -63,13 +63,10 @@ serve(async (req) => {
       auth: { autoRefreshToken: false, persistSession: false }
     });
 
-    // Generate a secure random password
-    const array = new Uint8Array(16);
-    crypto.getRandomValues(array);
-    const generatedPassword = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('').slice(0, 16);
-
+    // Reset password to default
+    const defaultPassword = "trcn2026";
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(member_id, {
-      password: generatedPassword,
+      password: defaultPassword,
     });
 
     if (updateError) {
@@ -96,15 +93,12 @@ serve(async (req) => {
     await supabaseAdmin.from('notifications').insert({
       user_id: member_id,
       type: 'password_reset',
-      message: `Your password has been reset by an administrator. Your new temporary password is: ${generatedPassword} — Please log in and change it immediately.`,
+      message: `Your password has been reset by an administrator. Please log in with the default password and change it immediately.`,
       read_status: false,
     });
 
     return new Response(
-      JSON.stringify({ 
-        message: `Password reset successfully for ${memberProfile?.full_name || 'member'}`,
-        temporary_password: generatedPassword
-      }),
+      JSON.stringify({ message: `Password reset successfully for ${memberProfile?.full_name || 'member'}` }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {

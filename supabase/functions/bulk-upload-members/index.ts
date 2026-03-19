@@ -191,8 +191,8 @@ serve(async (req) => {
 
         console.log(`Processing member: ${sanitizedMember.full_name} (user will be assigned ID)`);
 
-        // Generate a unique secure password for each new account
-        const defaultPassword = generateSecurePassword();
+        // Use default password for all new accounts
+        const defaultPassword = "trcn2026";
 
         // Create auth user with random password
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
