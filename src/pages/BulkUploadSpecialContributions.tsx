@@ -34,7 +34,6 @@ const BulkUploadSpecialContributions = () => {
   useEffect(() => {
     fetchRecentContributions();
 
-    // Set up real-time subscription
     const channel = supabase
       .channel('special-contributions-changes')
       .on(
@@ -74,13 +73,11 @@ const BulkUploadSpecialContributions = () => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
 
-    // Validate MIME type
     if (selectedFile.type !== "text/csv") {
       toast.error("Please select a valid CSV file");
       return;
     }
 
-    // Validate file size (max 2MB)
     if (selectedFile.size > 2 * 1024 * 1024) {
       toast.error("CSV file must be less than 2MB");
       return;
@@ -92,15 +89,31 @@ const BulkUploadSpecialContributions = () => {
 
   const parseCSV = (text: string) => {
     const lines = text.split("\n");
-    const headers = lines[0].split(",").map(h => h.trim());
+    const headers = lines[0].split(",").map(h => h.trim().toLowerCase().replace(/\s+/g, '_'));
     const records = [];
 
     for (let i = 1; i < lines.length; i++) {
       if (lines[i].trim()) {
-        const values = lines[i].split(",").map(v => v.trim());
+        const values: string[] = [];
+        let current = "";
+        let inQuotes = false;
+
+        for (let j = 0; j < lines[i].length; j++) {
+          const char = lines[i][j];
+          if (char === '"') {
+            inQuotes = !inQuotes;
+          } else if (char === ',' && !inQuotes) {
+            values.push(current.trim());
+            current = "";
+          } else {
+            current += char;
+          }
+        }
+        values.push(current.trim());
+
         const record: any = {};
         headers.forEach((header, index) => {
-          record[header] = values[index];
+          record[header] = values[index] || '';
         });
         records.push(record);
       }
@@ -127,12 +140,12 @@ const BulkUploadSpecialContributions = () => {
       if (error) throw error;
 
       setResult(data);
-      
+
       if (data.successful.length > 0) {
         toast.success(`Successfully uploaded ${data.successful.length} special contributions`);
         await fetchRecentContributions();
       }
-      
+
       if (data.failed.length > 0) {
         toast.error(`Failed to upload ${data.failed.length} special contributions`);
       }
@@ -146,7 +159,7 @@ const BulkUploadSpecialContributions = () => {
   };
 
   const downloadTemplate = () => {
-    const template = "email,contribution_name,target_amount,current_amount,target_date\nexample@email.com,Emergency Fund,100000,25000,2025-12-31";
+    const template = "email,contribution_year,monthly_amount,bank_name,account_number,account_name,account_type,total_contributed,duration_months\nexample@email.com,2026,5000,First Bank,1234567890,John Doe,savings,0,11";
     const blob = new Blob([template], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -198,7 +211,7 @@ const BulkUploadSpecialContributions = () => {
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                CSV should include: email, contribution_name, target_amount, current_amount (optional), target_date (optional, YYYY-MM-DD format)
+                CSV columns: email, contribution_year, monthly_amount, bank_name, account_number, account_name, account_type (optional), total_contributed (optional), duration_months (optional, default 11)
               </AlertDescription>
             </Alert>
           </CardContent>
