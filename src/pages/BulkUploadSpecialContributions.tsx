@@ -211,7 +211,7 @@ const BulkUploadSpecialContributions = () => {
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                CSV columns: email, contribution_year, monthly_amount, bank_name, account_number, account_name, account_type (optional), total_contributed (optional), duration_months (optional, default 11)
+                CSV columns: email, contribution_year, monthly_amount, total_contributed (optional, default 0). Bank details are automatically pulled from each member's profile.
               </AlertDescription>
             </Alert>
           </CardContent>

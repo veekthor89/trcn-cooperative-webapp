@@ -124,12 +124,7 @@ serve(async (req) => {
           email: record.email?.trim().toLowerCase() || '',
           contribution_year: record.contribution_year?.toString().trim() || '',
           monthly_amount: record.monthly_amount?.toString().trim() || '',
-          bank_name: sanitizeCsvField(record.bank_name?.trim() || ''),
-          account_number: sanitizeCsvField(record.account_number?.trim() || ''),
-          account_name: sanitizeCsvField(record.account_name?.trim() || ''),
-          account_type: record.account_type?.trim() || 'savings',
           total_contributed: record.total_contributed?.toString().trim() || '0',
-          duration_months: record.duration_months?.toString().trim() || '11',
         };
 
         const validation = validateContribution(sanitizedRecord);
@@ -144,7 +139,7 @@ serve(async (req) => {
         // Find user by email
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
-          .select('id, member_number, department, state_of_deployment')
+          .select('id, member_number, department, state_of_deployment, bank_name, account_number, account_name')
           .eq('email', sanitizedRecord.email)
           .single();
 
@@ -156,8 +151,16 @@ serve(async (req) => {
           continue;
         }
 
+        if (!profile.bank_name || !profile.account_number || !profile.account_name) {
+          results.failed.push({
+            email: sanitizedRecord.email,
+            error: 'Member profile is missing bank details (bank name, account number, or account name)',
+          });
+          continue;
+        }
+
         const monthlyAmount = parseFloat(sanitizedRecord.monthly_amount);
-        const durationMonths = parseInt(sanitizedRecord.duration_months) || 11;
+        const durationMonths = 11;
         const totalExpected = monthlyAmount * durationMonths;
         const totalContributed = parseFloat(sanitizedRecord.total_contributed) || 0;
 
@@ -171,10 +174,9 @@ serve(async (req) => {
             total_expected: totalExpected,
             total_contributed: totalContributed,
             balance: totalContributed,
-            bank_name: sanitizedRecord.bank_name,
-            account_number: sanitizedRecord.account_number,
-            account_name: sanitizedRecord.account_name,
-            account_type: sanitizedRecord.account_type,
+            bank_name: profile.bank_name,
+            account_number: profile.account_number,
+            account_name: profile.account_name,
             member_number: profile.member_number || null,
             department: profile.department || null,
             state_of_assignment: profile.state_of_deployment || null,
