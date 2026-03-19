@@ -22,10 +22,10 @@ const formSchema = z.object({
   sharesRequested: z.number().min(1, "Must request at least 1 share"),
   paymentMethod: z.enum(["cash_deposit", "bank_transfer"]),
   paymentReference: z.string().optional(),
-  termsAccepted: z.boolean().refine(val => val === true, "You must accept the terms"),
-  declaration1: z.boolean().refine(val => val === true, "This declaration is required"),
-  declaration2: z.boolean().refine(val => val === true, "This declaration is required"),
-  declaration3: z.boolean().refine(val => val === true, "This declaration is required"),
+  termsAccepted: z.boolean().refine((val) => val === true, "You must accept the terms"),
+  declaration1: z.boolean().refine((val) => val === true, "This declaration is required"),
+  declaration2: z.boolean().refine((val) => val === true, "This declaration is required"),
+  declaration3: z.boolean().refine((val) => val === true, "This declaration is required")
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -51,8 +51,8 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
       termsAccepted: false,
       declaration1: false,
       declaration2: false,
-      declaration3: false,
-    },
+      declaration3: false
+    }
   });
 
   const sharesRequested = watch("sharesRequested") || 0;
@@ -72,19 +72,19 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
+      const { data: profile } = await supabase.
+      from("profiles").
+      select("*").
+      eq("id", user.id).
+      single();
 
       setUserProfile(profile);
 
-      const { data: shares } = await supabase
-        .from("shares")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
+      const { data: shares } = await supabase.
+      from("shares").
+      select("*").
+      eq("user_id", user.id).
+      single();
 
       setCurrentShares(shares || { total_shares: 0, current_value: 0 });
     } catch (error) {
@@ -106,15 +106,15 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
     const fileName = `${user.id}-${Date.now()}.${fileExt}`;
     const filePath = `payment-proofs/${fileName}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("profile-photos")
-      .upload(filePath, file);
+    const { error: uploadError } = await supabase.storage.
+    from("profile-photos").
+    upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
-    const { data: signedUrlData } = await supabase.storage
-      .from("profile-photos")
-      .createSignedUrl(filePath, 3600);
+    const { data: signedUrlData } = await supabase.storage.
+    from("profile-photos").
+    createSignedUrl(filePath, 3600);
 
     if (!signedUrlData?.signedUrl) throw new Error("Failed to get signed URL");
     return signedUrlData.signedUrl;
@@ -138,12 +138,12 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
       if (!user) throw new Error("User not authenticated");
 
       // Check for active applications
-      const { data: activeApps } = await supabase
-        .from("share_subscriptions")
-        .select("id")
-        .eq("user_id", user.id)
-        .in("status", ["pending", "payment_verified"])
-        .maybeSingle();
+      const { data: activeApps } = await supabase.
+      from("share_subscriptions").
+      select("id").
+      eq("user_id", user.id).
+      in("status", ["pending", "payment_verified"]).
+      maybeSingle();
 
       if (activeApps) {
         toast.error("You already have an active application. Please wait for it to be processed.");
@@ -156,29 +156,29 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
         paymentProofUrl = await uploadPaymentProof(paymentProofFile);
       }
 
-      const { data: subscription, error } = await supabase
-        .from("share_subscriptions")
-        .insert({
-          user_id: user.id,
-          application_number: "",
-          shares_requested: data.sharesRequested,
-          price_per_share: PRICE_PER_SHARE,
-          total_cost: totalCost,
-          current_shares_before: currentSharesOwned,
-          shares_after: newTotalShares,
-          payment_method: data.paymentMethod,
-          payment_reference: data.paymentReference || null,
-          payment_proof_url: paymentProofUrl || null,
-          deduction_months: null,
-          monthly_deduction_amount: null,
-          status: "pending",
-          terms_accepted: data.termsAccepted,
-          declaration_1: data.declaration1,
-          declaration_2: data.declaration2,
-          declaration_3: data.declaration3,
-        })
-        .select()
-        .single();
+      const { data: subscription, error } = await supabase.
+      from("share_subscriptions").
+      insert({
+        user_id: user.id,
+        application_number: "",
+        shares_requested: data.sharesRequested,
+        price_per_share: PRICE_PER_SHARE,
+        total_cost: totalCost,
+        current_shares_before: currentSharesOwned,
+        shares_after: newTotalShares,
+        payment_method: data.paymentMethod,
+        payment_reference: data.paymentReference || null,
+        payment_proof_url: paymentProofUrl || null,
+        deduction_months: null,
+        monthly_deduction_amount: null,
+        status: "pending",
+        terms_accepted: data.termsAccepted,
+        declaration_1: data.declaration1,
+        declaration_2: data.declaration2,
+        declaration_3: data.declaration3
+      }).
+      select().
+      single();
 
       if (error) throw error;
 
@@ -188,14 +188,14 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
         amount: totalCost,
         payment_type: "initial",
         reference_number: data.paymentReference || null,
-        status: "pending",
+        status: "pending"
       });
 
       // Create notification
       await supabase.from("notifications").insert({
         user_id: user.id,
         type: "share_application",
-        message: `Your share subscription application ${subscription.application_number} has been submitted successfully.`,
+        message: `Your share subscription application ${subscription.application_number} has been submitted successfully.`
       });
 
       setApplicationNumber(subscription.application_number);
@@ -250,8 +250,8 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
             <li>You'll receive a share certificate</li>
           </ol>
         </div>
-      </div>
-    );
+      </div>);
+
   }
 
   return (
@@ -325,11 +325,11 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
               type="number"
               min={1}
               max={MAX_SHARES - currentSharesOwned}
-              {...register("sharesRequested", { valueAsNumber: true })}
-            />
-            {errors.sharesRequested && (
-              <p className="text-sm text-destructive mt-1">{errors.sharesRequested.message}</p>
-            )}
+              {...register("sharesRequested", { valueAsNumber: true })} />
+            
+            {errors.sharesRequested &&
+            <p className="text-sm text-destructive mt-1">{errors.sharesRequested.message}</p>
+            }
           </div>
 
           <Separator />
@@ -352,14 +352,14 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
             </div>
           </div>
 
-          {remainingCapacity < 0 && (
-            <Alert variant="destructive">
+          {remainingCapacity < 0 &&
+          <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 Your request exceeds the maximum allowed shares. Please reduce your request.
               </AlertDescription>
             </Alert>
-          )}
+          }
         </CardContent>
       </Card>
 
@@ -373,8 +373,8 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
             <Label>Payment Method *</Label>
             <RadioGroup
               value={paymentMethod}
-              onValueChange={(value) => setValue("paymentMethod", value as any)}
-            >
+              onValueChange={(value) => setValue("paymentMethod", value as any)}>
+              
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="cash_deposit" id="cash" />
                 <Label htmlFor="cash">Cash Deposit</Label>
@@ -386,8 +386,8 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
             </RadioGroup>
           </div>
 
-          {(paymentMethod === "cash_deposit" || paymentMethod === "bank_transfer") && (
-            <>
+          {(paymentMethod === "cash_deposit" || paymentMethod === "bank_transfer") &&
+          <>
               <div>
                 <Label>Reference Number *</Label>
                 <Input {...register("paymentReference")} placeholder="Enter payment reference" />
@@ -400,11 +400,13 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
                 </div>
               </div>
             </>
-          )}
+          }
 
           <Alert>
-            <AlertDescription>
-              <strong>TRCN Account Details:</strong>
+            <AlertDescription>TRCN Account Details:
+Bank: First Bank
+Account Number: 2006186959
+Account Name: TRCN Staff Multipurpose Cooperative Society<strong>TRCN Account Details:</strong>
               <br />
               Bank: First Bank
               <br />
@@ -439,60 +441,58 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-start space-x-2">
-            <Checkbox
-              id="terms"
-              checked={watch("termsAccepted")}
-              onCheckedChange={(checked) => setValue("termsAccepted", checked as boolean)}
-            />
+            <Checkbox id="terms" checked={watch("termsAccepted")}
+            onCheckedChange={(checked) => setValue("termsAccepted", checked as boolean)} />
+            
             <Label htmlFor="terms" className="text-sm leading-relaxed">
               I have read and accept the Terms and Conditions governing share ownership in TRCN Multipurpose Cooperative
             </Label>
           </div>
-          {errors.termsAccepted && (
-            <p className="text-sm text-destructive">{errors.termsAccepted.message}</p>
-          )}
+          {errors.termsAccepted &&
+          <p className="text-sm text-destructive">{errors.termsAccepted.message}</p>
+          }
 
           <div className="flex items-start space-x-2">
             <Checkbox
               id="dec1"
               checked={watch("declaration1")}
-              onCheckedChange={(checked) => setValue("declaration1", checked as boolean)}
-            />
+              onCheckedChange={(checked) => setValue("declaration1", checked as boolean)} />
+            
             <Label htmlFor="dec1" className="text-sm leading-relaxed">
               I declare that all information provided is true and accurate to the best of my knowledge
             </Label>
           </div>
-          {errors.declaration1 && (
-            <p className="text-sm text-destructive">{errors.declaration1.message}</p>
-          )}
+          {errors.declaration1 &&
+          <p className="text-sm text-destructive">{errors.declaration1.message}</p>
+          }
 
           <div className="flex items-start space-x-2">
             <Checkbox
               id="dec2"
               checked={watch("declaration2")}
-              onCheckedChange={(checked) => setValue("declaration2", checked as boolean)}
-            />
+              onCheckedChange={(checked) => setValue("declaration2", checked as boolean)} />
+            
             <Label htmlFor="dec2" className="text-sm leading-relaxed">
               I understand that shares are subject to availability and board approval
             </Label>
           </div>
-          {errors.declaration2 && (
-            <p className="text-sm text-destructive">{errors.declaration2.message}</p>
-          )}
+          {errors.declaration2 &&
+          <p className="text-sm text-destructive">{errors.declaration2.message}</p>
+          }
 
           <div className="flex items-start space-x-2">
             <Checkbox
               id="dec3"
               checked={watch("declaration3")}
-              onCheckedChange={(checked) => setValue("declaration3", checked as boolean)}
-            />
+              onCheckedChange={(checked) => setValue("declaration3", checked as boolean)} />
+            
             <Label htmlFor="dec3" className="text-sm leading-relaxed">
               I commit to making payment as per the selected payment method and understand that my application is subject to payment verification
             </Label>
           </div>
-          {errors.declaration3 && (
-            <p className="text-sm text-destructive">{errors.declaration3.message}</p>
-          )}
+          {errors.declaration3 &&
+          <p className="text-sm text-destructive">{errors.declaration3.message}</p>
+          }
         </CardContent>
       </Card>
 
@@ -505,6 +505,6 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
           {loading ? "Submitting..." : "Submit Application"}
         </Button>
       </div>
-    </form>
-  );
+    </form>);
+
 }
