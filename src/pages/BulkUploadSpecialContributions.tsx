@@ -159,7 +159,7 @@ const BulkUploadSpecialContributions = () => {
   };
 
   const downloadTemplate = () => {
-    const template = "email,contribution_year,monthly_amount,bank_name,account_number,account_name,account_type,total_contributed,duration_months\nexample@email.com,2026,5000,First Bank,1234567890,John Doe,savings,0,11";
+    const template = "email,contribution_year,monthly_amount,total_contributed\nexample@email.com,2026,5000,0";
     const blob = new Blob([template], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

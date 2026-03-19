@@ -24,16 +24,6 @@ function validateContribution(contrib: any): { valid: boolean; errors: string[] 
     errors.push('Monthly amount must be between 0 and 100,000,000');
   }
 
-  if (!contrib.bank_name || contrib.bank_name.length < 2) {
-    errors.push('Bank name is required');
-  }
-  if (!contrib.account_number || contrib.account_number.length < 5) {
-    errors.push('Valid account number is required');
-  }
-  if (!contrib.account_name || contrib.account_name.length < 2) {
-    errors.push('Account name is required');
-  }
-
   if (contrib.total_contributed !== undefined && contrib.total_contributed !== '') {
     const tc = parseFloat(contrib.total_contributed);
     if (isNaN(tc) || tc < 0) {
