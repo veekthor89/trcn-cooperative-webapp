@@ -63,10 +63,13 @@ serve(async (req) => {
       auth: { autoRefreshToken: false, persistSession: false }
     });
 
-    // Reset password to default
-    const defaultPassword = "trcn2026";
+    // Generate a secure random password
+    const array = new Uint8Array(16);
+    crypto.getRandomValues(array);
+    const generatedPassword = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('').slice(0, 16);
+
     const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(member_id, {
-      password: defaultPassword,
+      password: generatedPassword,
     });
 
     if (updateError) {
