@@ -113,7 +113,7 @@ const BulkUploadTransactions = () => {
   };
 
   const downloadTemplate = () => {
-    const template = "email,type,amount,description\nuser@example.com,deposit,1000.00,Salary Payment\nuser2@example.com,withdrawal,500.00,ATM Withdrawal";
+    const template = "email,type,amount,description\nuser@example.com,deposit,5000.00,Savings - Monthly Deposit\nuser2@example.com,deposit,10000.00,Special Contribution - December\nuser3@example.com,repayment,15000.00,Loan Repayment - January\nuser4@example.com,deposit,25000.00,Shares Purchase - Q1";
     const blob = new Blob([template], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
