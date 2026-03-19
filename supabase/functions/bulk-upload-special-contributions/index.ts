@@ -20,8 +20,8 @@ function validateContribution(contrib: any): { valid: boolean; errors: string[] 
   }
 
   const monthly = parseFloat(contrib.monthly_amount);
-  if (isNaN(monthly) || monthly <= 0 || monthly > 100000000) {
-    errors.push('Monthly amount must be between 0 and 100,000,000');
+  if (isNaN(monthly) || monthly < 5000 || monthly > 500000) {
+    errors.push('Monthly amount must be between 5,000 and 500,000');
   }
 
   if (contrib.total_contributed !== undefined && contrib.total_contributed !== '') {
@@ -163,9 +163,9 @@ serve(async (req) => {
             monthly_amount: monthlyAmount,
             duration_months: 11,
             total_contributed: totalContributed,
-            bank_name: profile.bank_name || 'N/A',
-            account_number: profile.account_number || 'N/A',
-            account_name: profile.account_name || 'N/A',
+            bank_name: profile.bank_name?.trim() || 'Profile Pending Update',
+            account_number: (profile.account_number?.trim() && /^\d{10}$/.test(profile.account_number.trim())) ? profile.account_number.trim() : '0000000000',
+            account_name: profile.account_name?.trim() || 'Profile Pending Update',
             member_number: profile.member_number || null,
             department: profile.department || null,
             state_of_assignment: profile.state_of_deployment || null,
