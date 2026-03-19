@@ -163,7 +163,6 @@ serve(async (req) => {
             monthly_amount: monthlyAmount,
             duration_months: 11,
             total_contributed: totalContributed,
-            balance: totalContributed,
             bank_name: profile.bank_name || 'N/A',
             account_number: profile.account_number || 'N/A',
             account_name: profile.account_name || 'N/A',
