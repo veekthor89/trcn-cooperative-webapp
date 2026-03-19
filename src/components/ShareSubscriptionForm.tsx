@@ -406,11 +406,11 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
             <AlertDescription>
               <strong>TRCN Account Details:</strong>
               <br />
-              Bank: Unity Bank
+              Bank: First Bank
               <br />
-              Account Number: 0025928510
+              Account Number: 2006186959
               <br />
-              Account Name: TRCN Multipurpose Cooperative
+              Account Name: TRCN Staff Multipurpose Cooperative Society
             </AlertDescription>
           </Alert>
         </CardContent>
