@@ -153,8 +153,6 @@ serve(async (req) => {
 
 
         const monthlyAmount = parseFloat(sanitizedRecord.monthly_amount);
-        const durationMonths = 11;
-        const totalExpected = monthlyAmount * durationMonths;
         const totalContributed = parseFloat(sanitizedRecord.total_contributed) || 0;
 
         const { error: insertError } = await supabase
@@ -163,8 +161,7 @@ serve(async (req) => {
             user_id: profile.id,
             contribution_year: parseInt(sanitizedRecord.contribution_year),
             monthly_amount: monthlyAmount,
-            duration_months: durationMonths,
-            total_expected: totalExpected,
+            duration_months: 11,
             total_contributed: totalContributed,
             balance: totalContributed,
             bank_name: profile.bank_name || 'N/A',
