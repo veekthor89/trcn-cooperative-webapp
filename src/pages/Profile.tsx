@@ -557,7 +557,7 @@ const Profile = () => {
               })} disabled={!editMode} />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="years_of_service">Years of Service</Label>
+                <Label htmlFor="years_of_service">Years in TRCN</Label>
                 <Input id="years_of_service" type="number" value={profileData.years_of_service} onChange={e => setProfileData({
                 ...profileData,
                 years_of_service: parseInt(e.target.value) || 0
