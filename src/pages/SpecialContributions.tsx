@@ -61,14 +61,16 @@ export default function SpecialContributions() {
     setLoading(false);
   };
 
-  const getProgressPercentage = () => {
+  const getMonthsCompleted = () => {
     if (!activeContribution) return 0;
-    return Math.round((deductions.length / 11) * 100);
+    const monthlyAmount = parseFloat(activeContribution.monthly_amount);
+    if (monthlyAmount <= 0) return 0;
+    return Math.floor(parseFloat(activeContribution.total_contributed || 0) / monthlyAmount);
   };
 
-  const getDaysRemaining = () => {
-    if (!activeContribution?.maturity_date) return 0;
-    return Math.max(0, differenceInDays(new Date(activeContribution.maturity_date), new Date()));
+  const getProgressPercentage = () => {
+    if (!activeContribution) return 0;
+    return Math.round((getMonthsCompleted() / 11) * 100);
   };
 
   const getStatusBadge = (status: string) => {
