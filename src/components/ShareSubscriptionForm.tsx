@@ -403,10 +403,8 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
           }
 
           <Alert>
-            <AlertDescription>TRCN Account Details:
-Bank: First Bank
-Account Number: 2006186959
-Account Name: TRCN Staff Multipurpose Cooperative Society<strong>TRCN Account Details:</strong>
+            <AlertDescription>
+              <strong>TRCN Account Details:</strong>
               <br />
               Bank: First Bank
               <br />
