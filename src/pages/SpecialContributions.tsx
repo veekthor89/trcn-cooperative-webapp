@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { PiggyBank, Calendar, TrendingUp, FileText } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
+import { PiggyBank, Calendar, TrendingUp } from "lucide-react";
+import { format } from "date-fns";
 import { SpecialContributionApplicationModal } from "@/components/SpecialContributionApplicationModal";
 
 export default function SpecialContributions() {
@@ -61,14 +61,16 @@ export default function SpecialContributions() {
     setLoading(false);
   };
 
-  const getProgressPercentage = () => {
+  const getMonthsCompleted = () => {
     if (!activeContribution) return 0;
-    return Math.round((deductions.length / 11) * 100);
+    const monthlyAmount = parseFloat(activeContribution.monthly_amount);
+    if (monthlyAmount <= 0) return 0;
+    return Math.floor(parseFloat(activeContribution.total_contributed || 0) / monthlyAmount);
   };
 
-  const getDaysRemaining = () => {
-    if (!activeContribution?.maturity_date) return 0;
-    return Math.max(0, differenceInDays(new Date(activeContribution.maturity_date), new Date()));
+  const getProgressPercentage = () => {
+    if (!activeContribution) return 0;
+    return Math.round((getMonthsCompleted() / 11) * 100);
   };
 
   const getStatusBadge = (status: string) => {
@@ -116,7 +118,7 @@ export default function SpecialContributions() {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <div className="bg-muted p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground">Total Contributed</p>
                   <p className="text-2xl font-bold">
@@ -131,11 +133,7 @@ export default function SpecialContributions() {
                 </div>
                 <div className="bg-muted p-4 rounded-lg">
                   <p className="text-sm text-muted-foreground">Months Completed</p>
-                  <p className="text-2xl font-bold">{deductions.length}/11</p>
-                </div>
-                <div className="bg-muted p-4 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Days Remaining</p>
-                  <p className="text-2xl font-bold">{getDaysRemaining()}</p>
+                  <p className="text-2xl font-bold">{getMonthsCompleted()}/11</p>
                 </div>
               </div>
 
@@ -156,16 +154,6 @@ export default function SpecialContributions() {
                   <TrendingUp className="h-4 w-4" />
                   <span>Balance: ₦{parseFloat(activeContribution.balance || 0).toLocaleString()}</span>
                 </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Button variant="outline" onClick={() => navigate(`/dashboard/special-contribution/${activeContribution.id}`)}>
-                  <FileText className="mr-2 h-4 w-4" />
-                  View Details
-                </Button>
-                <Button variant="outline">
-                  View Statement
-                </Button>
               </div>
             </CardContent>
           </Card>
