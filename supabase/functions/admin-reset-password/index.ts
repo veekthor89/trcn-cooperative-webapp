@@ -93,15 +93,12 @@ serve(async (req) => {
     await supabaseAdmin.from('notifications').insert({
       user_id: member_id,
       type: 'password_reset',
-      message: `Your password has been reset by an administrator. Your new temporary password is: ${generatedPassword} — Please log in and change it immediately.`,
+      message: `Your password has been reset by an administrator. Please log in with the default password and change it immediately.`,
       read_status: false,
     });
 
     return new Response(
-      JSON.stringify({ 
-        message: `Password reset successfully for ${memberProfile?.full_name || 'member'}`,
-        temporary_password: generatedPassword
-      }),
+      JSON.stringify({ message: `Password reset successfully for ${memberProfile?.full_name || 'member'}` }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
