@@ -151,13 +151,6 @@ serve(async (req) => {
           continue;
         }
 
-        if (!profile.bank_name || !profile.account_number || !profile.account_name) {
-          results.failed.push({
-            email: sanitizedRecord.email,
-            error: 'Member profile is missing bank details (bank name, account number, or account name)',
-          });
-          continue;
-        }
 
         const monthlyAmount = parseFloat(sanitizedRecord.monthly_amount);
         const durationMonths = 11;
