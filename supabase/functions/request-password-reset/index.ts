@@ -42,6 +42,25 @@ serve(async (req) => {
       );
     }
 
+    // Rate limit: check if a reset notification for this user was created in the last 15 minutes
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+    const { data: recentRequest } = await supabaseAdmin
+      .from('notifications')
+      .select('id')
+      .eq('type', 'password_reset_request')
+      .ilike('message', `%${profile.member_number || email}%`)
+      .gte('created_at', fifteenMinutesAgo)
+      .limit(1)
+      .maybeSingle();
+
+    if (recentRequest) {
+      // Already requested recently — return success silently to avoid flooding
+      return new Response(
+        JSON.stringify({ message: 'If an account with that email exists, the admin has been notified.' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Get all admin user IDs
     const { data: adminRoles } = await supabaseAdmin
       .from('user_roles')

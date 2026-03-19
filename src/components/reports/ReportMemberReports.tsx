@@ -21,14 +21,18 @@ export default function ReportMemberReports({ profiles, loans, accounts }: Props
   const [resettingId, setResettingId] = useState<string | null>(null);
 
   const handleResetPassword = async (memberId: string, memberName: string) => {
-    if (!confirm(`Reset password to default for ${memberName}? They will be required to change it on next login.`)) return;
+    if (!confirm(`Reset password for ${memberName}? A new temporary password will be generated. They will be required to change it on next login.`)) return;
     setResettingId(memberId);
     try {
       const { data, error } = await supabase.functions.invoke('admin-reset-password', {
         body: { member_id: memberId },
       });
       if (error) throw error;
-      toast.success(data.message || `Password reset for ${memberName}`);
+      if (data.temporary_password) {
+        toast.success(`Password reset for ${memberName}. Temporary password: ${data.temporary_password}`, { duration: 15000 });
+      } else {
+        toast.success(data.message || `Password reset for ${memberName}`);
+      }
     } catch (err: any) {
       toast.error(err.message || "Failed to reset password");
     } finally {
