@@ -314,7 +314,7 @@ const Loans = () => {
               <div className="space-y-6">
                 {loans.map((loan) => {
                   const progress = calculateProgress(loan);
-                  const monthsRemaining = calculateMonthsRemaining(loan);
+                  const paymentsMade = calculatePaymentsMade(loan);
                   
                   return (
                     <div key={loan.id} className="p-4 border rounded-lg space-y-4">
@@ -342,8 +342,8 @@ const Loans = () => {
                           <p className="text-lg font-semibold">₦{Number(loan.monthly_payment || 0).toLocaleString()}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Months Left</p>
-                          <p className="text-lg font-semibold">{monthsRemaining} / {loan.repayment_period}</p>
+                          <p className="text-sm text-muted-foreground">Payments Made</p>
+                          <p className="text-lg font-semibold">{paymentsMade} of {loan.repayment_period}</p>
                         </div>
                       </div>
 
