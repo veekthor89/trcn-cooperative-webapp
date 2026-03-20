@@ -178,6 +178,17 @@ serve(async (req) => {
             reference_number: referenceNumber,
           });
 
+          // Record in transactions table for visibility in recent activity
+          const { error: txnError2 } = await supabaseAdmin.from('transactions').insert({
+            user_id: profile.id,
+            type: 'deposit',
+            amount,
+            description,
+            reference_number: referenceNumber,
+            included_in_opening_balance: true, // skip savings balance trigger
+          });
+          if (txnError2) console.error('Failed to record special contribution transaction:', txnError2);
+
         } else if (category === 'loan_repayment') {
           // Find the user's active loan and reduce outstanding balance
           const { data: loan } = await supabaseAdmin
