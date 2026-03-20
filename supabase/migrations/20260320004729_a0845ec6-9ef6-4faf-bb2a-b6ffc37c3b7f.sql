@@ -1,0 +1,2 @@
+ALTER TABLE public.special_contributions DROP CONSTRAINT special_contributions_monthly_amount_check;
+ALTER TABLE public.special_contributions ADD CONSTRAINT special_contributions_monthly_amount_check CHECK (monthly_amount >= 1000 AND monthly_amount <= 500000);
