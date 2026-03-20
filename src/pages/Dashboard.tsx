@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins, AlertCircle, Megaphone } from "lucide-react";
+import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins, AlertCircle, Megaphone, HandCoins, ArrowDownLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
