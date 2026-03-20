@@ -305,7 +305,7 @@ export function SpecialContributionApplicationModal({
                       <Label>Monthly Amount (₦)</Label>
                       <Input 
                         type="number"
-                        min="5000"
+                        min="1000"
                         max="500000"
                         value={formData.monthly_amount}
                         onChange={(e) => setFormData({...formData, monthly_amount: e.target.value})}

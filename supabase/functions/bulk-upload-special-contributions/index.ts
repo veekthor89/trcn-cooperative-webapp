@@ -20,8 +20,8 @@ function validateContribution(contrib: any): { valid: boolean; errors: string[] 
   }
 
   const monthly = parseFloat(contrib.monthly_amount);
-  if (isNaN(monthly) || monthly < 5000 || monthly > 500000) {
-    errors.push('Monthly amount must be between 5,000 and 500,000');
+  if (isNaN(monthly) || monthly < 1000 || monthly > 500000) {
+    errors.push('Monthly amount must be between 1,000 and 500,000');
   }
 
   if (contrib.total_contributed !== undefined && contrib.total_contributed !== '') {
