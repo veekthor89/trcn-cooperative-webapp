@@ -53,8 +53,11 @@ function validateLoan(loan: any): { valid: boolean; errors: string[] } {
     }
   }
   
-  if (loan.next_payment_date && !/^\d{4}-\d{2}-\d{2}$/.test(loan.next_payment_date)) {
-    errors.push('Next payment date must be in YYYY-MM-DD format');
+  if (loan.next_payment_date) {
+    const trimmedDate = String(loan.next_payment_date).trim().replace(/\r/g, '');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmedDate)) {
+      errors.push('Next payment date must be in YYYY-MM-DD format');
+    }
   }
   
   return { valid: errors.length === 0, errors };
