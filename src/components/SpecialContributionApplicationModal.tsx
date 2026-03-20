@@ -114,8 +114,8 @@ export function SpecialContributionApplicationModal({
     }
 
     const amount = parseFloat(formData.monthly_amount);
-    if (amount < 5000 || amount > 500000) {
-      toast.error("Monthly amount must be between ₦5,000 and ₦500,000.");
+    if (amount < 1000 || amount > 500000) {
+      toast.error("Monthly amount must be between ₦1,000 and ₦500,000.");
       return;
     }
 
@@ -305,7 +305,7 @@ export function SpecialContributionApplicationModal({
                       <Label>Monthly Amount (₦)</Label>
                       <Input 
                         type="number"
-                        min="5000"
+                        min="1000"
                         max="500000"
                         value={formData.monthly_amount}
                         onChange={(e) => setFormData({...formData, monthly_amount: e.target.value})}
