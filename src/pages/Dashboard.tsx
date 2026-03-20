@@ -740,7 +740,7 @@ const Dashboard = () => {
                   {recentActivities.length === 0 ? <p className="text-muted-foreground text-center py-8">No recent activities</p> : recentActivities.map((activity, index) => <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-smooth">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                            {getActivityIcon(activity.type)}
+                            {getActivityIcon(activity.type, activity.description)}
                           </div>
                           <div>
                             <p className="font-medium text-sm capitalize">{activity.description || activity.type}</p>
