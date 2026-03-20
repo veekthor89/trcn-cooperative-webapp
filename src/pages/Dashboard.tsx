@@ -755,8 +755,8 @@ const Dashboard = () => {
                             </div>
                           </div>
                         </div>
-                        <p className={`font-semibold text-lg ${activity.type === 'deposit' || activity.type === 'investment' ? 'text-green-600' : 'text-red-600'}`}>
-                          {activity.type === 'deposit' || activity.type === 'investment' ? '+' : '-'}₦{Number(activity.amount).toLocaleString('en-NG')}
+                        <p className={`font-semibold text-lg ${activity.type === 'deposit' ? 'text-secondary' : 'text-destructive'}`}>
+                          {activity.type === 'deposit' ? '+' : '-'}₦{Number(activity.amount).toLocaleString('en-NG')}
                         </p>
                       </div>)}
                   {recentActivities.length > 0 && <Button variant="outline" className="w-full mt-4">
