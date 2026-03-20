@@ -23,26 +23,52 @@ const BulkUploadLoans = () => {
   const [uploading, setUploading] = useState(false);
   const [results, setResults] = useState<{ success: string[]; errors: Array<{ email: string; error: string }> } | null>(null);
 
+  const parseCsvLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  };
+
+  const parseNumber = (value: string | undefined): number => {
+    if (!value) return 0;
+    // Strip thousand separators (commas) from numbers
+    const cleaned = value.replace(/,/g, '');
+    const parsed = parseFloat(cleaned);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
   const parseCsv = (text: string): LoanData[] => {
     const lines = text.split('\n').filter(line => line.trim());
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
     
     const loans: LoanData[] = [];
     
     for (let i = 1; i < lines.length; i++) {
-      const values = lines[i].split(',');
+      const values = parseCsvLine(lines[i]);
       if (values.length < 5 || !values[0]?.trim()) continue;
       
       const loan: LoanData = {
-        email: values[0]?.trim() || '',
-        loan_type: (values[1]?.trim()?.toLowerCase() || 'normal') as 'normal' | 'trade' | 'special' | 'long_term',
-        principal_amount: values[2]?.trim() ? parseFloat(values[2].trim()) : 0,
-        interest_rate: values[3]?.trim() ? parseFloat(values[3].trim()) : 0,
-        repayment_period: values[4]?.trim() ? parseInt(values[4].trim()) : 12,
-        status: (values[5]?.trim()?.toLowerCase() || 'pending') as 'pending' | 'active' | 'paid' | 'defaulted',
-        outstanding_balance: values[6]?.trim() ? parseFloat(values[6].trim()) : undefined,
-        monthly_payment: values[7]?.trim() ? parseFloat(values[7].trim()) : undefined,
-        next_payment_date: values[8]?.trim() || undefined
+        email: values[0] || '',
+        loan_type: (values[1]?.toLowerCase() || 'normal') as 'normal' | 'trade' | 'special' | 'long_term',
+        principal_amount: parseNumber(values[2]),
+        interest_rate: parseNumber(values[3]),
+        repayment_period: values[4] ? parseInt(values[4].replace(/,/g, '')) : 12,
+        status: (values[5]?.toLowerCase() || 'pending') as 'pending' | 'active' | 'paid' | 'defaulted',
+        outstanding_balance: values[6] ? parseNumber(values[6]) : undefined,
+        monthly_payment: values[7] ? parseNumber(values[7]) : undefined,
+        next_payment_date: values[8] || undefined
       };
       
       if (loan.email && loan.principal_amount > 0) {
