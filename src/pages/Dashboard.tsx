@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins, AlertCircle, Megaphone } from "lucide-react";
+import { PiggyBank, CreditCard, TrendingUp, Bell, Landmark, Coins, AlertCircle, Megaphone, HandCoins, ArrowDownLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Area, AreaChart, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
@@ -339,17 +339,25 @@ const Dashboard = () => {
       toast.error("Failed to update notifications");
     }
   };
-  const getActivityIcon = (type: string) => {
+  const getActivityIcon = (type: string, description?: string) => {
+    // Check description for special contribution context
+    const desc = (description || '').toLowerCase();
+    const isSpecialContribution = desc.includes('special contribution');
+    
     switch (type) {
-      case 'loan':
-        return <CreditCard className="h-5 w-5 text-pink-600" />;
-      case 'investment':
-      case 'shares':
-        return <TrendingUp className="h-5 w-5 text-purple-600" />;
-      case 'contribution':
-        return <Coins className="h-5 w-5 text-orange-600" />;
+      case 'repayment':
+        return <ArrowDownLeft className="h-5 w-5 text-destructive" />;
+      case 'loan_disbursement':
+        return <CreditCard className="h-5 w-5 text-primary" />;
+      case 'withdrawal':
+        return <Landmark className="h-5 w-5 text-destructive" />;
+      case 'deposit':
+        if (isSpecialContribution) {
+          return <HandCoins className="h-5 w-5 text-secondary" />;
+        }
+        return <PiggyBank className="h-5 w-5 text-secondary" />;
       default:
-        return <PiggyBank className="h-5 w-5 text-green-600" />;
+        return <Coins className="h-5 w-5 text-muted-foreground" />;
     }
   };
   const getTimeAgo = (date: string) => {
@@ -732,7 +740,7 @@ const Dashboard = () => {
                   {recentActivities.length === 0 ? <p className="text-muted-foreground text-center py-8">No recent activities</p> : recentActivities.map((activity, index) => <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-border hover:bg-muted/50 transition-smooth">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                            {getActivityIcon(activity.type)}
+                            {getActivityIcon(activity.type, activity.description)}
                           </div>
                           <div>
                             <p className="font-medium text-sm capitalize">{activity.description || activity.type}</p>
@@ -747,8 +755,8 @@ const Dashboard = () => {
                             </div>
                           </div>
                         </div>
-                        <p className={`font-semibold text-lg ${activity.type === 'deposit' || activity.type === 'investment' ? 'text-green-600' : 'text-red-600'}`}>
-                          {activity.type === 'deposit' || activity.type === 'investment' ? '+' : '-'}₦{Number(activity.amount).toLocaleString('en-NG')}
+                        <p className={`font-semibold text-lg ${activity.type === 'deposit' ? 'text-secondary' : 'text-destructive'}`}>
+                          {activity.type === 'deposit' ? '+' : '-'}₦{Number(activity.amount).toLocaleString('en-NG')}
                         </p>
                       </div>)}
                   {recentActivities.length > 0 && <Button variant="outline" className="w-full mt-4">
