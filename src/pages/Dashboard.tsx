@@ -339,17 +339,25 @@ const Dashboard = () => {
       toast.error("Failed to update notifications");
     }
   };
-  const getActivityIcon = (type: string) => {
+  const getActivityIcon = (type: string, description?: string) => {
+    // Check description for special contribution context
+    const desc = (description || '').toLowerCase();
+    const isSpecialContribution = desc.includes('special contribution');
+    
     switch (type) {
-      case 'loan':
-        return <CreditCard className="h-5 w-5 text-pink-600" />;
-      case 'investment':
-      case 'shares':
-        return <TrendingUp className="h-5 w-5 text-purple-600" />;
-      case 'contribution':
-        return <Coins className="h-5 w-5 text-orange-600" />;
+      case 'repayment':
+        return <ArrowDownLeft className="h-5 w-5 text-destructive" />;
+      case 'loan_disbursement':
+        return <CreditCard className="h-5 w-5 text-primary" />;
+      case 'withdrawal':
+        return <Landmark className="h-5 w-5 text-destructive" />;
+      case 'deposit':
+        if (isSpecialContribution) {
+          return <HandCoins className="h-5 w-5 text-secondary" />;
+        }
+        return <PiggyBank className="h-5 w-5 text-secondary" />;
       default:
-        return <PiggyBank className="h-5 w-5 text-green-600" />;
+        return <Coins className="h-5 w-5 text-muted-foreground" />;
     }
   };
   const getTimeAgo = (date: string) => {
