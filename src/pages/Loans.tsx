@@ -114,9 +114,10 @@ const Loans = () => {
     return (paid / loan.principal_amount) * 100;
   };
 
-  const calculateMonthsRemaining = (loan: Loan) => {
-    if (!loan.outstanding_balance || !loan.monthly_payment) return 0;
-    return Math.ceil(loan.outstanding_balance / loan.monthly_payment);
+  const calculatePaymentsMade = (loan: Loan) => {
+    if (!loan.monthly_payment || loan.monthly_payment === 0) return 0;
+    const paid = loan.principal_amount - loan.outstanding_balance;
+    return Math.round(paid / loan.monthly_payment);
   };
 
   // Calculate summary statistics
