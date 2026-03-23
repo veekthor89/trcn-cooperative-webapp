@@ -111,7 +111,7 @@ export default function GuarantorAutocomplete({
                     <div className="flex-1">
                       <div className="font-medium">{guarantor.full_name}</div>
                       <div className="text-sm text-muted-foreground">
-                        {guarantor.member_number} • {guarantor.department}
+                        {guarantor.member_number} • {guarantor.department}{guarantor.phone ? ` • ${guarantor.phone}` : ''}
                       </div>
                     </div>
                   </CommandItem>
