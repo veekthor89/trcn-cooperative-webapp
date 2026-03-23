@@ -72,6 +72,7 @@ const App = () => (
           <Route path="/dashboard/admin/announcements" element={<AdminAnnouncements />} />
           <Route path="/dashboard/announcements" element={<MemberAnnouncements />} />
           <Route path="/dashboard/admin/password-reset-requests" element={<AdminPasswordResetRequests />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
