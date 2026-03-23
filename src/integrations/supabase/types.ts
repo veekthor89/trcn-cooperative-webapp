@@ -1217,6 +1217,7 @@ export type Database = {
           full_name: string
           id: string
           member_number: string
+          phone: string
         }[]
       }
     }
