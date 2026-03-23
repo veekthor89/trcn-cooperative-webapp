@@ -88,7 +88,7 @@ export default function PrintableShareSubscription({
                 <p className="font-semibold border-b border-dotted pb-1">{subscription.profiles?.full_name}</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Member ID:</p>
+                <p className="text-muted-foreground">TRCN Number:</p>
                 <p className="font-semibold border-b border-dotted pb-1">{subscription.profiles?.member_number}</p>
               </div>
               <div>

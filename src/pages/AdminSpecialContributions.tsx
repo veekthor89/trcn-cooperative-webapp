@@ -461,7 +461,7 @@ export default function AdminSpecialContributions() {
                       <p className="font-medium">{selectedContribution.profiles?.full_name}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Member ID</p>
+                      <p className="text-sm text-muted-foreground">TRCN Number</p>
                       <p className="font-medium">{selectedContribution.profiles?.member_number || "N/A"}</p>
                     </div>
                     <div>

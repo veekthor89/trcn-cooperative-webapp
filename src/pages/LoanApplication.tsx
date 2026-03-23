@@ -351,7 +351,7 @@ export default function LoanApplication() {
               <Input value={profile?.full_name || ""} disabled />
             </div>
             <div>
-              <Label>Member Number</Label>
+              <Label>TRCN Number</Label>
               <Input value={profile?.staff_id || ""} disabled />
             </div>
             <div>

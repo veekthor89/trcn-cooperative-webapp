@@ -304,7 +304,7 @@ export default function PresidentDashboard() {
                   <CardHeader><CardTitle className="text-base">Member Information</CardTitle></CardHeader>
                   <CardContent className="grid grid-cols-2 gap-3 text-sm">
                     <div><Label className="text-muted-foreground">Name</Label><p className="font-medium">{selectedApp.profile?.full_name}</p></div>
-                    <div><Label className="text-muted-foreground">Member #</Label><p className="font-medium">{selectedApp.profile?.member_number}</p></div>
+                    <div><Label className="text-muted-foreground">TRCN #</Label><p className="font-medium">{selectedApp.profile?.member_number}</p></div>
                   </CardContent>
                 </Card>
 

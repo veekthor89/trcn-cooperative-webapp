@@ -27,7 +27,7 @@ export default function AdminReports() {
 
   const handleExportCSV = () => {
     // Simple CSV export of member financial summary
-    const headers = ["Name", "Member Number", "Department"];
+    const headers = ["Name", "TRCN Number", "Department"];
     const rows = profiles.map(p => [p.full_name, p.member_number || "", p.department || ""]);
     const csv = [headers.join(","), ...rows.map(r => r.map(v => `"${v}"`).join(","))].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });

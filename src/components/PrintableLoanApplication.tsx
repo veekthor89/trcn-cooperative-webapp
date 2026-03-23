@@ -118,7 +118,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
                   <div className="space-y-2">
                     <p className="font-semibold text-base mb-1">Guarantor 2:</p>
                     <Field label="Name" value={application.guarantor_2_name} />
-                    <Field label="Member ID" value={application.guarantor_2_member_number} />
+                    <Field label="TRCN Number" value={application.guarantor_2_member_number} />
                     <Field label="Phone" value={application.guarantor_2_phone} />
                   </div>
                 )}

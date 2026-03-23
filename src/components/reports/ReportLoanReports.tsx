@@ -217,7 +217,7 @@ export default function ReportLoanReports({ loans, profiles }: Props) {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Member</TableHead><TableHead>Member ID</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Total Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead><TableHead>Status</TableHead>
+                    <TableHead>Member</TableHead><TableHead>TRCN Number</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Total Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead><TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

@@ -104,7 +104,7 @@ export default function ReportMemberReports({ profiles, loans, accounts }: Props
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Member</TableHead><TableHead>Member ID</TableHead><TableHead>Password Status</TableHead><TableHead>Actions</TableHead><TableHead className="text-right">Savings</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead>
+                    <TableHead>Member</TableHead><TableHead>TRCN Number</TableHead><TableHead>Password Status</TableHead><TableHead>Actions</TableHead><TableHead className="text-right">Savings</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

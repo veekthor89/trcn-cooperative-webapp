@@ -518,7 +518,7 @@ export default function AdminLoanApplications() {
                               <span className="font-medium">{selectedApp.guarantor_2_name}</span>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Member #: </span>
+                              <span className="text-muted-foreground">TRCN #: </span>
                               <span className="font-medium">{selectedApp.guarantor_2_member_number}</span>
                             </div>
                             <div>
