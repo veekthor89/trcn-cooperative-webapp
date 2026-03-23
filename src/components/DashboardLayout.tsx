@@ -115,6 +115,29 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     fetchPendingCounts();
   }, [isAdmin, session]);
 
+  useEffect(() => {
+    const fetchUnreadAnnouncements = async () => {
+      if (!session) return;
+      const userId = session.user.id;
+      const { data: published } = await supabase
+        .from("announcements")
+        .select("id")
+        .eq("status", "published");
+      if (!published || published.length === 0) {
+        setUnreadAnnouncementsCount(0);
+        return;
+      }
+      const { data: reads } = await supabase
+        .from("announcement_reads")
+        .select("announcement_id")
+        .eq("user_id", userId);
+      const readIds = new Set(reads?.map(r => r.announcement_id) || []);
+      const unread = published.filter(a => !readIds.has(a.id)).length;
+      setUnreadAnnouncementsCount(unread);
+    };
+    fetchUnreadAnnouncements();
+  }, [session]);
+
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) { toast.error("Error signing out"); } else { toast.success("Signed out successfully"); navigate("/"); }
