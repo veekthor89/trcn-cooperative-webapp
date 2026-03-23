@@ -28,6 +28,7 @@ import AdminReports from "./pages/AdminReports";
 import ForceChangePassword from "./pages/ForceChangePassword";
 import AdminDepositRequests from "./pages/AdminDepositRequests";
 import AdminAnnouncements from "./pages/AdminAnnouncements";
+import AdminPasswordResetRequests from "./pages/AdminPasswordResetRequests";
 import MemberAnnouncements from "./pages/MemberAnnouncements";
 import NotFound from "./pages/NotFound";
 import DeveloperFooter from "./components/DeveloperFooter";
