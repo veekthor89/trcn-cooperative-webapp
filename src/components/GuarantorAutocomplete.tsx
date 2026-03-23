@@ -11,6 +11,7 @@ interface GuarantorProfile {
   full_name: string;
   member_number: string;
   department: string;
+  phone: string;
 }
 
 interface GuarantorAutocompleteProps {
