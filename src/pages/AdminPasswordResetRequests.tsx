@@ -43,22 +43,35 @@ const AdminPasswordResetRequests = () => {
 
       if (error) throw error;
 
-      const parsed: ResetRequest[] = (notifications || []).map((n) => {
+      const parsed: ResetRequest[] = [];
+      
+      for (const n of (notifications || [])) {
         // Parse "Password reset requested by Full Name (TRCN123 or email)"
         const match = n.message.match(/Password reset requested by (.+?) \((.+?)\)/);
         const memberName = match ? match[1] : "Unknown Member";
         const memberIdentifier = match ? match[2] : "";
-        // Consider read notifications as "completed" for display
-        return {
+        
+        // Check if this member's password was actually reset (must_change_password = true)
+        let completed = false;
+        if (memberIdentifier) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("must_change_password")
+            .or(`email.eq.${memberIdentifier},member_number.eq.${memberIdentifier}`)
+            .maybeSingle();
+          completed = profile?.must_change_password === true;
+        }
+        
+        parsed.push({
           id: n.id,
           message: n.message,
           created_at: n.created_at || "",
           read_status: n.read_status || false,
           memberName,
           memberIdentifier,
-          completed: n.read_status || false,
-        };
-      });
+          completed,
+        });
+      }
 
       setRequests(parsed);
     } catch (error) {
