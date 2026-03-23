@@ -295,7 +295,7 @@ export default function AdminLoanApplications() {
                 <div className="flex-1">
                   <Label>Search Member</Label>
                   <Input
-                    placeholder="Search by name or member number..."
+                    placeholder="Search by name or TRCN number..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
