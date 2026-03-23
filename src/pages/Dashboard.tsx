@@ -434,12 +434,13 @@ const Dashboard = () => {
                               !notification.read_status ? "bg-muted/30" : ""
                             }`}
                             onClick={() => {
-                              markAsRead(notification.id);
-                              // Handle password reset request notifications
+                              // Handle password reset request notifications - navigate without marking as read
+                              // (read_status is used to track completion on the reset requests page)
                               if (notification.type === "password_reset_request") {
                                 navigate("/dashboard/admin/password-reset-requests");
                                 return;
                               }
+                              markAsRead(notification.id);
                               // Navigate based on notification type
                               if (notification.type === "deposit_approved" || notification.type === "deposit_rejected") {
                                 navigate("/dashboard/savings");
