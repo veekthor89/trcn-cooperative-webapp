@@ -31,6 +31,7 @@ import AdminAnnouncements from "./pages/AdminAnnouncements";
 import AdminPasswordResetRequests from "./pages/AdminPasswordResetRequests";
 import MemberAnnouncements from "./pages/MemberAnnouncements";
 import NotFound from "./pages/NotFound";
+import Unsubscribe from "./pages/Unsubscribe";
 import DeveloperFooter from "./components/DeveloperFooter";
 
 const queryClient = new QueryClient();
