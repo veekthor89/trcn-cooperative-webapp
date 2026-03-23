@@ -97,6 +97,32 @@ serve(async (req) => {
       read_status: false,
     });
 
+    // Send email notification to the member
+    const { data: memberEmail } = await supabaseAdmin
+      .from('profiles')
+      .select('email')
+      .eq('id', member_id)
+      .single();
+
+    if (memberEmail?.email) {
+      try {
+        await supabaseAdmin.functions.invoke('send-transactional-email', {
+          body: {
+            templateName: 'password-reset-notification',
+            recipientEmail: memberEmail.email,
+            idempotencyKey: `pwd-reset-${member_id}-${Date.now()}`,
+            templateData: {
+              memberName: memberProfile?.full_name || 'Member',
+              defaultPassword: 'trcn2026',
+            },
+          },
+        });
+      } catch (emailErr) {
+        console.error('Failed to send password reset email:', emailErr);
+        // Don't fail the whole operation if email fails
+      }
+    }
+
     return new Response(
       JSON.stringify({ message: `Password reset successfully for ${memberProfile?.full_name || 'member'}` }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
