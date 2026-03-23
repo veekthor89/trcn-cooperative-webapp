@@ -129,6 +129,58 @@ export default function AdminDepositRequests() {
         message: `Your deposit of ₦${selectedRequest.amount.toLocaleString("en-NG")} has been verified and added to your account.`,
       });
 
+      // Send email notification
+      try {
+        const { data: memberProfile } = await supabase
+          .from("profiles")
+          .select("full_name, email")
+          .eq("id", selectedRequest.user_id)
+          .single();
+
+        if (memberProfile?.email) {
+          const amountStr = selectedRequest.amount.toLocaleString("en-NG");
+          const depositTypeLabel = DEPOSIT_TYPE_LABELS[selectedRequest.deposit_type] || selectedRequest.deposit_type;
+
+          if (selectedRequest.deposit_type === "savings") {
+            // Get updated balance for savings-specific email
+            const { data: account } = await supabase
+              .from("accounts")
+              .select("balance")
+              .eq("user_id", selectedRequest.user_id)
+              .eq("account_type", "savings")
+              .single();
+
+            await supabase.functions.invoke('send-transactional-email', {
+              body: {
+                templateName: 'savings-deposit-confirmed',
+                recipientEmail: memberProfile.email,
+                idempotencyKey: `savings-deposit-${selectedRequest.id}`,
+                templateData: {
+                  memberName: memberProfile.full_name,
+                  amount: amountStr,
+                  newBalance: (account?.balance || 0).toLocaleString("en-NG"),
+                },
+              },
+            });
+          } else {
+            await supabase.functions.invoke('send-transactional-email', {
+              body: {
+                templateName: 'deposit-approved',
+                recipientEmail: memberProfile.email,
+                idempotencyKey: `deposit-approved-${selectedRequest.id}`,
+                templateData: {
+                  memberName: memberProfile.full_name,
+                  amount: amountStr,
+                  depositType: depositTypeLabel,
+                },
+              },
+            });
+          }
+        }
+      } catch (emailErr) {
+        console.error('Failed to send deposit email:', emailErr);
+      }
+
       toast.success("Deposit approved successfully");
       setShowApproveDialog(false);
       setSelectedRequest(null);
