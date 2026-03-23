@@ -155,6 +155,32 @@ export default function AdminShareSubscriptions() {
         message: `Your share subscription application ${app.application_number} has been approved. ${app.shares_requested} shares have been allocated to your account.`,
       });
 
+      // Send email notification for share purchase
+      try {
+        const memberEmail = app.profiles?.email;
+        const memberName = app.profiles?.full_name;
+        if (memberEmail) {
+          const newTotalShares = (existingShares ? existingShares.total_shares : 0) + app.shares_requested;
+          const newTotalValue = newTotalShares * 1000;
+          await supabase.functions.invoke('send-transactional-email', {
+            body: {
+              templateName: 'shares-purchased',
+              recipientEmail: memberEmail,
+              idempotencyKey: `shares-purchased-${app.id}`,
+              templateData: {
+                memberName: memberName || 'Member',
+                sharesQuantity: app.shares_requested.toLocaleString(),
+                totalCost: app.total_cost.toLocaleString('en-NG'),
+                totalShares: newTotalShares.toLocaleString(),
+                totalValue: newTotalValue.toLocaleString('en-NG'),
+              },
+            },
+          });
+        }
+      } catch (emailErr) {
+        console.error('Failed to send share purchase email:', emailErr);
+      }
+
       toast.success("Application approved successfully");
       setShowDetailDialog(false);
       fetchApplications();

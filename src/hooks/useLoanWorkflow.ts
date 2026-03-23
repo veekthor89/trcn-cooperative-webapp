@@ -296,6 +296,35 @@ export const useLoanWorkflow = () => {
     await addHistory(applicationId, 'disbursed', user.id, role, name, 'approved_awaiting_disbursement', 'disbursed', disbursementDetails.notes);
     await notifyUser(userId, 'loan_disbursed', 
       `Your loan of ₦${disbursementDetails.amount.toLocaleString()} has been disbursed. Check your account.`);
+
+    // Send email notification for loan disbursement
+    try {
+      const { data: memberProfile } = await supabase
+        .from("profiles")
+        .select("full_name, email")
+        .eq("id", userId)
+        .single();
+
+      if (memberProfile?.email) {
+        const loanTypeLabels: Record<string, string> = {
+          normal: 'Normal Loan', trade: 'Trade Loan', special: 'Special Loan', long_term: 'Long Term Loan',
+        };
+        await supabase.functions.invoke('send-transactional-email', {
+          body: {
+            templateName: 'loan-disbursed',
+            recipientEmail: memberProfile.email,
+            idempotencyKey: `loan-disbursed-${applicationId}`,
+            templateData: {
+              memberName: memberProfile.full_name,
+              loanType: loanTypeLabels[disbursementDetails.loanType] || disbursementDetails.loanType,
+              amount: disbursementDetails.amount.toLocaleString('en-NG'),
+            },
+          },
+        });
+      }
+    } catch (emailErr) {
+      console.error('Failed to send loan disbursement email:', emailErr);
+    }
   };
 
   return {
