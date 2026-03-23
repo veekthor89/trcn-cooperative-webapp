@@ -366,7 +366,7 @@ export default function AdminSpecialContributions() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Member</TableHead>
-                        <TableHead>Member ID</TableHead>
+                        <TableHead>TRCN Number</TableHead>
                         <TableHead>Year</TableHead>
                         <TableHead>Monthly Amount</TableHead>
                         <TableHead>Total (11 months)</TableHead>
