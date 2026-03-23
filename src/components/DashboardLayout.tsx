@@ -23,6 +23,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [pendingLoansCount, setPendingLoansCount] = useState(0);
   const [pendingContributionsCount, setPendingContributionsCount] = useState(0);
   const [pendingDepositsCount, setPendingDepositsCount] = useState(0);
+  const [unreadAnnouncementsCount, setUnreadAnnouncementsCount] = useState(0);
   const [dataManagementOpen, setDataManagementOpen] = useState(false);
   const [adminSectionOpen, setAdminSectionOpen] = useState(false);
   const [excoSectionOpen, setExcoSectionOpen] = useState(false);
