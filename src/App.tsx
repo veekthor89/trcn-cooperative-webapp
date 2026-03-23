@@ -28,6 +28,7 @@ import AdminReports from "./pages/AdminReports";
 import ForceChangePassword from "./pages/ForceChangePassword";
 import AdminDepositRequests from "./pages/AdminDepositRequests";
 import AdminAnnouncements from "./pages/AdminAnnouncements";
+import AdminPasswordResetRequests from "./pages/AdminPasswordResetRequests";
 import MemberAnnouncements from "./pages/MemberAnnouncements";
 import NotFound from "./pages/NotFound";
 import DeveloperFooter from "./components/DeveloperFooter";
@@ -69,6 +70,7 @@ const App = () => (
           <Route path="/dashboard/admin/deposit-requests" element={<AdminDepositRequests />} />
           <Route path="/dashboard/admin/announcements" element={<AdminAnnouncements />} />
           <Route path="/dashboard/announcements" element={<MemberAnnouncements />} />
+          <Route path="/dashboard/admin/password-reset-requests" element={<AdminPasswordResetRequests />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
