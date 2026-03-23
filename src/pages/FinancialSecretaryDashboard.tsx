@@ -232,7 +232,7 @@ export default function FinancialSecretaryDashboard() {
           {/* Search */}
           <div>
             <Input
-              placeholder="Search by name or member number..."
+              placeholder="Search by name or TRCN number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-md"
