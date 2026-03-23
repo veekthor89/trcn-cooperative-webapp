@@ -238,6 +238,41 @@ const AdminAnnouncements = () => {
           await supabase.from("notifications").insert(batch);
         }
       }
+
+      // Send email for important/urgent announcements only
+      if (priority === "important" || priority === "urgent") {
+        try {
+          // Get emails of targeted members
+          const memberIds = userIds.length > 0 ? userIds : [];
+          if (memberIds.length > 0) {
+            const { data: profiles } = await supabase
+              .from("profiles")
+              .select("email, full_name")
+              .in("id", memberIds)
+              .eq("email_notifications", true);
+
+            if (profiles) {
+              for (const profile of profiles) {
+                if (profile.email) {
+                  await supabase.functions.invoke('send-transactional-email', {
+                    body: {
+                      templateName: 'urgent-announcement',
+                      recipientEmail: profile.email,
+                      idempotencyKey: `announcement-${announcementTitle.slice(0, 20)}-${profile.email}-${Date.now()}`,
+                      templateData: {
+                        title: announcementTitle,
+                        content: message.trim(),
+                      },
+                    },
+                  });
+                }
+              }
+            }
+          }
+        } catch (emailErr) {
+          console.error('Failed to send announcement emails:', emailErr);
+        }
+      }
     } catch (error) {
       console.error("Error sending notifications:", error);
     }
