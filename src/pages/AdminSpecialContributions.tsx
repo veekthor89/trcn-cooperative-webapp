@@ -217,7 +217,7 @@ export default function AdminSpecialContributions() {
   };
 
   const exportToCSV = () => {
-    const headers = ["Member Name", "Member ID", "Year", "Monthly Amount", "Total Expected", "Status", "Date Submitted"];
+    const headers = ["Member Name", "TRCN Number", "Year", "Monthly Amount", "Total Expected", "Status", "Date Submitted"];
     const rows = filteredContributions.map(c => [
       c.profiles?.full_name || "",
       c.profiles?.member_number || "",
