@@ -126,8 +126,9 @@ export default function GuarantorAutocomplete({
         <div className="flex items-start justify-between p-3 bg-muted rounded-lg">
           <div className="flex-1 space-y-1">
             <p className="font-medium">{value.full_name}</p>
-            <p className="text-sm text-muted-foreground">Member: {value.member_number}</p>
+            <p className="text-sm text-muted-foreground">TRCN No: {value.member_number}</p>
             <p className="text-sm text-muted-foreground">Department: {value.department}</p>
+            {value.phone && <p className="text-sm text-muted-foreground">Phone: {value.phone}</p>}
           </div>
           <Button
             variant="ghost"
