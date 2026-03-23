@@ -72,7 +72,7 @@ serve(async (req) => {
       const notifications = adminRoles.map(role => ({
         user_id: role.user_id,
         type: 'password_reset_request',
-        message: `Password reset requested by ${profile.full_name} (${profile.member_number || email}). Please reset their password from the Member Reports page.`,
+        message: `Password reset requested by ${profile.full_name} (${profile.member_number || email}). Please click to review and reset their password.`,
         read_status: false,
       }));
 
