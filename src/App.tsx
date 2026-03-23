@@ -70,6 +70,7 @@ const App = () => (
           <Route path="/dashboard/admin/deposit-requests" element={<AdminDepositRequests />} />
           <Route path="/dashboard/admin/announcements" element={<AdminAnnouncements />} />
           <Route path="/dashboard/announcements" element={<MemberAnnouncements />} />
+          <Route path="/dashboard/admin/password-reset-requests" element={<AdminPasswordResetRequests />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

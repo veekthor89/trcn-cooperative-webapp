@@ -255,6 +255,9 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <button onClick={() => { navigate("/dashboard/admin/announcements"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
                       <Megaphone className="h-5 w-5" /><span>Announcements</span>
                     </button>
+                    <button onClick={() => { navigate("/dashboard/admin/password-reset-requests"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
+                      <KeyRound className="h-5 w-5" /><span>Password Resets</span>
+                    </button>
                   </CollapsibleContent>
                 </Collapsible>
               </div>
