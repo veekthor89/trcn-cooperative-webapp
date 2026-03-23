@@ -174,9 +174,16 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
           <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
             {menuItems.map(item => (
-              <button key={item.path} onClick={() => { navigate(item.path); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth">
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
+              <button key={item.path} onClick={() => { navigate(item.path); setSidebarOpen(false); }} className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-smooth">
+                <div className="flex items-center gap-3">
+                  <item.icon className="h-5 w-5" />
+                  <span>{item.label}</span>
+                </div>
+                {item.path === "/dashboard/announcements" && unreadAnnouncementsCount > 0 && (
+                  <span className="bg-destructive text-destructive-foreground text-xs font-semibold px-2 py-0.5 rounded-full">
+                    {unreadAnnouncementsCount}
+                  </span>
+                )}
               </button>
             ))}
 
