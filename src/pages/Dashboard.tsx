@@ -440,24 +440,54 @@ const Dashboard = () => {
                                 navigate("/dashboard/admin/password-reset-requests");
                                 return;
                               }
+                              // Navigate based on notification type
+                              if (notification.type === "deposit_approved" || notification.type === "deposit_rejected") {
+                                navigate("/dashboard/savings");
+                                return;
+                              }
+                              if (notification.type === "loan_disbursed" || notification.type === "loan_approved" || notification.type === "loan_rejected" || notification.type === "loan_status_update" || notification.type === "loan_sent_back") {
+                                navigate("/dashboard/loans");
+                                return;
+                              }
+                              if (notification.type === "share_approved") {
+                                navigate("/dashboard/shares");
+                                return;
+                              }
+                              if (notification.type === "announcement") {
+                                navigate("/dashboard/announcements");
+                                return;
+                              }
+                              if (notification.type === "special_contribution_approved" || notification.type === "special_contribution_rejected") {
+                                navigate("/dashboard/special-contributions");
+                                return;
+                              }
+                              if (notification.type === "password_reset") {
+                                // Already on dashboard, just mark read
+                                return;
+                              }
                               // If it's a guarantor request, find and open the modal
-                              if (notification.type === "guarantor_request") {
-                                const loanIdMatch = notification.message.match(/Loan ID: ([a-f0-9-]+)/);
-                                const loanId = loanIdMatch ? loanIdMatch[1] : null;
-                                
-                                const request = guarantorRequests.find(r => 
-                                  r.loan_id === loanId || r.loan_application_number === loanId
-                                );
-                                
-                                if (request) {
-                                  handleGuarantorRequestClick(request);
-                                } else {
-                                  if (guarantorRequests.length > 0) {
-                                    handleGuarantorRequestClick(guarantorRequests[0]);
+                              if (notification.type === "guarantor_request" || notification.type === "guarantor_approved" || notification.type === "guarantor_denied") {
+                                if (notification.type === "guarantor_request") {
+                                  const loanIdMatch = notification.message.match(/Loan ID: ([a-f0-9-]+)/);
+                                  const loanId = loanIdMatch ? loanIdMatch[1] : null;
+                                  
+                                  const request = guarantorRequests.find(r => 
+                                    r.loan_id === loanId || r.loan_application_number === loanId
+                                  );
+                                  
+                                  if (request) {
+                                    handleGuarantorRequestClick(request);
                                   } else {
-                                    toast.error("Could not find the guarantor request. It may have been processed already.");
+                                    if (guarantorRequests.length > 0) {
+                                      handleGuarantorRequestClick(guarantorRequests[0]);
+                                    } else {
+                                      toast.error("Could not find the guarantor request. It may have been processed already.");
+                                    }
                                   }
+                                } else {
+                                  navigate("/dashboard/loans");
                                 }
+                                return;
                               }
                             }}
                           >
