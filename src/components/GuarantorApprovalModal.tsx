@@ -79,7 +79,7 @@ export default function GuarantorApprovalModal({ request, open, onClose, onSucce
               <span className="font-semibold">{request.applicant_name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Member Number:</span>
+              <span className="text-sm text-muted-foreground">TRCN Number:</span>
               <span className="font-semibold">{request.applicant_member_id}</span>
             </div>
             <div className="flex justify-between">

@@ -145,7 +145,7 @@ export default function ExcoViewDashboard() {
               <div className="space-y-4">
                 <Card>
                   <CardContent className="pt-4 space-y-2 text-sm">
-                    <div className="flex justify-between"><span className="text-muted-foreground">Member:</span><span className="font-medium">{selectedApp.profile?.full_name}</span></div>
+                     <div className="flex justify-between"><span className="text-muted-foreground">Member:</span><span className="font-medium">{selectedApp.profile?.full_name}</span></div>
                     <div className="flex justify-between"><span className="text-muted-foreground">Loan Type:</span><span className="capitalize font-medium">{selectedApp.loan_type?.replace("_", " ")}</span></div>
                     <div className="flex justify-between"><span className="text-muted-foreground">Amount:</span><span className="font-semibold">₦{selectedApp.requested_amount?.toLocaleString()}</span></div>
                     <div className="flex justify-between"><span className="text-muted-foreground">Period:</span><span>{selectedApp.repayment_period} months</span></div>

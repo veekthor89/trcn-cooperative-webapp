@@ -76,7 +76,7 @@ export default function GuarantorAutocomplete({
               !value && "text-muted-foreground"
             )}
           >
-            {value ? `${value.full_name} (${value.member_number})` : "Search by name or member number..."}
+            {value ? `${value.full_name} (${value.member_number})` : "Search by name or TRCN number..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>

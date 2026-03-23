@@ -295,7 +295,7 @@ export default function AdminLoanApplications() {
                 <div className="flex-1">
                   <Label>Search Member</Label>
                   <Input
-                    placeholder="Search by name or member number..."
+                    placeholder="Search by name or TRCN number..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -412,7 +412,7 @@ export default function AdminLoanApplications() {
                       <p className="font-medium">{selectedApp.profiles?.full_name}</p>
                     </div>
                     <div>
-                      <Label className="text-muted-foreground">Member Number</Label>
+                      <Label className="text-muted-foreground">TRCN Number</Label>
                       <p className="font-medium">{selectedApp.profiles?.member_number}</p>
                     </div>
                     <div>
@@ -499,7 +499,7 @@ export default function AdminLoanApplications() {
                               <span className="font-medium">{selectedApp.guarantor_1_name}</span>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Member #: </span>
+                              <span className="text-muted-foreground">TRCN #: </span>
                               <span className="font-medium">{selectedApp.guarantor_1_member_number}</span>
                             </div>
                             <div>
@@ -518,7 +518,7 @@ export default function AdminLoanApplications() {
                               <span className="font-medium">{selectedApp.guarantor_2_name}</span>
                             </div>
                             <div>
-                              <span className="text-muted-foreground">Member #: </span>
+                              <span className="text-muted-foreground">TRCN #: </span>
                               <span className="font-medium">{selectedApp.guarantor_2_member_number}</span>
                             </div>
                             <div>

@@ -217,7 +217,7 @@ export default function AdminSpecialContributions() {
   };
 
   const exportToCSV = () => {
-    const headers = ["Member Name", "Member ID", "Year", "Monthly Amount", "Total Expected", "Status", "Date Submitted"];
+    const headers = ["Member Name", "TRCN Number", "Year", "Monthly Amount", "Total Expected", "Status", "Date Submitted"];
     const rows = filteredContributions.map(c => [
       c.profiles?.full_name || "",
       c.profiles?.member_number || "",
@@ -366,7 +366,7 @@ export default function AdminSpecialContributions() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Member</TableHead>
-                        <TableHead>Member ID</TableHead>
+                        <TableHead>TRCN Number</TableHead>
                         <TableHead>Year</TableHead>
                         <TableHead>Monthly Amount</TableHead>
                         <TableHead>Total (11 months)</TableHead>
@@ -461,7 +461,7 @@ export default function AdminSpecialContributions() {
                       <p className="font-medium">{selectedContribution.profiles?.full_name}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Member ID</p>
+                      <p className="text-sm text-muted-foreground">TRCN Number</p>
                       <p className="font-medium">{selectedContribution.profiles?.member_number || "N/A"}</p>
                     </div>
                     <div>

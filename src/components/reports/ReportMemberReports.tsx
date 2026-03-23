@@ -96,7 +96,7 @@ export default function ReportMemberReports({ profiles, loans, accounts }: Props
       <TabsContent value="financial" className="space-y-4">
         <div className="flex items-center gap-2">
           <Search className="h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search by name or member number..." value={search} onChange={e => setSearch(e.target.value)} className="max-w-sm" />
+          <Input placeholder="Search by name or TRCN number..." value={search} onChange={e => setSearch(e.target.value)} className="max-w-sm" />
         </div>
         <Card className="shadow-card">
           <CardContent className="p-0">
@@ -104,7 +104,7 @@ export default function ReportMemberReports({ profiles, loans, accounts }: Props
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Member</TableHead><TableHead>Member ID</TableHead><TableHead>Password Status</TableHead><TableHead>Actions</TableHead><TableHead className="text-right">Savings</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead>
+                    <TableHead>Member</TableHead><TableHead>TRCN Number</TableHead><TableHead>Password Status</TableHead><TableHead>Actions</TableHead><TableHead className="text-right">Savings</TableHead><TableHead className="text-right">Active Loans</TableHead><TableHead className="text-right">Outstanding</TableHead><TableHead className="text-right">Monthly Deduction</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

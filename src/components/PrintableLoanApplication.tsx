@@ -68,7 +68,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
           <SectionHeader title="1. Member Information" />
           <div className="grid grid-cols-2 gap-x-8 gap-y-3 mb-5">
             <Field label="Full Name" value={application.profiles?.full_name} />
-            <Field label="Member ID" value={application.profiles?.member_number} />
+            <Field label="TRCN Number" value={application.profiles?.member_number} />
             <Field label="Phone Number" value={application.profiles?.phone} />
             <Field label="Email Address" value={application.profiles?.email} />
             <Field label="Residential Address" value={application.profiles?.address || "N/A"} />
@@ -111,14 +111,14 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
                 <div className="space-y-2">
                   <p className="font-semibold text-base mb-1">Guarantor 1:</p>
                   <Field label="Name" value={application.guarantor_1_name} />
-                  <Field label="Member ID" value={application.guarantor_1_member_number} />
+                  <Field label="TRCN Number" value={application.guarantor_1_member_number} />
                   <Field label="Phone" value={application.guarantor_1_phone} />
                 </div>
                 {application.guarantor_2_name && (
                   <div className="space-y-2">
                     <p className="font-semibold text-base mb-1">Guarantor 2:</p>
                     <Field label="Name" value={application.guarantor_2_name} />
-                    <Field label="Member ID" value={application.guarantor_2_member_number} />
+                    <Field label="TRCN Number" value={application.guarantor_2_member_number} />
                     <Field label="Phone" value={application.guarantor_2_phone} />
                   </div>
                 )}

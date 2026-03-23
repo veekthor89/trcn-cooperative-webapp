@@ -268,7 +268,7 @@ export default function ShareSubscriptionForm({ onSuccess, onCancel }: ShareSubs
             <Input value={userProfile?.full_name || ""} disabled />
           </div>
           <div>
-            <Label>Member Number</Label>
+            <Label>TRCN Number</Label>
             <Input value={userProfile?.member_number || "N/A"} disabled />
           </div>
           <div>

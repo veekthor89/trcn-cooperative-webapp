@@ -380,7 +380,7 @@ export default function AdminShareSubscriptions() {
                     <p className="font-medium">{selectedApp.profiles?.full_name}</p>
                   </div>
                   <div>
-                    <Label className="text-muted-foreground">Member Number</Label>
+                    <Label className="text-muted-foreground">TRCN Number</Label>
                     <p className="font-medium">{selectedApp.profiles?.member_number}</p>
                   </div>
                   <div>
