@@ -66,7 +66,7 @@ export default function AdminLoanApplications() {
 
       const { data: allApps } = await supabase
         .from("loan_applications")
-        .select("status, approval_date");
+        .select("status, approval_date, application_date, financial_review_date");
 
       if (allApps) {
         setStats({
@@ -75,7 +75,11 @@ export default function AdminLoanApplications() {
             (a) => a.status === "approved" && a.approval_date && new Date(a.approval_date) >= startOfMonth
           ).length,
           rejectedThisMonth: allApps.filter(
-            (a) => a.status === "rejected" && a.approval_date && new Date(a.approval_date) >= startOfMonth
+            (a) => {
+              if (a.status !== "rejected") return false;
+              const rejDate = a.financial_review_date || a.approval_date || a.application_date;
+              return rejDate && new Date(rejDate) >= startOfMonth;
+            }
           ).length,
         });
       }
