@@ -10,7 +10,7 @@ const DeveloperFooter = () => {
         aria-label="Visit developer's website"
         className="flex items-center justify-center gap-3 text-foreground/70 hover:text-foreground transition-colors">
         
-        <span className="text-sm font-medium">Developed by</span>
+        <span className="text-sm font-medium">Powered by</span>
         <img
 
           alt="VANNI - Design Build Think"
