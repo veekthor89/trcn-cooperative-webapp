@@ -23,9 +23,9 @@ function generateToken(): string {
     .join('')
 }
 
-// Auth note: this function uses verify_jwt = true in config.toml, so Supabase's
-// gateway validates the caller's JWT (anon or service_role) before the request
-// reaches this code. No in-function auth check is needed.
+// Auth: verify_jwt = true in config.toml validates that a JWT is present, but
+// any authenticated member could still call this. We additionally require either
+// the service role (server-to-server) or an admin/EXCO role on the caller.
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -35,8 +35,9 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')
 
-  if (!supabaseUrl || !supabaseServiceKey) {
+  if (!supabaseUrl || !supabaseServiceKey || !supabaseAnonKey) {
     console.error('Missing required environment variables')
     return new Response(
       JSON.stringify({ error: 'Server configuration error' }),
@@ -45,6 +46,49 @@ Deno.serve(async (req) => {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     )
+  }
+
+  // Authorization check: allow service role OR admin/EXCO users only.
+  const authHeader = req.headers.get('Authorization') || ''
+  const token = authHeader.replace('Bearer ', '').trim()
+
+  if (!token) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
+  }
+
+  const isServiceRole = token === supabaseServiceKey
+
+  if (!isServiceRole) {
+    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    })
+
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token)
+    if (claimsError || !claimsData?.claims?.sub) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const userId = claimsData.claims.sub as string
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey)
+
+    const [{ data: isAdmin }, { data: isExco }] = await Promise.all([
+      adminClient.rpc('has_role', { _user_id: userId, _role: 'admin' }),
+      adminClient.rpc('has_any_exco_role', { _user_id: userId }),
+    ])
+
+    if (!isAdmin && !isExco) {
+      console.warn('Forbidden send-transactional-email attempt', { userId })
+      return new Response(
+        JSON.stringify({ error: 'Forbidden: admin or EXCO role required' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
   }
 
   // Parse request body
