@@ -1,5 +1,4 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "@/components/ui/button";
 import { Printer, X } from "lucide-react";
 import trcnLogo from "@/assets/trcn-smcs-logo.png";
@@ -41,7 +40,7 @@ export default function PrintableLoanApplication({ application, isOpen, onClose 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[850px] max-h-[95vh] overflow-y-auto p-0 border-none shadow-none [&>button:last-child]:hidden">
-        <VisuallyHidden><DialogTitle>Loan Application</DialogTitle></VisuallyHidden>
+        <DialogTitle className="sr-only">Loan Application</DialogTitle>
         <div className="print-hide flex justify-end gap-2 p-3 sticky top-0 bg-background z-10">
           <Button onClick={handlePrint} size="sm" className="gap-2">
             <Printer className="w-4 h-4" /> Print
