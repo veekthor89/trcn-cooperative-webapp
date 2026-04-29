@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import ShareSubscriptionForm from "@/components/ShareSubscriptionForm";
 import { TrendingUp, FileText, Clock, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
-const PRICE_PER_SHARE = 1000;
+const PRICE_PER_SHARE = 25;
 const MAX_SHARES = 3500;
 export default function Shares() {
   const [loading, setLoading] = useState(true);
