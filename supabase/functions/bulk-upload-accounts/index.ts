@@ -113,7 +113,7 @@ serve(async (req) => {
     if (roleError) {
       console.error('Role check error:', roleError);
       return new Response(
-        JSON.stringify({ error: 'Failed to verify admin privileges', details: roleError.message }),
+        JSON.stringify({ error: 'Failed to verify privileges' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
