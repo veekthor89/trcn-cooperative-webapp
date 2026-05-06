@@ -33,6 +33,8 @@ import MemberAnnouncements from "./pages/MemberAnnouncements";
 import NotFound from "./pages/NotFound";
 import Unsubscribe from "./pages/Unsubscribe";
 import DeveloperFooter from "./components/DeveloperFooter";
+import { AdminRoute } from "./components/AdminRoute";
+import { ExcoRoute } from "./components/ExcoRoute";
 
 const queryClient = new QueryClient();
 
