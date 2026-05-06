@@ -60,7 +60,7 @@ const App = () => (
           <Route path="/dashboard/special-contributions" element={<SpecialContributions />} />
           <Route path="/dashboard/admin/special-contributions" element={<AdminSpecialContributions />} />
           <Route path="/dashboard/shares" element={<Shares />} />
-          <Route path="/dashboard/admin/share-subscriptions" element={<AdminShareSubscriptions />} />
+          <Route path="/dashboard/admin/share-subscriptions" element={<AdminRoute><AdminShareSubscriptions /></AdminRoute>} />
           <Route path="/dashboard/admin/loan-applications" element={<AdminLoanApplications />} />
           {/* EXCO Role-Based Dashboards */}
           <Route path="/dashboard/exco/financial-review" element={<FinancialSecretaryDashboard />} />
@@ -69,7 +69,7 @@ const App = () => (
           <Route path="/dashboard/exco/overview" element={<ExcoViewDashboard />} />
           <Route path="/dashboard/admin/reports" element={<AdminReports />} />
           <Route path="/dashboard/admin/deposit-requests" element={<AdminDepositRequests />} />
-          <Route path="/dashboard/admin/announcements" element={<AdminAnnouncements />} />
+          <Route path="/dashboard/admin/announcements" element={<ExcoRoute allowedRoles={["president", "general_secretary", "pro"]}><AdminAnnouncements /></ExcoRoute>} />
           <Route path="/dashboard/announcements" element={<MemberAnnouncements />} />
           <Route path="/dashboard/admin/password-reset-requests" element={<AdminPasswordResetRequests />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
