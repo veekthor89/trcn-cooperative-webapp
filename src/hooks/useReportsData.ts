@@ -44,7 +44,7 @@ export function useReportsData() {
   const profilesQuery = useQuery({
     queryKey: ["reports-profiles"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("id, full_name, member_number, department, email, phone, employment_status, bank_name, account_number, created_at, must_change_password");
+      const { data, error } = await supabase.from("profiles").select("id, full_name, member_number, department, designation, email, phone, bank_name, account_number, account_name, created_at, must_change_password");
       if (error) throw error;
       return data || [];
     },
