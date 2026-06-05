@@ -261,8 +261,8 @@ export default function AdminReports() {
               <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
                 <RefreshCw className={`h-4 w-4 mr-1 ${isLoading ? "animate-spin" : ""}`} /> Refresh
               </Button>
-              <Button variant="outline" size="sm" onClick={handleExportCSV}>
-                <Download className="h-4 w-4 mr-1" /> CSV
+              <Button variant="outline" size="sm" onClick={handleExportXLSX}>
+                <Download className="h-4 w-4 mr-1" /> Export
               </Button>
               <Button variant="outline" size="sm" onClick={handlePrint}>
                 <Printer className="h-4 w-4 mr-1" /> Print
