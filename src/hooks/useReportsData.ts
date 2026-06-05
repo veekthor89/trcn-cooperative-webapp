@@ -44,7 +44,16 @@ export function useReportsData() {
   const profilesQuery = useQuery({
     queryKey: ["reports-profiles"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("id, full_name, member_number, department, created_at, must_change_password");
+      const { data, error } = await supabase.from("profiles").select("id, full_name, member_number, department, designation, email, phone, bank_name, account_number, account_name, created_at, must_change_password");
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const sharesQuery = useQuery({
+    queryKey: ["reports-shares"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("shares").select("*");
       if (error) throw error;
       return data || [];
     },
@@ -75,7 +84,8 @@ export function useReportsData() {
     transactionsQuery.isLoading ||
     profilesQuery.isLoading ||
     specialContributionsQuery.isLoading ||
-    shareSubscriptionsQuery.isLoading;
+    shareSubscriptionsQuery.isLoading ||
+    sharesQuery.isLoading;
 
   const refetchAll = () => {
     loansQuery.refetch();
@@ -85,6 +95,7 @@ export function useReportsData() {
     profilesQuery.refetch();
     specialContributionsQuery.refetch();
     shareSubscriptionsQuery.refetch();
+    sharesQuery.refetch();
   };
 
   return {
@@ -95,6 +106,7 @@ export function useReportsData() {
     profiles: profilesQuery.data || [],
     specialContributions: specialContributionsQuery.data || [],
     shareSubscriptions: shareSubscriptionsQuery.data || [],
+    shares: sharesQuery.data || [],
     isLoading,
     refetchAll,
   };
