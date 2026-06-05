@@ -84,7 +84,8 @@ export function useReportsData() {
     transactionsQuery.isLoading ||
     profilesQuery.isLoading ||
     specialContributionsQuery.isLoading ||
-    shareSubscriptionsQuery.isLoading;
+    shareSubscriptionsQuery.isLoading ||
+    sharesQuery.isLoading;
 
   const refetchAll = () => {
     loansQuery.refetch();
@@ -94,6 +95,7 @@ export function useReportsData() {
     profilesQuery.refetch();
     specialContributionsQuery.refetch();
     shareSubscriptionsQuery.refetch();
+    sharesQuery.refetch();
   };
 
   return {
@@ -104,6 +106,7 @@ export function useReportsData() {
     profiles: profilesQuery.data || [],
     specialContributions: specialContributionsQuery.data || [],
     shareSubscriptions: shareSubscriptionsQuery.data || [],
+    shares: sharesQuery.data || [],
     isLoading,
     refetchAll,
   };
