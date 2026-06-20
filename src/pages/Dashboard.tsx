@@ -786,8 +786,8 @@ const Dashboard = () => {
                           {activity.type === 'deposit' ? '+' : '-'}₦{Number(activity.amount).toLocaleString('en-NG')}
                         </p>
                       </div>)}
-                  {recentActivities.length > 0 && <Button variant="outline" className="w-full mt-4">
-                      Load More Transactions
+                  {recentActivities.length > 0 && <Button variant="outline" className="w-full mt-4" onClick={() => navigate("/dashboard/transactions")}>
+                      View All Transactions
                     </Button>}
                 </CardContent>
               </Card>
