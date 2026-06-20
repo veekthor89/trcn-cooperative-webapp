@@ -128,28 +128,34 @@ const Transactions = () => {
             {transactions.map((transaction) => (
               <Card key={transaction.id} className="shadow-card hover:shadow-elevated transition-smooth">
                 <CardContent className="py-4">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 bg-muted rounded-full">
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    <div className="p-2 bg-muted rounded-full shrink-0">
                       {getTransactionIcon(transaction.type)}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-semibold truncate">
-                          {formatTransactionType(transaction.type)}
+                      <div className="flex flex-wrap items-start justify-between gap-2 mb-1">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <p className="font-semibold truncate">
+                            {formatTransactionType(transaction.type)}
+                          </p>
+                          <Badge variant="outline" className="text-xs shrink-0">
+                            {transaction.type}
+                          </Badge>
+                        </div>
+                        <p className={`text-base sm:text-xl font-bold whitespace-nowrap ${getTransactionColor(transaction.type)}`}>
+                          {isIncoming(transaction.type) ? '+' : '-'}
+                          ₦{Math.abs(Number(transaction.amount)).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
                         </p>
-                        <Badge variant="outline" className="text-xs">
-                          {transaction.type}
-                        </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground truncate">
+                      <p className="text-sm text-muted-foreground break-words">
                         {transaction.description || "No description"}
                       </p>
-                      <div className="flex items-center gap-4 mt-1">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
                         <p className="text-xs text-muted-foreground">
                           {new Date(transaction.created_at).toLocaleString()}
                         </p>
                         {transaction.reference_number && (
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground break-all">
                             Ref: {transaction.reference_number}
                           </p>
                         )}
@@ -160,15 +166,10 @@ const Transactions = () => {
                         )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className={`text-xl font-bold ${getTransactionColor(transaction.type)}`}>
-                        {isIncoming(transaction.type) ? '+' : '-'}
-                        ₦{Math.abs(Number(transaction.amount)).toLocaleString('en-NG', { minimumFractionDigits: 2 })}
-                      </p>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
+
             ))}
           </div>
         )}
