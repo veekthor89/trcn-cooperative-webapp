@@ -196,7 +196,7 @@ const OnboardingSection = () => {
       if (data.created > 0) toast.success(`Created ${data.created} member${data.created > 1 ? "s" : ""}`);
       if (data.errors.length > 0) toast.error(`${data.errors.length} row${data.errors.length > 1 ? "s" : ""} failed`);
     } catch (err) {
-      toast.error(parseEdgeFunctionError(err) || "Upload failed");
+      toast.error(await getEdgeFunctionErrorMessage(err, "Upload failed"));
     } finally {
       setUploading(false);
     }
@@ -281,7 +281,7 @@ const MonthlySection = () => {
       if (data.updated > 0) toast.success(`Updated ${data.updated} member${data.updated > 1 ? "s" : ""}`);
       if (data.errors.length > 0) toast.error(`${data.errors.length} row${data.errors.length > 1 ? "s" : ""} failed`);
     } catch (err) {
-      toast.error(parseEdgeFunctionError(err) || "Upload failed");
+      toast.error(await getEdgeFunctionErrorMessage(err, "Upload failed"));
     } finally {
       setUploading(false);
     }
