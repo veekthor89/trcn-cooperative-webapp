@@ -51,10 +51,6 @@ const App = () => (
           <Route path="/dashboard/loan-application" element={<LoanApplication />} />
           <Route path="/dashboard/transactions" element={<Transactions />} />
           <Route path="/dashboard/bulk-upload" element={<BulkUpload />} />
-          <Route path="/dashboard/bulk-upload-accounts" element={<BulkUploadAccounts />} />
-          <Route path="/dashboard/bulk-upload-loans" element={<BulkUploadLoans />} />
-          <Route path="/dashboard/bulk-upload-transactions" element={<BulkUploadTransactions />} />
-          <Route path="/dashboard/bulk-upload-special-contributions" element={<BulkUploadSpecialContributions />} />
           <Route path="/dashboard/special-contributions" element={<SpecialContributions />} />
           <Route path="/dashboard/admin/special-contributions" element={<AdminSpecialContributions />} />
           <Route path="/dashboard/shares" element={<Shares />} />
