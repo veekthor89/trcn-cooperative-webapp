@@ -1,246 +1,408 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Upload, Download } from "lucide-react";
+import { Upload, Download, FileSpreadsheet, Loader2, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { AdminRoute } from "@/components/AdminRoute";
 import DashboardLayout from "@/components/DashboardLayout";
+import * as XLSX from "xlsx";
+import { parseEdgeFunctionError } from "@/lib/edgeFunctionError";
 
-interface MemberData {
-  full_name: string;
-  email: string;
-  phone?: string;
-  address?: string;
-  date_of_birth?: string;
+// ============ Column definitions ============
+const ONBOARDING_COLUMNS = [
+  "full_name", "email", "phone", "address", "date_of_birth",
+  "savings_balance", "special_loan_amount", "trade_loan_amount",
+  "normal_loan_amount", "land_loan_amount", "contribution_amount",
+];
+
+const MONTHLY_COLUMNS = [
+  "full_name", "email", "savings_deduction", "contribution_amount",
+  "special_loan_repayment", "trade_loan_repayment",
+  "normal_loan_repayment", "land_loan_repayment", "month",
+];
+
+// ============ Helpers ============
+function parseFile(file: File): Promise<Record<string, any>[]> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = e.target?.result;
+        const wb = XLSX.read(data, { type: "binary", cellDates: true });
+        const sheet = wb.Sheets[wb.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false });
+        resolve(rows as Record<string, any>[]);
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsBinaryString(file);
+  });
 }
 
-const BulkUpload = () => {
+function downloadTemplate(name: string, columns: string[], sample: Record<string, any>) {
+  const ws = XLSX.utils.json_to_sheet([sample], { header: columns });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Template");
+  XLSX.writeFile(wb, name);
+}
+
+function downloadErrorReport(name: string, errors: Array<{ row: number; email?: string; reason: string }>) {
+  const ws = XLSX.utils.json_to_sheet(errors);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Errors");
+  XLSX.writeFile(wb, name);
+}
+
+// ============ Drop zone ============
+interface DropZoneProps {
+  onFile: (file: File) => void;
+  disabled?: boolean;
+  accept?: string;
+}
+const DropZone = ({ onFile, disabled, accept = ".xlsx,.csv" }: DropZoneProps) => {
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(false);
+    if (disabled) return;
+    const file = e.dataTransfer.files?.[0];
+    if (file) onFile(file);
+  }, [onFile, disabled]);
+
+  return (
+    <div
+      onDragOver={(e) => { e.preventDefault(); if (!disabled) setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={handleDrop}
+      onClick={() => !disabled && inputRef.current?.click()}
+      className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+        dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+      } ${disabled ? "opacity-60 cursor-not-allowed" : ""}`}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        className="hidden"
+        disabled={disabled}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) onFile(file);
+          e.target.value = "";
+        }}
+      />
+      <FileSpreadsheet className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+      <p className="text-sm font-medium mb-1">Drop your .xlsx or .csv file here</p>
+      <p className="text-xs text-muted-foreground mb-4">or click to browse</p>
+      <Button type="button" variant="outline" size="sm" disabled={disabled}>
+        <Upload className="h-4 w-4 mr-2" /> Browse File
+      </Button>
+    </div>
+  );
+};
+
+// ============ Summary Card ============
+interface SummaryProps {
+  successCount: number;
+  skippedCount?: number;
+  errors: Array<{ row: number; email?: string; reason: string }>;
+  reportName: string;
+  successLabel: string;
+}
+const SummaryCard = ({ successCount, skippedCount, errors, reportName, successLabel }: SummaryProps) => (
+  <div className="mt-4 rounded-lg border bg-muted/30 p-4 space-y-3">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="flex items-center gap-2 rounded-md bg-background p-3 border">
+        <CheckCircle2 className="h-5 w-5 text-green-600" />
+        <div>
+          <p className="text-xs text-muted-foreground">{successLabel}</p>
+          <p className="font-semibold">{successCount}</p>
+        </div>
+      </div>
+      {skippedCount !== undefined && (
+        <div className="flex items-center gap-2 rounded-md bg-background p-3 border">
+          <AlertCircle className="h-5 w-5 text-amber-500" />
+          <div>
+            <p className="text-xs text-muted-foreground">Skipped (duplicates)</p>
+            <p className="font-semibold">{skippedCount}</p>
+          </div>
+        </div>
+      )}
+      <div className="flex items-center gap-2 rounded-md bg-background p-3 border">
+        <XCircle className="h-5 w-5 text-destructive" />
+        <div>
+          <p className="text-xs text-muted-foreground">Errors</p>
+          <p className="font-semibold">{errors.length}</p>
+        </div>
+      </div>
+    </div>
+    {errors.length > 0 && (
+      <>
+        <div className="max-h-48 overflow-y-auto text-sm space-y-1 rounded-md border bg-background p-3">
+          {errors.slice(0, 20).map((e, i) => (
+            <p key={i} className="text-muted-foreground">
+              <span className="font-medium text-foreground">Row {e.row}</span>
+              {e.email ? ` (${e.email})` : ""}: {e.reason}
+            </p>
+          ))}
+          {errors.length > 20 && <p className="text-xs text-muted-foreground">…and {errors.length - 20} more</p>}
+        </div>
+        <Button variant="outline" size="sm" onClick={() => downloadErrorReport(reportName, errors)}>
+          <Download className="h-4 w-4 mr-2" /> Download Error Report
+        </Button>
+      </>
+    )}
+  </div>
+);
+
+// ============ Section 1: Onboarding ============
+const OnboardingSection = () => {
   const [uploading, setUploading] = useState(false);
-  const [results, setResults] = useState<{ success: Array<{ email: string; password: string }>; errors: Array<{ email: string; error: string }> } | null>(null);
+  const [result, setResult] = useState<{ created: number; skipped: number; errors: Array<{ row: number; email?: string; reason: string }> } | null>(null);
 
-  const parseCsv = (text: string): MemberData[] => {
-    const lines = text.split('\n').filter(line => line.trim());
-    
-    const members: MemberData[] = [];
-    
-    for (let i = 1; i < lines.length; i++) {
-      // Parse CSV line properly handling quoted fields
-      const values: string[] = [];
-      let currentValue = '';
-      let insideQuotes = false;
-      
-      for (let j = 0; j < lines[i].length; j++) {
-        const char = lines[i][j];
-        
-        if (char === '"') {
-          insideQuotes = !insideQuotes;
-        } else if (char === ',' && !insideQuotes) {
-          values.push(currentValue.trim());
-          currentValue = '';
-        } else {
-          currentValue += char;
-        }
-      }
-      values.push(currentValue.trim());
-      
-      if (values.length < 3 || !values[1]?.trim() || !values[2]?.trim()) continue;
-      
-      const member: MemberData = {
-        full_name: values[1]?.trim() || '',
-        email: values[2]?.trim() || '',
-        phone: values[3]?.trim() || undefined,
-        address: values[4]?.trim() || undefined,
-        date_of_birth: values[5]?.trim() || undefined
-      };
-      
-      if (member.full_name && member.email) {
-        members.push(member);
-      }
-    }
-    
-    return members;
-  };
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    // Validate MIME type
-    if (file.type !== "text/csv") {
-      toast.error("Please select a valid CSV file");
-      event.target.value = ''; // Reset file input
-      return;
-    }
-
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("CSV file must be less than 2MB");
-      event.target.value = ''; // Reset file input
-      return;
-    }
-
+  const handleFile = async (file: File) => {
     setUploading(true);
-    setResults(null);
-
+    setResult(null);
     try {
-      const text = await file.text();
-      const members = parseCsv(text);
-
-      if (members.length === 0) {
-        toast.error("No valid members found in CSV");
-        setUploading(false);
+      const rows = await parseFile(file);
+      if (rows.length === 0) {
+        toast.error("No rows found in file");
         return;
       }
-
-      toast.info(`Uploading ${members.length} members...`);
-
-      const { data, error } = await supabase.functions.invoke('bulk-upload-members', {
-        body: { members }
+      toast.info(`Processing ${rows.length} members…`);
+      const { data, error } = await supabase.functions.invoke("bulk-onboard-members", {
+        body: { rows },
       });
-
       if (error) throw error;
-
-      setResults(data);
-      
-      if (data.success.length > 0) {
-        toast.success(`Successfully uploaded ${data.success.length} members`);
-      }
-      if (data.errors.length > 0) {
-        toast.error(`Failed to upload ${data.errors.length} members`);
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to upload members');
+      setResult(data);
+      if (data.created > 0) toast.success(`Created ${data.created} member${data.created > 1 ? "s" : ""}`);
+      if (data.errors.length > 0) toast.error(`${data.errors.length} row${data.errors.length > 1 ? "s" : ""} failed`);
+    } catch (err) {
+      toast.error(parseEdgeFunctionError(err) || "Upload failed");
     } finally {
       setUploading(false);
-      event.target.value = ''; // Reset file input to allow re-upload
     }
-  };
-
-  const downloadTemplate = () => {
-    const template = `id,full_name,email,phone,address,date_of_birth,created_at,updated_at
-,John Doe,johndoe@example.com,08012345678,123 Main St,01-01-1990,,
-,Jane Smith,janesmith@example.com,08012345679,456 Oak Ave,15-05-1985,,`;
-    
-    const blob = new Blob([template], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'members_template.csv';
-    a.click();
-    window.URL.revokeObjectURL(url);
   };
 
   return (
+    <Card>
+      <CardHeader>
+        <CardTitle>New Member Onboarding</CardTitle>
+        <CardDescription>
+          Use this to onboard new members onto the platform. Download the template, fill in member details and upload.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex flex-wrap gap-3">
+          <Button
+            variant="outline"
+            onClick={() =>
+              downloadTemplate("member_onboarding_template.xlsx", ONBOARDING_COLUMNS, {
+                full_name: "John Doe",
+                email: "john@example.com",
+                phone: "08012345678",
+                address: "123 Main St, Lagos",
+                date_of_birth: "1990-05-15",
+                savings_balance: 50000,
+                special_loan_amount: 0,
+                trade_loan_amount: 0,
+                normal_loan_amount: 0,
+                land_loan_amount: 0,
+                contribution_amount: 0,
+              })
+            }
+          >
+            <Download className="h-4 w-4 mr-2" /> Download Template
+          </Button>
+        </div>
+        <DropZone onFile={handleFile} disabled={uploading} />
+        {uploading && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Processing upload…
+          </div>
+        )}
+        {result && (
+          <SummaryCard
+            successCount={result.created}
+            skippedCount={result.skipped}
+            errors={result.errors}
+            reportName="member_onboarding_errors.xlsx"
+            successLabel="Members created"
+          />
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
+// ============ Section 2: Monthly deductions ============
+const MonthlySection = () => {
+  const now = new Date();
+  const defaultMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const [month, setMonth] = useState(defaultMonth);
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState<{ updated: number; errors: Array<{ row: number; email?: string; reason: string }> } | null>(null);
+  const [pendingRows, setPendingRows] = useState<Record<string, any>[] | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const run = async (rows: Record<string, any>[], confirmOverride: boolean) => {
+    setUploading(true);
+    setResult(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("bulk-monthly-deductions", {
+        body: { rows, month, confirmOverride },
+      });
+      if (error) throw error;
+      if (data.requiresConfirmation) {
+        setPendingRows(rows);
+        setConfirmOpen(true);
+        setUploading(false);
+        return;
+      }
+      setResult(data);
+      if (data.updated > 0) toast.success(`Updated ${data.updated} member${data.updated > 1 ? "s" : ""}`);
+      if (data.errors.length > 0) toast.error(`${data.errors.length} row${data.errors.length > 1 ? "s" : ""} failed`);
+    } catch (err) {
+      toast.error(parseEdgeFunctionError(err) || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleFile = async (file: File) => {
+    if (!/^\d{4}-\d{2}$/.test(month)) {
+      toast.error("Please select a valid month first");
+      return;
+    }
+    try {
+      const rows = await parseFile(file);
+      if (rows.length === 0) {
+        toast.error("No rows found in file");
+        return;
+      }
+      toast.info(`Processing ${rows.length} rows…`);
+      await run(rows, false);
+    } catch (err) {
+      toast.error("Failed to read file");
+    }
+  };
+
+  return (
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Monthly Update</CardTitle>
+          <CardDescription>
+            Use this every month to record salary deductions for savings, contributions and loan repayments.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="month-picker">Month</Label>
+              <Input
+                id="month-picker"
+                type="month"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+                className="w-[180px]"
+              />
+            </div>
+            <Button
+              variant="outline"
+              onClick={() =>
+                downloadTemplate("monthly_deductions_template.xlsx", MONTHLY_COLUMNS, {
+                  full_name: "John Doe",
+                  email: "john@example.com",
+                  savings_deduction: 10000,
+                  contribution_amount: 5000,
+                  special_loan_repayment: 0,
+                  trade_loan_repayment: 0,
+                  normal_loan_repayment: 0,
+                  land_loan_repayment: 0,
+                  month,
+                })
+              }
+            >
+              <Download className="h-4 w-4 mr-2" /> Download Template
+            </Button>
+          </div>
+          <DropZone onFile={handleFile} disabled={uploading} />
+          {uploading && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" /> Processing upload…
+            </div>
+          )}
+          {result && (
+            <SummaryCard
+              successCount={result.updated}
+              errors={result.errors}
+              reportName="monthly_deductions_errors.xlsx"
+              successLabel="Members updated"
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Records already exist for {month}</AlertDialogTitle>
+            <AlertDialogDescription>
+              Records for {month} already exist. Uploading again will create duplicate transactions. Do you want to proceed?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPendingRows(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (pendingRows) run(pendingRows, true);
+                setPendingRows(null);
+              }}
+            >
+              Proceed
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+};
+
+// ============ Page ============
+const BulkUpload = () => {
+  return (
     <DashboardLayout>
       <AdminRoute>
-        <div className="container mx-auto p-6 space-y-6">
+        <div className="container mx-auto p-4 sm:p-6 space-y-6 max-w-5xl">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Bulk Upload Members</h1>
-            <p className="text-muted-foreground">Upload multiple members at once using a CSV file</p>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1">Bulk Upload</h1>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              Onboard new members or record monthly salary deductions.
+            </p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Upload CSV File</CardTitle>
-              <CardDescription>
-                Upload a CSV file with member details. Each member will be assigned a secure random password and must change it on first login.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-4">
-                <Button
-                  variant="outline"
-                  onClick={downloadTemplate}
-                  className="flex items-center gap-2"
-                >
-                  <Download className="h-4 w-4" />
-                  Download Template
-                </Button>
-
-                <div className="relative">
-                  <input
-                    type="file"
-                    accept=".csv"
-                    onChange={handleFileUpload}
-                    disabled={uploading}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                  <Button disabled={uploading} className="flex items-center gap-2">
-                    <Upload className="h-4 w-4" />
-                    {uploading ? 'Uploading...' : 'Upload CSV'}
-                  </Button>
-                </div>
-              </div>
-
-              <div className="text-sm text-muted-foreground space-y-1">
-                <p><strong>CSV Format:</strong></p>
-                <p>Columns: id, full_name, email, phone, address, date_of_birth, created_at, updated_at</p>
-                <p className="text-xs">Note: id, created_at, and updated_at will be auto-generated if left empty</p>
-                <p className="text-xs text-amber-600"><strong>Security:</strong> Each member receives a secure random password and must change it on first login.</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {results && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Member Credentials</CardTitle>
-                <CardDescription className="text-amber-600">
-                  <strong>Security Warning:</strong> Copy these passwords immediately. They will not be shown again.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {results.success.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-green-600 mb-2">
-                      Successfully created ({results.success.length})
-                    </h3>
-                    <div className="border rounded-md p-4 space-y-3 max-h-96 overflow-y-auto bg-muted/50">
-                      {results.success.map((member, idx) => (
-                        <div key={idx} className="flex items-start justify-between gap-4 p-3 bg-background rounded border">
-                          <div className="space-y-1 flex-1 min-w-0">
-                            <p className="font-medium text-sm break-all">{member.email}</p>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm text-muted-foreground">Password:</span>
-                              <code className="bg-muted px-2 py-1 rounded text-xs font-mono break-all">{member.password}</code>
-                            </div>
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="shrink-0"
-                            onClick={() => {
-                              navigator.clipboard.writeText(`Email: ${member.email}\nPassword: ${member.password}`);
-                              toast.success("Credentials copied!");
-                            }}
-                          >
-                            Copy
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {results.errors.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-destructive mb-2">
-                      Failed uploads ({results.errors.length})
-                    </h3>
-                    <ul className="text-sm space-y-2 max-h-40 overflow-y-auto">
-                      {results.errors.map((err, idx) => (
-                        <li key={idx} className="text-muted-foreground">
-                          <span className="font-medium">{err.email}</span>: {err.error}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
+          <OnboardingSection />
+          <Separator />
+          <MonthlySection />
         </div>
       </AdminRoute>
     </DashboardLayout>
