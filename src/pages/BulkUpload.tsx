@@ -20,7 +20,7 @@ import { Upload, Download, FileSpreadsheet, Loader2, CheckCircle2, XCircle, Aler
 import { AdminRoute } from "@/components/AdminRoute";
 import DashboardLayout from "@/components/DashboardLayout";
 import * as XLSX from "xlsx";
-import { parseEdgeFunctionError } from "@/lib/edgeFunctionError";
+import { getEdgeFunctionErrorMessage } from "@/lib/edgeFunctionError";
 
 // ============ Column definitions ============
 const ONBOARDING_COLUMNS = [
