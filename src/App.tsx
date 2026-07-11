@@ -11,10 +11,6 @@ import Loans from "./pages/Loans";
 import LoanApplication from "./pages/LoanApplication";
 import Transactions from "./pages/Transactions";
 import BulkUpload from "./pages/BulkUpload";
-import BulkUploadAccounts from "./pages/BulkUploadAccounts";
-import BulkUploadLoans from "./pages/BulkUploadLoans";
-import BulkUploadTransactions from "./pages/BulkUploadTransactions";
-import BulkUploadSpecialContributions from "./pages/BulkUploadSpecialContributions";
 import SpecialContributions from "./pages/SpecialContributions";
 import AdminSpecialContributions from "./pages/AdminSpecialContributions";
 import Shares from "./pages/Shares";
@@ -55,10 +51,6 @@ const App = () => (
           <Route path="/dashboard/loan-application" element={<LoanApplication />} />
           <Route path="/dashboard/transactions" element={<Transactions />} />
           <Route path="/dashboard/bulk-upload" element={<BulkUpload />} />
-          <Route path="/dashboard/bulk-upload-accounts" element={<BulkUploadAccounts />} />
-          <Route path="/dashboard/bulk-upload-loans" element={<BulkUploadLoans />} />
-          <Route path="/dashboard/bulk-upload-transactions" element={<BulkUploadTransactions />} />
-          <Route path="/dashboard/bulk-upload-special-contributions" element={<BulkUploadSpecialContributions />} />
           <Route path="/dashboard/special-contributions" element={<SpecialContributions />} />
           <Route path="/dashboard/admin/special-contributions" element={<AdminSpecialContributions />} />
           <Route path="/dashboard/shares" element={<Shares />} />

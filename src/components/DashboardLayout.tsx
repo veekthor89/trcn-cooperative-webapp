@@ -242,19 +242,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   </CollapsibleTrigger>
                   <CollapsibleContent className="space-y-1">
                     <button onClick={() => { navigate("/dashboard/bulk-upload"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                      <Upload className="h-5 w-5" /><span>Bulk Upload Members</span>
-                    </button>
-                    <button onClick={() => { navigate("/dashboard/bulk-upload-accounts"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                      <Wallet className="h-5 w-5" /><span>Bulk Upload Accounts</span>
-                    </button>
-                    <button onClick={() => { navigate("/dashboard/bulk-upload-loans"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                      <CreditCard className="h-5 w-5" /><span>Bulk Upload Loans</span>
-                    </button>
-                    <button onClick={() => { navigate("/dashboard/bulk-upload-transactions"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                      <TrendingUp className="h-5 w-5" /><span>Bulk Upload Transactions</span>
-                    </button>
-                    <button onClick={() => { navigate("/dashboard/bulk-upload-special-contributions"); setSidebarOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-smooth">
-                      <PiggyBank className="h-5 w-5" /><span>Bulk Upload Contributions</span>
+                      <Upload className="h-5 w-5" /><span>Bulk Upload</span>
                     </button>
                   </CollapsibleContent>
                 </Collapsible>
