@@ -215,18 +215,18 @@ const OnboardingSection = () => {
           <Button
             variant="outline"
             onClick={() =>
-              downloadTemplate("member_onboarding_template.xlsx", ONBOARDING_COLUMNS, {
-                full_name: "John Doe",
-                email: "john@example.com",
+              downloadTemplate("TRCN_Coop_Onboarding_Template.xlsx", ONBOARDING_COLUMNS, {
+                full_name: "Aisha Bello",
+                email: "aisha.bello@trcn.gov.ng",
                 phone: "08012345678",
-                address: "123 Main St, Lagos",
-                date_of_birth: "1990-05-15",
-                savings_balance: 50000,
+                address: "No. 5 Gana Street, Maitama, Abuja",
+                date_of_birth: "15/03/1985",
+                savings_balance: 150000,
                 special_loan_amount: 0,
-                trade_loan_amount: 0,
+                trade_loan_amount: 200000,
                 normal_loan_amount: 0,
                 land_loan_amount: 0,
-                contribution_amount: 0,
+                contribution_amount: 5000,
               })
             }
           >
@@ -329,16 +329,16 @@ const MonthlySection = () => {
             <Button
               variant="outline"
               onClick={() =>
-                downloadTemplate("monthly_deductions_template.xlsx", MONTHLY_COLUMNS, {
-                  full_name: "John Doe",
-                  email: "john@example.com",
+                downloadTemplate("TRCN_Coop_Monthly_Upload_Template.xlsx", MONTHLY_COLUMNS, {
+                  full_name: "Aisha Bello",
+                  email: "aisha.bello@trcn.gov.ng",
                   savings_deduction: 10000,
                   contribution_amount: 5000,
                   special_loan_repayment: 0,
-                  trade_loan_repayment: 0,
+                  trade_loan_repayment: 12500,
                   normal_loan_repayment: 0,
                   land_loan_repayment: 0,
-                  month,
+                  month: "2026-07",
                 })
               }
             >
