@@ -29,14 +29,31 @@ const Auth = () => {
     fullName: "",
   });
 
+  const safeNext = (() => {
+    const raw = searchParams.get("next");
+    if (!raw) return null;
+    // Only allow same-origin relative paths.
+    if (!raw.startsWith("/") || raw.startsWith("//")) return null;
+    return raw;
+  })();
+
+  const goAfterAuth = () => {
+    if (safeNext) {
+      window.location.href = safeNext;
+    } else {
+      navigate("/dashboard");
+    }
+  };
+
   useEffect(() => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/dashboard");
+        goAfterAuth();
       }
     };
     checkUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,7 +85,7 @@ const Auth = () => {
             email: validationData.email,
             password: validationData.password,
             options: {
-              emailRedirectTo: `${window.location.origin}/dashboard`,
+              emailRedirectTo: `${window.location.origin}${safeNext ?? "/dashboard"}`,
               data: {
                 full_name: formData.fullName,
               },
@@ -82,8 +99,8 @@ const Auth = () => {
               toast.error(error.message);
             }
           } else {
-            toast.success("Account created successfully! Redirecting to dashboard...");
-            setTimeout(() => navigate("/dashboard"), 1000);
+            toast.success("Account created successfully! Redirecting...");
+            setTimeout(goAfterAuth, 1000);
           }
         } else {
           const { error } = await supabase.auth.signInWithPassword({
@@ -95,7 +112,7 @@ const Auth = () => {
             toast.error(error.message);
           } else {
             toast.success("Signed in successfully!");
-            navigate("/dashboard");
+            goAfterAuth();
           }
         }
       }

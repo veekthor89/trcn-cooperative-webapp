@@ -28,6 +28,7 @@ import AdminPasswordResetRequests from "./pages/AdminPasswordResetRequests";
 import MemberAnnouncements from "./pages/MemberAnnouncements";
 import NotFound from "./pages/NotFound";
 import Unsubscribe from "./pages/Unsubscribe";
+import OAuthConsent from "./pages/OAuthConsent";
 import DeveloperFooter from "./components/DeveloperFooter";
 import { AdminRoute } from "./components/AdminRoute";
 import { ExcoRoute } from "./components/ExcoRoute";
@@ -67,6 +68,7 @@ const App = () => (
           <Route path="/dashboard/announcements" element={<MemberAnnouncements />} />
           <Route path="/dashboard/admin/password-reset-requests" element={<AdminPasswordResetRequests />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
+          <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
