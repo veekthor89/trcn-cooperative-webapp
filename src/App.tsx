@@ -74,6 +74,7 @@ const App = () => (
           <Route path="*" element={<NotFound />} />
         </Routes>
         <DeveloperFooter />
+        <CoopAssistant />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
