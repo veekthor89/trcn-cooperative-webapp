@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { MessageCircle, Sparkles, X, Send, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import trcnLogo from "@/assets/trcn-logo.png";
 
 type Msg = { role: "user" | "assistant"; content: string; ts: number };
 
@@ -161,10 +162,17 @@ export default function CoopAssistant() {
         <button
           onClick={() => setOpen(true)}
           aria-label="Open COOP Assistant"
-          className="group fixed bottom-6 right-6 z-[60] h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center"
+          className="group fixed bottom-6 right-6 z-[60] h-14 w-14"
         >
-          <MessageCircle className="h-6 w-6" />
-          <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-yellow-300 fill-yellow-300 animate-pulse" />
+          <div className="absolute inset-0 rounded-[22px] bg-white shadow-lg transition-all group-hover:scale-105 group-hover:shadow-xl animate-pulse" />
+          <img
+            src={trcnLogo}
+            alt="TRCN Cooperative Logo"
+            className="relative z-10 h-11 w-11 object-contain p-1.5"
+          />
+          <span className="pointer-events-none absolute -top-2 left-1/2 z-20 -translate-x-1/2 flex h-4 min-w-[28px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground shadow-md">
+            AI
+          </span>
           <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground text-background text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
             COOP Assistant
           </span>
@@ -182,9 +190,12 @@ export default function CoopAssistant() {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-primary text-primary-foreground sm:rounded-t-xl">
             <div className="flex items-center gap-2">
-              <div className="relative">
-                <MessageCircle className="h-5 w-5" />
-                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-yellow-300 fill-yellow-300" />
+              <div className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-white/20">
+                <img
+                  src={trcnLogo}
+                  alt="TRCN Cooperative Logo"
+                  className="h-5 w-5 object-contain"
+                />
               </div>
               <div>
                 <p className="font-semibold text-sm leading-tight">COOP Assistant</p>
