@@ -162,14 +162,15 @@ export default function CoopAssistant() {
         <button
           onClick={() => setOpen(true)}
           aria-label="Open COOP Assistant"
-          className="group fixed bottom-6 right-6 z-[60] h-14 w-14 rounded-[22px] bg-white text-primary shadow-lg hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center animate-pulse"
+          className="group fixed bottom-6 right-6 z-[60] h-14 w-14"
         >
+          <div className="absolute inset-0 rounded-[22px] bg-white shadow-lg transition-all group-hover:scale-105 group-hover:shadow-xl animate-pulse" />
           <img
             src={trcnLogo}
             alt="TRCN Cooperative Logo"
-            className="h-11 w-11 object-contain p-1.5"
+            className="relative z-10 h-11 w-11 object-contain p-1.5"
           />
-          <span className="pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 flex h-4 min-w-[28px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground shadow-md">
+          <span className="pointer-events-none absolute -top-2 left-1/2 z-20 -translate-x-1/2 flex h-4 min-w-[28px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground shadow-md">
             AI
           </span>
           <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground text-background text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
