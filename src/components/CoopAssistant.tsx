@@ -165,8 +165,12 @@ export default function CoopAssistant() {
           className="group fixed bottom-6 right-6 z-[60] h-14 w-14"
         >
           <div
-            className="absolute inset-0 rounded-[22px] bg-[#007A55] transition-all group-hover:scale-105 animate-pulse"
-            style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
+            className="absolute inset-0 rounded-[22px] transition-all group-hover:scale-105 animate-pulse"
+            style={{
+              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+              background: "#007A55 !important",
+              backgroundImage: "none !important",
+            }}
           />
           <img
             src={trcnLogo}
@@ -193,7 +197,10 @@ export default function CoopAssistant() {
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-[#007A55] text-primary-foreground sm:rounded-t-xl">
+          <div
+            className="flex items-center justify-between px-4 py-3 border-b border-border text-primary-foreground sm:rounded-t-xl"
+            style={{ background: "#007A55 !important", backgroundImage: "none !important" }}
+          >
             <div className="flex items-center gap-2">
               <div className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-white/20">
                 <img
