@@ -193,7 +193,7 @@ export default function CoopAssistant() {
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-primary text-primary-foreground sm:rounded-t-xl">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-[#007A55] text-primary-foreground sm:rounded-t-xl">
             <div className="flex items-center gap-2">
               <div className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-white/20">
                 <img
