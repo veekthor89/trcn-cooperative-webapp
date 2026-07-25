@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { MessageCircle, Sparkles, X, Send, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import trcnLogo from "@/assets/trcn-logo.png";
 
 type Msg = { role: "user" | "assistant"; content: string; ts: number };
 
