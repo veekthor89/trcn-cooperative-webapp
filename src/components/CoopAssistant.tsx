@@ -164,7 +164,7 @@ export default function CoopAssistant() {
           aria-label="Open COOP Assistant"
           className="group fixed bottom-6 right-6 z-[60] h-14 w-14"
         >
-          <div className="absolute inset-0 rounded-[22px] bg-white shadow-lg transition-all group-hover:scale-105 group-hover:shadow-xl animate-pulse" />
+          <div className="absolute inset-0 rounded-[22px] bg-[#007A55] shadow-lg transition-all group-hover:scale-105 group-hover:shadow-xl animate-pulse" />
           <img
             src={trcnLogo}
             alt="TRCN Cooperative Logo"
