@@ -164,13 +164,18 @@ export default function CoopAssistant() {
           aria-label="Open COOP Assistant"
           className="group fixed bottom-6 right-6 z-[60] h-14 w-14"
         >
-          <div className="absolute inset-0 rounded-[22px] bg-[#007A55] shadow-lg transition-all group-hover:scale-105 group-hover:shadow-xl animate-pulse" />
+          <div
+            className="absolute inset-0 rounded-[22px] bg-[#007A55] transition-all group-hover:scale-105 animate-pulse"
+            style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}
+          />
           <img
             src={trcnLogo}
             alt="TRCN Cooperative Logo"
-            className="relative z-10 h-11 w-11 object-contain p-1.5"
+            className="relative z-10 h-[44px] w-[44px] object-contain p-[6px]"
           />
-          <span className="pointer-events-none absolute -top-2 left-1/2 z-20 -translate-x-1/2 flex h-4 min-w-[28px] items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground shadow-md">
+          <span
+            className="pointer-events-none absolute -top-1.5 left-1/2 z-20 -translate-x-1/2 flex items-center justify-center rounded-full bg-[#007A55] px-[6px] py-[2px] text-[10px] font-bold text-white shadow-sm"
+          >
             AI
           </span>
           <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-md bg-foreground text-background text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
