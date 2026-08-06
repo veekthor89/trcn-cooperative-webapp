@@ -124,6 +124,11 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  .coop-assistant-green {
+    background: #007A55 !important;
+    background-image: none !important;
+  }
+
   .gradient-hero {
     background: var(--gradient-hero);
   }
