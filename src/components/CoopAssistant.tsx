@@ -162,7 +162,7 @@ export default function CoopAssistant() {
         <button
           onClick={() => setOpen(true)}
           aria-label="Open COOP Assistant"
-          className="group fixed bottom-6 right-6 z-[60] h-14 w-14"
+          className="group fixed bottom-6 right-6 z-[60] flex h-14 w-14 items-center justify-center"
         >
           <div
             className="coop-assistant-green absolute inset-0 rounded-[22px] transition-transform group-hover:scale-105"
