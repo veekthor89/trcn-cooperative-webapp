@@ -4,7 +4,8 @@ import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import trcnLogo from "@/assets/trcn-logo.png";
+import coopLogoAsset from "@/assets/coop-logo-white.png.asset.json";
+const trcnLogo = coopLogoAsset.url;
 
 type Msg = { role: "user" | "assistant"; content: string; ts: number };
 
