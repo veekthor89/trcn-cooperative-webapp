@@ -165,7 +165,7 @@ export default function CoopAssistant() {
           className="group fixed bottom-6 right-6 z-[60] h-14 w-14"
         >
           <div
-            className="coop-assistant-green absolute inset-0 rounded-[22px] transition-all group-hover:scale-105 animate-pulse"
+            className="coop-assistant-green absolute inset-0 rounded-[22px] transition-transform group-hover:scale-105"
             style={{
               boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
             }}
