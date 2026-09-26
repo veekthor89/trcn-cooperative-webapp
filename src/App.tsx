@@ -29,7 +29,6 @@ import MemberAnnouncements from "./pages/MemberAnnouncements";
 import NotFound from "./pages/NotFound";
 import Unsubscribe from "./pages/Unsubscribe";
 import OAuthConsent from "./pages/OAuthConsent";
-import DeveloperFooter from "./components/DeveloperFooter";
 import CoopAssistant from "./components/CoopAssistant";
 import { AdminRoute } from "./components/AdminRoute";
 import { ExcoRoute } from "./components/ExcoRoute";
