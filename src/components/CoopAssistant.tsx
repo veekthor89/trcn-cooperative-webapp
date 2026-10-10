@@ -12,6 +12,37 @@ type Msg = { role: "user" | "assistant"; content: string; ts: number };
 const SESSION_KEY = "coop_assistant_messages";
 const GREETED_KEY = "coop_assistant_greeted";
 
+// The AI sometimes replies in markdown. The chat bubbles render plain text,
+// so strip the syntax and keep only the readable text before displaying.
+const stripMarkdown = (raw: string): string => {
+  if (!raw) return "";
+  let s = raw;
+
+  // Fenced code blocks: ```lang ... ``` -> inner text
+  s = s.replace(/```[^\n]*\n([\s\S]*?)```/g, "$1");
+  // Inline code: `code` -> code
+  s = s.replace(/`([^`\n]+)`/g, "$1");
+  // Headings: leading #, ##, ... ###### on their own line
+  s = s.replace(/^[ \t]{0,3}#{1,6}[ \t]+/gm, "");
+  // Bold / strong: **text** and __text__
+  s = s.replace(/(\*\*|__)(?=\S)([\s\S]*?\S)\1/g, "$2");
+  // Italic / emphasis: *text* and _text_ (word-bounded so snake_case survives)
+  s = s.replace(/(^|[^*\w])\*(?=\S)([^*\n]*?\S)\*(?!\*)/g, "$1$2");
+  s = s.replace(/(^|[^_\w])_(?=\S)([^_\n]*?\S)_(?![_\w])/g, "$1$2");
+  // Strikethrough: ~~text~~
+  s = s.replace(/~~(?=\S)([\s\S]*?\S)~~/g, "$1");
+  // Links / images: [text](url) and ![alt](url) -> text
+  s = s.replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1");
+  // Blockquotes: leading >
+  s = s.replace(/^[ \t]{0,3}>+[ \t]?/gm, "");
+  // Horizontal rules: ---, ***, ___ on their own line
+  s = s.replace(/^[ \t]{0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$/gm, "");
+  // Bullet markers: -, *, + at line start -> plain dash
+  s = s.replace(/^[ \t]{0,3}[-*+][ \t]+/gm, "- ");
+
+  return s.replace(/\n{3,}/g, "\n\n").trim();
+};
+
 const QUICK_REPLIES = [
   { emoji: "💰", text: "What's my savings balance?" },
   { emoji: "🏦", text: "Can I apply for a loan?" },
