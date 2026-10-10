@@ -73,33 +73,33 @@ Deno.serve(async (req) => {
       profile?.member_number ? `TRCN Number: ${profile.member_number}` : null,
       profile?.department ? `Department: ${profile.department}` : null,
       "",
-      `SAVINGS BALANCE: ${fmt(savings?.balance)}`,
-      lastTx ? `Last transaction: ${lastTx.type} of ${fmt(lastTx.amount)} on ${new Date(lastTx.created_at).toLocaleDateString("en-NG")}` : "No recent transactions",
+      `SAVINGS BALANCE: ${raw(savings?.balance)}`,
+      lastTx ? `Last transaction: ${lastTx.type} of ${raw(lastTx.amount)} on ${new Date(lastTx.created_at).toLocaleDateString("en-NG")}` : "No recent transactions",
       "",
       `ACTIVE LOANS (${activeLoans.length}):`,
       ...(activeLoans.length === 0 ? ["  None"] : activeLoans.map((l: any) => {
         const monthly = Number(l.monthly_payment ?? 0);
         const remainingMonths = monthly > 0 ? Math.ceil(Number(l.outstanding_balance) / monthly) : "unknown";
-        return `  • ${l.loan_type} loan — original ${fmt(l.principal_amount)}, outstanding ${fmt(l.outstanding_balance)}, monthly repayment ${fmt(monthly)}, ~${remainingMonths} months remaining, next payment ${l.next_payment_date ?? "n/a"}`;
+        return `  • ${l.loan_type} loan — original ${raw(l.principal_amount)}, outstanding ${raw(l.outstanding_balance)}, monthly repayment ${raw(monthly)}, ~${remainingMonths} months remaining, next payment ${l.next_payment_date ?? "n/a"}`;
       })),
       "",
       `LOAN REPAYMENT HISTORY (last 6):`,
-      ...((repayR.data ?? []).length === 0 ? ["  None"] : (repayR.data ?? []).map((r: any) => `  • ${new Date(r.created_at).toLocaleDateString("en-NG")}: ${fmt(r.amount)}`)),
+      ...((repayR.data ?? []).length === 0 ? ["  None"] : (repayR.data ?? []).map((r: any) => `  • ${new Date(r.created_at).toLocaleDateString("en-NG")}: ${raw(r.amount)}`)),
       "",
       `SPECIAL CONTRIBUTIONS:`,
       ...(activeContrib.length === 0 ? ["  None active"] : activeContrib.map((c: any) => {
         const monthsContributed = Number(c.monthly_amount) > 0 ? Math.floor(Number(c.total_contributed ?? 0) / Number(c.monthly_amount)) : 0;
         const expectedPayout = Number(c.monthly_amount) * Number(c.duration_months);
-        return `  • Monthly ${fmt(c.monthly_amount)} × ${c.duration_months} months; contributed so far ${fmt(c.total_contributed)} (${monthsContributed} months); current balance ${fmt(c.balance)}; expected December payout ${fmt(expectedPayout)}; maturity ${c.maturity_date ?? "n/a"}`;
+        return `  • Monthly ${raw(c.monthly_amount)} × ${c.duration_months} months; contributed so far ${raw(c.total_contributed)} (${monthsContributed} months); current balance ${raw(c.balance)}; expected December payout ${raw(expectedPayout)}; maturity ${c.maturity_date ?? "n/a"}`;
       })),
       "",
-      `SHARES: ${sharesR.data?.total_shares ?? 0} shares, current value ${fmt(sharesR.data?.current_value)}${sharesR.data?.last_dividend_amount ? `, last dividend ${fmt(sharesR.data.last_dividend_amount)} on ${sharesR.data.last_dividend_date}` : ""}`,
+      `SHARES: ${sharesR.data?.total_shares ?? 0} shares, current value ${raw(sharesR.data?.current_value)}${sharesR.data?.last_dividend_amount ? `, last dividend ${raw(sharesR.data.last_dividend_amount)} on ${sharesR.data.last_dividend_date}` : ""}`,
       "",
       `RECENT TRANSACTIONS (last 10):`,
-      ...((txR.data ?? []).length === 0 ? ["  None"] : (txR.data ?? []).map((t: any) => `  • ${new Date(t.created_at).toLocaleDateString("en-NG")}: ${t.type} ${fmt(t.amount)}${t.description ? ` — ${t.description}` : ""}`)),
+      ...((txR.data ?? []).length === 0 ? ["  None"] : (txR.data ?? []).map((t: any) => `  • ${new Date(t.created_at).toLocaleDateString("en-NG")}: ${t.type} ${raw(t.amount)}${t.description ? ` — ${t.description}` : ""}`)),
       "",
-      `Gross monthly salary: ${grossSalary ? fmt(grossSalary) : "not on file"}`,
-      `Current total monthly deductions: ${fmt(totalMonthlyDeductions)} (loans ${fmt(monthlyLoanRepayments)} + contributions ${fmt(monthlyContrib)})`,
+      `Gross monthly salary: ${grossSalary ? raw(grossSalary) : "not on file"}`,
+      `Current total monthly deductions: ${raw(totalMonthlyDeductions)} (loans ${raw(monthlyLoanRepayments)} + contributions ${raw(monthlyContrib)})`,
     ].filter(Boolean).join("\n");
 
     const lovableKey = Deno.env.get("LOVABLE_API_KEY");
