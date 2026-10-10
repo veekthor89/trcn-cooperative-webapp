@@ -267,7 +267,7 @@ export default function CoopAssistant() {
                       : "bg-background text-foreground border border-border rounded-bl-sm",
                   )}
                 >
-                  {m.content}
+                  {m.role === "assistant" ? stripMarkdown(m.content) : m.content}
                 </div>
                 <span className="text-[10px] text-muted-foreground mt-1 px-1">{timeFmt(m.ts)}</span>
               </div>
