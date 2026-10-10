@@ -8,8 +8,10 @@ const corsHeaders = {
 
 const SYSTEM_PROMPT = `You are COOP Assistant, a friendly and helpful AI for TRCN Staff Multipurpose Cooperative Society. You have access to the logged-in member's live account data. Answer their questions clearly, warmly and in plain English. Always use Nigerian Naira (₦) for all amounts. Never make up figures — only use the data provided. If a question is outside your scope (e.g. political, general knowledge), politely redirect: 'I can only help with your cooperative account. Is there anything about your savings, loans or contributions I can help with?' Keep responses concise — no more than 4 sentences unless the member asks for a detailed explanation. Always address the member by their first name.`;
 
-const fmt = (n: number | null | undefined) =>
-  `₦${Number(n ?? 0).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+// Currency values are passed to the AI as plain numbers (no commas, no symbols)
+// so they are never misinterpreted as delimited values. The AI formats them
+// back to readable ₦ amounts in its responses.
+const raw = (n: number | null | undefined) => `${Number(n ?? 0)}`;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
